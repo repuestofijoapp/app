@@ -16,7 +16,12 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable(); // Nullable para Google OAuth
+            $table->string('google_id')->nullable()->unique(); // ID de Google OAuth
+            $table->string('ruc_dni')->nullable(); // DNI o RUC (solo al activar ZettaBot)
+            $table->enum('role', ['mechanic', 'provider', 'admin'])->default('mechanic');
+            $table->string('business_name')->nullable(); // Nombre del negocio/taller
+            $table->string('ciiu_code')->nullable(); // Código CIIU para validación SUNAT
             $table->rememberToken();
             $table->timestamps();
         });

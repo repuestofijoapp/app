@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Culqi</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; background: #f5f5f5; }
+        button { padding: 15px 30px; font-size: 18px; background: #e00; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        #status { margin-top: 20px; padding: 15px; background: white; border-radius: 8px; font-family: monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h2>🧪 Test de Culqi Checkout v4</h2>
+    <div id="status">Esperando...</div>
+    <br>
+    <button onclick="testCulqi()">ABRIR MODAL DE CULQI</button>
+
+    <script src="https://checkout.culqi.com/js/v4"></script>
+    <script>
+        const log = (msg) => {
+            document.getElementById('status').textContent += '\n' + msg;
+            console.log(msg);
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            log('[DOMContentLoaded] typeof Culqi = ' + (typeof Culqi));
+            if (typeof Culqi !== 'undefined') {
+                log('[OK] Culqi script cargado correctamente');
+            } else {
+                log('[ERROR] Culqi NO está definido - el script no cargó');
+            }
+        });
+
+        window.culqi = function() {
+            log('[culqi callback] Ejecutado');
+            if (Culqi.token) {
+                log('[OK] Token recibido: ' + Culqi.token.id);
+                alert('Token: ' + Culqi.token.id);
+            } else if (Culqi.error) {
+                log('[ERROR] ' + JSON.stringify(Culqi.error));
+            }
+        };
+
+        function testCulqi() {
+            log('\n--- Clic en botón ---');
+            log('typeof Culqi = ' + (typeof Culqi));
+
+            if (typeof Culqi === 'undefined') {
+                log('[ERROR] Culqi no está disponible');
+                return;
+            }
+
+            const PUBLIC_KEY = document.getElementById('pk_input').value.trim();
+            log('Public key usada: ' + PUBLIC_KEY.substring(0, 20) + '...');
+
+            try {
+                Culqi.publicKey = PUBLIC_KEY;
+                log('[OK] publicKey asignada');
+
+                Culqi.settings({
+                    title: 'RepuestoFijo Test',
+                    currency: 'PEN',
+                    amount: 10000,
+                    description: 'Pedido de prueba'
+                });
+                log('[OK] settings() OK');
+
+                Culqi.options({
+                    lang: 'es',
+                    installments: false,
+                    modal: true
+                });
+                log('[OK] options() OK');
+
+                log('[→] Llamando Culqi.open()...');
+                Culqi.open();
+                log('[OK] open() ejecutado sin error');
+            } catch(e) {
+                log('[EXCEPTION] ' + e.message);
+            }
+        }
+    </script>
+
+    <br><br>
+    <label>Llave pública (pk_test_...):<br>
+        <input id="pk_input" type="text" style="width: 400px; padding: 8px; font-family: monospace;" placeholder="pk_test_xxxxx">
+    </label>
+    <br><small>Pega tu pk_test aquí para el test</small>
+</body>
+</html>

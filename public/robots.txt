@@ -1,2 +1,4 @@
 User-agent: *
 Disallow:
+
+Sitemap: https://repuestofijo.com/sitemap.xml

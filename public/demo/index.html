@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RepuestoFijo — Cliente</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #e63946;
+            --secondary: #1d3557;
+            --bg: #0f1923;
+            --card-bg: #1a2535;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        html, body { overflow-x: hidden; width: 100%; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+        header {
+            background: #0a1117;
+            padding: 12px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #1e3a4a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo-container {
+            flex-shrink: 0;
+        }
+
+        .logo-container img {
+            height: 36px;
+            filter: drop-shadow(0 0 8px rgba(230, 57, 70, 0.2));
+        }
+
+        .search-bar {
+            flex: 1;
+            display: flex;
+            gap: 0;
+            position: relative;
+            max-width: 800px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            background: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px 0 0 8px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .search-bar button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 16px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+        }
+
+        .autocomplete-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 101;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 12px 16px;
+            color: #333;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .result-item:hover { background: #f8f9fa; }
+
+        .main-content {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 16px;
+            flex: 1;
+        }
+
+        .hero-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 768px) {
+            header { 
+                flex-direction: column; 
+                padding: 12px; 
+                gap: 12px;
+            }
+            .logo-container img { height: 28px; }
+            .search-bar { width: 100%; max-width: none; }
+            .search-bar input { font-size: 13px; }
+            
+            .hero-section { 
+                grid-template-columns: 1fr; 
+                gap: 16px; 
+            }
+            .hero-card, .hero-banner { 
+                padding: 16px; 
+            }
+            .hero-banner h3 { font-size: 18px; }
+            .hero-banner .icon-bg { font-size: 80px; }
+            
+            .plate-search { width: 100%; box-sizing: border-box; }
+            .plate-search input { font-size: 14px; padding: 8px; width: 100%; min-width: 0; }
+            .plate-search .peru { font-size: 9px; padding: 4px 8px; }
+            .plate-search button { padding: 0 12px; }
+            
+            .main-content { padding: 16px 10px; width: 100%; box-sizing: border-box; }
+            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .product-card { min-width: 0; }
+            .product-img { height: 120px; padding: 10px; }
+            .product-name { font-size: 12px; height: 34px; }
+            .product-price { font-size: 15px; margin-bottom: 10px; }
+            .btn-add { font-size: 11px; padding: 8px 4px; }
+            
+            h2 { font-size: 18px !important; }
+            
+            footer { gap: 20px; }
+        }
+
+        .hero-card {
+            background: #111b27;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #1e3a4a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-banner {
+            background: #c1272d;
+            border-radius: 12px;
+            padding: 24px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner h3 { font-size: 24px; font-weight: 700; }
+        .hero-banner p { font-size: 14px; opacity: 0.9; }
+        .hero-banner .icon-bg {
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 120px;
+            opacity: 0.1;
+        }
+
+        .plate-search {
+            display: flex;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 16px;
+            border: 2px solid #1e3a4a;
+        }
+
+        .plate-search .peru {
+            background: #0052cc;
+            color: white;
+            padding: 8px 12px;
+            font-weight: bold;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .plate-search input {
+            flex: 1;
+            border: none;
+            padding: 12px;
+            font-size: 20px;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #333;
+        }
+
+        .plate-search button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            font-weight: bold;
+        }
+
+        .car-selector {
+            margin-top: 20px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .car-selector select {
+            background: #1e2a3a;
+            color: white;
+            border: 1px solid #334155;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #1e3a4a;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+
+        .product-img {
+            height: 180px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .product-img img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .product-info {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            height: 40px;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        .product-price {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .btn-add {
+            width: 100%;
+            background: #1e3a4a;
+            color: #38bdf8;
+            border: 1px solid #2a4a6e;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-add:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* MODAL */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 200;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            border: 1px solid #1e3a4a;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            color: #22c55e;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background: #0a1117;
+            padding: 12px 0;
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            border-top: 1px solid #1e3a4a;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .footer-item {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .footer-item.active { color: var(--primary); }
+        .footer-item i { font-size: 24px; margin-bottom: 4px; display: block; }
+
+        #toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #22c55e;
+            color: white;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 600;
+            display: none;
+            z-index: 300;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-container">
+        <img src="logo.png" alt="RepuestoFijo">
+    </div>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Busca por código OEM, marca o repuesto..." oninput="handleSearch(this.value)">
+        <button><i class="fa-solid fa-magnifying-glass"></i></button>
+        <div id="autocomplete" class="autocomplete-results"></div>
+    </div>
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <span style="font-size: 14px; font-weight: 600;"><i class="fa-solid fa-user-gear"></i> Perfil Taller</span>
+    </div>
+</header>
+
+<div class="main-content">
+    
+    <div class="hero-section">
+        <div class="hero-card">
+            <p style="font-size: 15px; color: #38bdf8; font-weight: 600; margin-bottom: 8px;">Buscar modelo de auto por placa</p>
+            <div class="plate-search">
+                <div class="peru">PERÚ</div>
+                <input type="text" placeholder="AAC264" value="AAC264" maxlength="7">
+                <button>BUSCAR</button>
+            </div>
+            
+            <div class="car-selector">
+                <select><option>1. Elija una marca</option></select>
+                <select disabled><option>2. Elija un modelo</option></select>
+                <select disabled><option>3. Elija un tipo de motor</option></select>
+                <button class="btn-add" style="background: var(--primary); color: white; padding: 12px; margin-top: 10px;">BUSCAR</button>
+            </div>
+        </div>
+
+        <div class="hero-banner">
+            <div>
+                <i class="fa-solid fa-bullhorn" style="font-size: 40px; margin-bottom: 15px;"></i>
+                <h3>¡Consigue un cupón de S/. 50.00</h3>
+                <p>al suscribirte a nuestra newsletter!</p>
+                <button class="btn-add" style="background: #0f1923; color: white; width: auto; padding: 12px 30px; margin-top: 20px;">SUSCRÍBETE AHORA</button>
+            </div>
+            <div class="icon-bg"><i class="fa-solid fa-envelope"></i></div>
+        </div>
+    </div>
+
+    <h2 style="font-size: 22px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-fire" style="color: #f59e0b;"></i> Productos más buscados
+    </h2>
+
+    <div class="product-grid" id="productGrid">
+        <!-- Products will be rendered here -->
+    </div>
+</div>
+
+<div id="toast">¡Pedido realizado con éxito!</div>
+
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+        <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <h2 style="margin-bottom: 12px; font-size: 28px;">¡Compra Finalizada!</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 16px;">Tu pedido se está preparando. Un motorizado está en camino a recogerlo.</p>
+        <button class="btn-add" style="background: var(--primary); color: white; padding: 16px; font-size: 16px;" onclick="closeModal()">Cerrar</button>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-item active">
+        <i class="fa-solid fa-house"></i>
+        Inicio
+    </div>
+    <div class="footer-item">
+        <i class="fa-solid fa-toolbox"></i>
+        Mi Reparación
+    </div>
+    <div class="footer-item">
+        <i class="fa-solid fa-user"></i>
+        Cuenta
+    </div>
+</footer>
+
+<script>
+    const products = [
+        { id: 1, name: 'Batería Bosch S4 12V 13 Placas', price: 450, brand: 'Bosch', image: 'Bateria_Bosch.jpg' },
+        { id: 2, name: 'Amortiguador Tokico Trasero Toyota Yaris', price: 380, brand: 'Tokico', image: 'Amortiguador_Tokico.jpg' },
+        { id: 3, name: 'Faja de Distribución Mitsuboshi Honda Civic', price: 120, brand: 'Mitsuboshi', image: 'Faja_mitsuboshi.jpg' },
+        { id: 4, name: 'Filtro de Aceite Beste Premium', price: 45, brand: 'Beste', image: 'Filtro_aceite.jpg' },
+        { id: 5, name: 'Faja de Alternador Bosch Multi V', price: 85, brand: 'Bosch', image: 'Faja_Bosch.jpg' }
+    ];
+    
+    // Canal de comunicación secundario para asegurar la sincronización
+    const channel = new BroadcastChannel('rf_demo_channel');
+
+    function renderProducts(list) {
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = '';
+        list.forEach(p => {
+            grid.innerHTML += `
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="${p.image}" alt="${p.name}">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">S/ ${p.price.toFixed(2)}</div>
+                        <button class="btn-add" onclick="buyProduct(${p.id})">Añadir a la reparación</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function handleSearch(val) {
+        const auto = document.getElementById('autocomplete');
+        if (val.length < 2) { auto.style.display = 'none'; return; }
+        
+        const filtered = products.filter(p => p.name.toLowerCase().includes(val.toLowerCase()));
+        if (filtered.length > 0) {
+            auto.innerHTML = '';
+            filtered.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'result-item';
+                item.innerHTML = `<span>${p.name}</span> <strong>S/ ${p.price}</strong>`;
+                item.onclick = () => {
+                    document.getElementById('searchInput').value = p.name;
+                    auto.style.display = 'none';
+                    renderProducts([p]);
+                };
+                auto.appendChild(item);
+            });
+            auto.style.display = 'block';
+        } else {
+            auto.style.display = 'none';
+        }
+    }
+
+    function buyProduct(id) {
+        const product = products.find(p => p.id === id);
+        
+        const order = {
+            id: Math.floor(Math.random() * 9000) + 1000,
+            product: product.name,
+            price: product.price,
+            time: new Date().toLocaleTimeString(),
+            status: 'Pendiente'
+        };
+
+        let orders = JSON.parse(localStorage.getItem('rf_orders') || '[]');
+        orders.unshift(order);
+        localStorage.setItem('rf_orders', JSON.stringify(orders));
+        localStorage.setItem('rf_new_order', Date.now());
+        
+        // Disparar mensaje por canal directo
+        channel.postMessage('new_order');
+
+        document.getElementById('orderModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('orderModal').style.display = 'none';
+        document.getElementById('toast').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('toast').style.display = 'none';
+        }, 3000);
+        renderProducts(products);
+        document.getElementById('searchInput').value = '';
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-bar')) {
+            document.getElementById('autocomplete').style.display = 'none';
+        }
+    });
+
+    renderProducts(products);
+</script>
+</body>
+</html>

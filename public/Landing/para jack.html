@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="RepuestoFijo — La solución integral para repuestos de autos en Lima, Perú. Buscamos en todos los proveedores, consolidamos tu pedido y lo entregamos en tu taller el mismo día.">
+<link rel="canonical" href="https://repuestofijo.com/" />
+<title>RepuestoFijo — Repuestos al toque</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #C0392B;
+  --red-dark: #8B0000;
+  --white: #F5F0E8;
+  --black: #0A0A0A;
+  --gray: #1A1A1A;
+  --gray2: #2A2A2A;
+  --accent: #E8D5B0;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+.cursor {
+  width: 12px; height: 12px;
+  background: var(--red);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1px solid rgba(192,57,43,0.5);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+}
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 20px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--white); }
+.nav-logo span { color: var(--red); }
+.nav-logo-hidden { display: none; }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,240,232,0.5); text-decoration: none; transition: color .2s; }
+.nav-links a:hover { color: var(--white); }
+
+.hero {
+  height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  text-align: center; padding: 0 24px;
+  position: relative; overflow: hidden;
+}
+.hero-logo-main { width: clamp(300px, 60vw, 700px); margin-bottom: 40px; opacity: 0; filter: drop-shadow(0 0 50px rgba(255,255,255,0.2)); }
+.hero-bg-text {
+  position: absolute;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(120px, 22vw, 320px);
+  color: rgba(255,255,255,0.025);
+  letter-spacing: -4px;
+  user-select: none;
+  top: 50%; transform: translateY(-50%);
+  z-index: -1;
+}
+.hero-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--red); margin-bottom: 24px; opacity: 0; }
+.hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(64px, 12vw, 160px); line-height: .95; letter-spacing: -1px; margin-bottom: 24px; opacity: 0; }
+.hero h1 em { font-style: normal; color: var(--red); display: block; }
+.hero-sub { font-size: clamp(14px, 1.5vw, 18px); color: rgba(245,240,232,0.5); max-width: 480px; line-height: 1.7; margin-bottom: 40px; opacity: 0; }
+.btn-hero { display: inline-flex; align-items: center; gap: 10px; padding: 16px 36px; background: var(--red); color: var(--white); font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: .15em; text-transform: uppercase; text-decoration: none; opacity: 0; transition: background .2s; cursor: none; }
+.btn-hero:hover { background: var(--red-dark); }
+.scroll-hint { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.scroll-line { width: 1px; height: 48px; background: linear-gradient(to bottom, rgba(192,57,43,0.8), transparent); animation: scrollline 1.8s ease-in-out infinite; }
+@keyframes scrollline { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+.anim-section { height: 500vh; position: relative; }
+.anim-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+.anim-title { position: absolute; top: 10%; text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 4vw, 56px); letter-spacing: 2px; opacity: 0; line-height: 1.2; }
+.anim-title span { color: var(--red); }
+
+.stage { width: 100%; height: 80vh; position: relative; display: flex; align-items: center; justify-content: center; }
+
+.piece { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; }
+.piece-icon { width: 80px; height: 80px; border: 1.5px solid rgba(255,255,255,0.1); border-radius: 18px; display: flex; align-items: center; justify-content: center; background: var(--gray2); position: relative; overflow: hidden; transition: transform .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.piece-icon::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(192,57,43,0.15), transparent); }
+.piece-svg { width: 48px; height: 48px; position: relative; z-index: 1; transition: transform .4s ease; }
+
+/* Efecto Planetono - Piezas aisladas */
+.piece.isolated { z-index: 5; }
+.piece.isolated .piece-icon { background: transparent; border: none; width: 220px; height: 220px; overflow: visible; filter: drop-shadow(0 0 30px rgba(255,255,255,0.15)); }
+.piece.isolated .piece-icon::before { display: none; }
+.piece.isolated .piece-svg { width: 220px; height: 220px; filter: brightness(1.1) contrast(1.05) drop-shadow(0 0 5px rgba(255,255,255,0.5)); mix-blend-mode: screen; }
+.piece-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: rgba(245,240,232,0.45); margin-top: 5px; }
+
+/* Etiquetas de proveedores refinadas */
+.piece-prov { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--red); letter-spacing: .15em; text-transform: uppercase; margin-top: 8px; opacity: 0.8; }
+
+.box-wrap { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 15px; opacity: 0; transform: scale(0.6); z-index: 10; }
+.box { width: 180px; height: 150px; position: relative; filter: drop-shadow(0 30px 60px rgba(0,0,0,0.5)); }
+.box-lid { position: absolute; top: -18px; left: -6px; width: 192px; height: 30px; background: #D4BC96; border-radius: 4px; z-index: 2; border-bottom: 2px solid rgba(0,0,0,0.15); box-shadow: inset 0 2px 5px rgba(255,255,255,0.2); }
+.box-tape { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); width: 55px; height: 10px; background: rgba(192,57,43,0.9); z-index: 3; border-radius: 1px; }
+.box-body { position: absolute; top: 0; width: 180px; height: 130px; background: var(--accent); border-radius: 4px 4px 10px 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+.box-body::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(0,0,0,0.15); transform: translateX(-50%); }
+.box-logo { margin-bottom: 6px; }
+.box-logo img { height: 32px; opacity: 1; filter: none; }
+.box-logo span { color: var(--red-dark); display: block; }
+.box-fragil { font-size: 8px; font-family: 'DM Mono', monospace; color: rgba(0,0,0,0.3); letter-spacing: .05em; z-index: 1; margin-top: 4px; }
+.box-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .15em; color: rgba(255,255,255,0.45); text-transform: uppercase; }
+
+.moto-wrap { position: absolute; right: -300px; display: flex; flex-direction: column; align-items: center; gap: 8px; opacity: 0; z-index: 5; }
+.moto-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .15em; color: var(--red); text-transform: uppercase; }
+
+.particle { position: absolute; width: 4px; height: 4px; background: var(--red); border-radius: 50%; opacity: 0; }
+.piece-count { position: absolute; bottom: 8%; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .15em; color: rgba(255,255,255,0.3); text-transform: uppercase; opacity: 0; }
+.piece-count strong { color: var(--white); }
+
+.how-section { padding: 120px 48px; max-width: 1100px; margin: 0 auto; }
+.section-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .25em; text-transform: uppercase; color: var(--red); margin-bottom: 16px; }
+.section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 7vw, 96px); line-height: .95; letter-spacing: 1px; margin-bottom: 64px; }
+.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+.step { padding: 40px 32px; border: 1px solid rgba(255,255,255,0.06); background: var(--gray); position: relative; overflow: hidden; opacity: 0; transform: translateY(40px); transition: border-color .3s; }
+.step:hover { border-color: rgba(192,57,43,0.4); }
+.step-num { font-family: 'Bebas Neue', sans-serif; font-size: 80px; line-height: 1; color: rgba(255,255,255,0.04); position: absolute; top: 16px; right: 24px; }
+.step-icon { width: 44px; height: 44px; margin-bottom: 20px; }
+.step h3 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; margin-bottom: 12px; }
+.step p { font-size: 14px; line-height: 1.7; color: rgba(245,240,232,0.5); }
+
+.why-section { padding: 120px 48px; background: var(--gray); position: relative; overflow: hidden; }
+.why-section::before { content: 'PROVEEDOR'; position: absolute; font-family: 'Bebas Neue', sans-serif; font-size: 280px; color: rgba(255,255,255,0.02); top: 50%; left: 50%; transform: translate(-50%, -50%); white-space: nowrap; letter-spacing: -8px; pointer-events: none; }
+.why-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.why-perks { display: flex; flex-direction: column; gap: 24px; }
+.perk { display: flex; gap: 16px; align-items: flex-start; padding: 20px; border: 1px solid rgba(255,255,255,0.06); background: rgba(10,10,10,0.5); opacity: 0; transform: translateX(-30px); }
+.perk-dot { width: 8px; height: 8px; background: var(--red); border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+.perk h4 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+.perk p { font-size: 13px; color: rgba(245,240,232,0.45); line-height: 1.6; }
+.why-cta { text-align: center; opacity: 0; }
+.big-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px, 14vw, 180px); line-height: 1; color: var(--red); display: block; }
+.big-desc { font-size: 15px; color: rgba(245,240,232,0.5); max-width: 280px; margin: 16px auto 40px; line-height: 1.7; }
+.btn-cta { display: inline-block; padding: 16px 40px; border: 1.5px solid var(--white); color: var(--white); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; transition: background .2s, color .2s; cursor: none; }
+.btn-cta:hover { background: var(--white); color: var(--black); }
+
+footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: space-between; }
+.footer-logo img { height: 30px; object-fit: contain; filter: brightness(0) invert(1); }
+.footer-text { font-size: 12px; color: rgba(255,255,255,0.3); font-family: 'DM Mono', monospace; }
+
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .why-inner { grid-template-columns: 1fr; gap: 40px; }
+  .how-section, .why-section { padding: 80px 20px; }
+  footer { padding: 32px 20px; flex-direction: column; gap: 16px; text-align: center; }
+  .piece-icon { width: 50px; height: 50px; }
+  .piece-svg { width: 30px; height: 30px; }
+  .piece.isolated .piece-icon { width: 100px; height: 100px; }
+  .piece.isolated .piece-svg { width: 90px; height: 90px; }
+  .piece-prov { font-size: 16px !important; letter-spacing: .1em; margin-top: 5px; }
+  #piece1 { left: 0%; }
+  #piece2 { right: 0%; }
+  #piece3 { left: 0%; }
+  #piece4 { right: 0%; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<nav>
+  <ul class="nav-links">
+    <li><a href="#como-funciona">Cómo funciona</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg-text"></div>
+  <img src="../images/logo.png" alt="RepuestoFijo" class="hero-logo-main" id="hero-logo">
+  <p class="hero-tag" id="hero-tag">Todo en un solo pedido. El mismo día.</p>
+  <h1 id="hero-h1">Busca menos,<em>repara más</em></h1>
+  <p class="hero-sub" id="hero-sub">No pierdas horas buscando entre decenas de proveedores. Encuentra todos tus repuestos en segundos y recíbelos juntos en tu taller.</p>
+  <a href="#como-funciona" class="btn-hero" id="hero-btn">Descubrir solución</a>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<section class="anim-section" id="anim-section">
+  <div class="anim-sticky">
+    <div class="anim-title" id="anim-title">
+      Buscamos en <span>Todos los proveedores</span><br>al mismo tiempo.
+    </div>
+
+    <div class="stage" id="stage">
+
+      <!-- FILTRO — izquierda arriba -->
+      <div class="piece isolated" id="piece1" style="left:2%;top:15%">
+        <div class="piece-icon">
+          <img src="Filtro_1.webp" alt="Filtro" class="piece-svg" style="object-fit: contain;">
+        </div>
+        <div class="piece-prov">PROVEEDOR 01</div>
+      </div>
+
+      <!-- AMORTIGUADOR — derecha arriba -->
+      <div class="piece isolated" id="piece2" style="right:2%;top:15%">
+        <div class="piece-icon">
+          <img src="Amortiguador.png" alt="Amortiguador" class="piece-svg" style="object-fit: contain;">
+        </div>
+        <div class="piece-prov">PROVEEDOR 02</div>
+      </div>
+
+      <!-- ALTERNADOR — izquierda abajo -->
+      <div class="piece isolated" id="piece3" style="left:2%;top:70%">
+        <div class="piece-icon">
+          <img src="Alternador_Pro.png" alt="Alternador" class="piece-svg" style="object-fit: contain;">
+        </div>
+        <div class="piece-prov">PROVEEDOR 02</div>
+      </div>
+
+      <!-- BUJÍA — derecha abajo -->
+      <div class="piece isolated" id="piece4" style="right:2%;top:70%">
+        <div class="piece-icon">
+          <img src="Bujia_1.png" alt="Bujía" class="piece-svg" style="object-fit: contain;">
+        </div>
+        <div class="piece-prov">PROVEEDOR 03</div>
+      </div>
+
+      <!-- CAJA CENTRAL -->
+      <div class="box-wrap" id="box-wrap">
+        <div class="box">
+          <div class="box-lid"><div class="box-tape"></div></div>
+          <div class="box-body">
+            <div class="box-logo">
+              <img src="../images/logo.png" alt="Logo">
+            </div>
+            <div class="box-fragil">FRÁGIL</div>
+          </div>
+        </div>
+        <div class="box-label">1 pedido · 1 entrega</div>
+      </div>
+
+      <!-- MOTORIZADO -->
+      <div class="moto-wrap" id="moto-wrap">
+        <svg viewBox="0 0 140 80" fill="none" style="width:140px;height:80px">
+          <circle cx="24" cy="60" r="17" fill="rgba(20,20,20,0.95)" stroke="rgba(245,240,232,0.75)" stroke-width="2.5"/>
+          <circle cx="24" cy="60" r="9" stroke="rgba(245,240,232,0.2)" stroke-width="1.2" fill="none"/>
+          <circle cx="24" cy="60" r="3.5" fill="rgba(192,57,43,0.8)"/>
+          <line x1="24" y1="43" x2="24" y2="77" stroke="rgba(245,240,232,0.15)" stroke-width="1"/>
+          <line x1="7" y1="60" x2="41" y2="60" stroke="rgba(245,240,232,0.15)" stroke-width="1"/>
+          <line x1="12" y1="48" x2="36" y2="72" stroke="rgba(245,240,232,0.1)" stroke-width="1"/>
+          <line x1="36" y1="48" x2="12" y2="72" stroke="rgba(245,240,232,0.1)" stroke-width="1"/>
+          <circle cx="116" cy="60" r="17" fill="rgba(20,20,20,0.95)" stroke="rgba(245,240,232,0.75)" stroke-width="2.5"/>
+          <circle cx="116" cy="60" r="9" stroke="rgba(245,240,232,0.2)" stroke-width="1.2" fill="none"/>
+          <circle cx="116" cy="60" r="3.5" fill="rgba(192,57,43,0.8)"/>
+          <line x1="116" y1="43" x2="116" y2="77" stroke="rgba(245,240,232,0.15)" stroke-width="1"/>
+          <line x1="99" y1="60" x2="133" y2="60" stroke="rgba(245,240,232,0.15)" stroke-width="1"/>
+          <path d="M24 46 L36 32 L80 30 L100 35 L116 43" stroke="rgba(245,240,232,0.5)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <path d="M36 32 L42 20 L86 18 L92 32 L36 32 Z" fill="rgba(28,28,28,0.95)" stroke="rgba(245,240,232,0.4)" stroke-width="1.5"/>
+          <rect x="44" y="4" width="42" height="18" rx="3" fill="rgba(232,213,176,0.95)" stroke="rgba(160,80,10,0.4)" stroke-width="1"/>
+          <rect x="42" y="2" width="46" height="6" rx="2" fill="rgba(210,188,140,0.9)" stroke="rgba(160,80,10,0.3)" stroke-width="0.8"/>
+          <line x1="65" y1="4" x2="65" y2="22" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+          <text x="65" y="16" font-size="7" fill="#5A3010" text-anchor="middle" font-family="sans-serif" font-weight="bold">RF</text>
+          <line x1="44" y1="9" x2="44" y2="20" stroke="rgba(192,57,43,0.7)" stroke-width="1.2"/>
+          <line x1="86" y1="9" x2="86" y2="20" stroke="rgba(192,57,43,0.7)" stroke-width="1.2"/>
+          <line x1="44" y1="14" x2="86" y2="14" stroke="rgba(192,57,43,0.35)" stroke-width="0.8"/>
+          <path d="M100 35 L108 26 L118 26" stroke="rgba(245,240,232,0.6)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <circle cx="118" cy="26" r="3" fill="rgba(245,240,232,0.5)"/>
+          <ellipse cx="68" cy="24" rx="8" ry="8" fill="rgba(192,57,43,0.3)" stroke="rgba(192,57,43,0.55)" stroke-width="1.2"/>
+          <path d="M62 18 Q68 10 74 18 Q76 22 68 24 Q60 22 62 18Z" fill="rgba(192,57,43,0.75)" stroke="rgba(192,57,43,1)" stroke-width="1"/>
+          <path d="M63 20 Q68 17 73 20" stroke="rgba(245,240,232,0.5)" stroke-width="1.2" fill="none"/>
+          <path d="M36 50 L24 50" stroke="rgba(245,240,232,0.25)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="0" y1="60" x2="7" y2="60" stroke="rgba(192,57,43,0.5)" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <line x1="0" y1="54" x2="5" y2="54" stroke="rgba(192,57,43,0.2)" stroke-width="1" stroke-dasharray="2 3"/>
+          <line x1="0" y1="66" x2="5" y2="66" stroke="rgba(192,57,43,0.2)" stroke-width="1" stroke-dasharray="2 3"/>
+        </svg>
+        <div class="moto-label">En camino · 20 min</div>
+      </div>
+
+      <div class="particle" id="p1" style="top:38%;left:32%"></div>
+      <div class="particle" id="p2" style="top:55%;left:42%"></div>
+      <div class="particle" id="p3" style="top:42%;left:62%"></div>
+      <div class="particle" id="p4" style="top:60%;left:56%"></div>
+      <div class="particle" id="p5" style="top:46%;left:36%"></div>
+      <div class="particle" id="p6" style="top:52%;left:66%"></div>
+      <div class="particle" id="p7" style="top:35%;left:50%"></div>
+      <div class="particle" id="p8" style="top:64%;left:48%"></div>
+    </div>
+
+    <div class="piece-count" id="piece-count">
+      <strong>4 repuestos</strong> · 3 proveedores · 1 pedido
+    </div>
+  </div>
+</section>
+
+<section class="how-section" id="como-funciona">
+  <p class="section-tag">Proceso</p>
+  <h2 class="section-title">Así de<br>simple.</h2>
+  <div class="steps-grid">
+    <div class="step" id="step1">
+      <div class="step-num">01</div>
+      <svg class="step-icon" viewBox="0 0 44 44" fill="none">
+        <rect x="4" y="8" width="28" height="28" rx="6" stroke="rgba(192,57,43,0.8)" stroke-width="1.5"/>
+        <line x1="10" y1="16" x2="26" y2="16" stroke="rgba(245,240,232,0.4)" stroke-width="1.5"/>
+        <line x1="10" y1="22" x2="22" y2="22" stroke="rgba(245,240,232,0.4)" stroke-width="1.5"/>
+        <circle cx="34" cy="32" r="8" fill="#0A0A0A" stroke="rgba(192,57,43,0.8)" stroke-width="1.5"/>
+        <path d="M30 32 L33 35 L38 29" stroke="rgba(192,57,43,1)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <h3>El mecánico pide</h3>
+      <p>Busca el repuesto en la app, arma su lista y confirma el pedido. Sin llamadas, sin vueltas.</p>
+    </div>
+    <div class="step" id="step2">
+      <div class="step-num">02</div>
+      <svg class="step-icon" viewBox="0 0 44 44" fill="none">
+        <rect x="6" y="10" width="32" height="24" rx="6" fill="rgba(37,211,102,0.1)" stroke="rgba(37,211,102,0.5)" stroke-width="1.5"/>
+        <circle cx="14" cy="22" r="4" fill="rgba(37,211,102,0.3)" stroke="rgba(37,211,102,0.7)" stroke-width="1"/>
+        <line x1="22" y1="18" x2="32" y2="18" stroke="rgba(245,240,232,0.3)" stroke-width="1.5"/>
+        <line x1="22" y1="22" x2="28" y2="22" stroke="rgba(245,240,232,0.3)" stroke-width="1.5"/>
+      </svg>
+      <h3>ZettaBot avisa</h3>
+      <p>El bot envía el pedido por WhatsApp a cada proveedor. Responden precio y stock en segundos.</p>
+    </div>
+    <div class="step" id="step3">
+      <div class="step-num">03</div>
+      <svg class="step-icon" viewBox="0 0 44 44" fill="none">
+        <circle cx="12" cy="34" r="7" stroke="rgba(245,240,232,0.6)" stroke-width="1.5"/>
+        <circle cx="34" cy="34" r="7" stroke="rgba(245,240,232,0.6)" stroke-width="1.5"/>
+        <path d="M10 27 L16 18 L32 18 L38 27" stroke="rgba(245,240,232,0.5)" stroke-width="1.5" fill="rgba(26,26,26,0.6)"/>
+        <rect x="26" y="20" width="10" height="8" rx="2" fill="rgba(232,213,176,0.7)"/>
+      </svg>
+      <h3>Llega al toque</h3>
+      <p>Un motorizado recoge de cada proveedor y entrega todo junto en el taller. Mismo día.</p>
+    </div>
+  </div>
+</section>
+
+<section class="why-section" id="proveedores">
+  <div class="why-inner">
+    <div>
+      <p class="section-tag">Para proveedores</p>
+      <h2 class="section-title">Más ventas.<br>Cero riesgo.</h2>
+      <div class="why-perks">
+        <div class="perk" id="perk1">
+          <div class="perk-dot"></div>
+          <div><h4>Solo respondes un WhatsApp</h4><p>No cambias nada en tu operativa. El pedido llega, confirmas precio y stock, nosotros hacemos el resto.</p></div>
+        </div>
+        <div class="perk" id="perk2">
+          <div class="perk-dot"></div>
+          <div><h4>Sin contratos ni exclusividad</h4><p>Entras cuando quieres, sales cuando quieres. Sin compromisos de volumen ni permanencia mínima.</p></div>
+        </div>
+        <div class="perk" id="perk3">
+          <div class="perk-dot"></div>
+          <div><h4>Cobras tu precio íntegro</h4><p>Pones el precio, nosotros añadimos nuestro margen al cliente. Recibes transferencia semanal sin descuentos.</p></div>
+        </div>
+        <div class="perk" id="perk4">
+          <div class="perk-dot"></div>
+          <div><h4>Ventaja del proveedor fundador</h4><p>Los primeros en unirse tienen prioridad en los pedidos. El mercado crece contigo desde el inicio.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="why-cta" id="why-cta">
+      <span class="big-number">0</span>
+      <p class="big-desc">Costo de incorporación. Sin inversión, sin riesgo. Empiezas a recibir pedidos desde el primer día.</p>
+      <a href="mailto:hola@repuestofijo.com" class="btn-cta" id="contacto">Quiero ser proveedor</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo"><img src="../images/logo.png" alt="RepuestoFijo"></div>
+  <div class="footer-text">© 2026 RepuestoFijo · Lima, Perú</div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  gsap.to(cursor, { x: mx, y: my, duration: 0.05 });
+});
+gsap.ticker.add(() => {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  gsap.set(cursorRing, { x: rx, y: ry });
+});
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => { gsap.to(cursor, { scale: 2.5, duration: .2 }); gsap.to(cursorRing, { scale: 1.5, duration: .2 }); });
+  el.addEventListener('mouseleave', () => { gsap.to(cursor, { scale: 1, duration: .2 }); gsap.to(cursorRing, { scale: 1, duration: .2 }); });
+});
+
+// Efecto Flotación (estilo Planetono) para piezas con variaciones
+gsap.utils.toArray('.piece.isolated .piece-icon').forEach((el, i) => {
+  gsap.to(el, {
+    y: i%2 === 0 ? '-=20' : '+=15',
+    rotation: i%2 === 0 ? 8 : -6,
+    duration: 2.5 + (i * 0.4),
+    repeat: -1,
+    yoyo: true,
+    ease: 'sine.inOut'
+  });
+});
+
+// Parallax con el mouse (estilo Planetono)
+document.addEventListener('mousemove', (e) => {
+  const x = (e.clientX - window.innerWidth / 2) / 30;
+  const y = (e.clientY - window.innerHeight / 2) / 30;
+  
+  gsap.to('.piece-icon', {
+    x: (i) => x * (i + 1) * 0.4,
+    y: (i) => y * (i + 1) * 0.4,
+    rotateX: -y * 0.5,
+    rotateY: x * 0.5,
+    duration: 1,
+    ease: 'power2.out'
+  });
+});
+
+gsap.timeline({ delay: 0.3 })
+  .to('#hero-logo', { opacity: 1, y: 30, duration: 2.2, ease: 'power3.out' })
+  .from('#hero-tag', { opacity: 0, y: 20, duration: .8, ease: 'power3.out' }, '-=.6')
+  .from('#hero-h1', { opacity: 0, y: 60, duration: 1, ease: 'power3.out' }, '-=.7')
+  .from('#hero-sub', { opacity: 0, y: 30, duration: .8, ease: 'power3.out' }, '-=.8')
+  .from('#hero-btn', { opacity: 0, y: 20, duration: .6, ease: 'power3.out' }, '-=.9');
+
+const animTl = gsap.timeline({
+  scrollTrigger: {
+    trigger: '#anim-section',
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: 1.5,
+  }
+});
+
+animTl
+  .to('#anim-title', { opacity: 1, duration: 1 }, 0)
+  .to('#piece1', { opacity: 1, duration: .6 }, 0.8)
+  .to('#piece2', { opacity: 1, duration: .6 }, 1.0)
+  .to('#piece3', { opacity: 1, duration: .6 }, 1.2)
+  .to('#piece4', { opacity: 1, duration: .6 }, 1.4)
+  .to('#box-wrap', { opacity: 1, scale: 1, duration: 1, ease: 'back.out(1.7)' }, 2.2)
+  .to('#piece1', { left: '50%', top: '55%', xPercent: -50, yPercent: -50, duration: 1.8, ease: 'power2.inOut' }, 3.2)
+  .to('#piece2', { right: 'auto', left: '50%', top: '55%', xPercent: -50, yPercent: -50, duration: 1.8, ease: 'power2.inOut' }, 3.2)
+  .to('#piece3', { left: '50%', top: '55%', xPercent: -50, yPercent: -50, duration: 1.8, ease: 'power2.inOut' }, 3.2)
+  .to('#piece4', { right: 'auto', left: '50%', top: '55%', xPercent: -50, yPercent: -50, duration: 1.8, ease: 'power2.inOut' }, 3.2)
+  .to(['#piece1','#piece2','#piece3','#piece4'], { opacity: 0, scale: 0.2, duration: .8, ease: 'power3.in' }, 4.8)
+  .to('#box-wrap', { scale: 1.2, duration: .35, ease: 'back.out(3)' }, 5.2)
+  .to('#box-wrap', { scale: 1, duration: .3 }, 5.55)
+  .to(['#p1','#p2','#p3','#p4','#p5','#p6','#p7','#p8'], { opacity: 1, scale: 4, x: 'random(-80,80)', y: 'random(-80,80)', duration: .6, stagger: .04 }, 5.3)
+  .to(['#p1','#p2','#p3','#p4','#p5','#p6','#p7','#p8'], { opacity: 0, duration: .5 }, 5.9)
+  .to('#piece-count', { opacity: 1, duration: .5 }, 5.6)
+  .to('#moto-wrap', { opacity: 1, right: '8%', duration: 1.2, ease: 'power2.out' }, 6.2)
+  .to('#box-wrap', { x: 120, duration: 1, ease: 'power2.inOut' }, 7.0)
+  .to('#box-wrap', { opacity: 0, duration: .4 }, 7.8)
+  .to('#moto-wrap', { right: '-350px', duration: 1.8, ease: 'power2.in' }, 7.4)
+  .to('#anim-title', { opacity: 0, duration: .5 }, 8.8)
+  .to('#piece-count', { opacity: 0, duration: .5 }, 8.8);
+
+gsap.utils.toArray(['#step1','#step2','#step3']).forEach((el, i) => {
+  gsap.to(el, { opacity: 1, y: 0, duration: .8, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 85%' }, delay: i * .15 });
+});
+
+gsap.utils.toArray(['#perk1','#perk2','#perk3','#perk4']).forEach((el, i) => {
+  gsap.to(el, { opacity: 1, x: 0, duration: .7, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%' }, delay: i * .1 });
+});
+
+gsap.to('#why-cta', { opacity: 1, duration: .8, scrollTrigger: { trigger: '#why-cta', start: 'top 80%' } });
+</script>
+</body>
+</html>

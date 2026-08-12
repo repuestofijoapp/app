@@ -1,11 +1,89 @@
-@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import 'bootstrap/dist/css/bootstrap.min.css';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+:root {
+    --primary-color: #BE3C3B;
+    --dark-blue: #132530;
+    --light-gray: #F9FAFB;
+    --text-dark: #333333;
+    --text-white: #FFFFFF;
+    --dark-color: #0A0E1A;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+
+.main-container {
+    background-color: #FFFFFF;
+    color: var(--text-dark);
+}
+
+#app {
+    color: var(--text-dark) !important;
+}
+
+.bg-header-custom {
+    background-color: #132530 !important;
+}
+
+.bg-section-custom {
+    background-color: var(--light-gray) !important;
+}
+
+.text-primary-custom {
+    color: var(--primary-color) !important;
+}
+
+.btn-primary-custom {
+    background-color: #0066cc;
+    /* Azul similar al de la imagen */
+    border-color: #0066cc;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+}
+
+.btn-primary-custom:hover {
+    background-color: #0052a3;
+    border-color: #0052a3;
+}
+
+.card-custom {
+    background-color: var(--text-white);
+    border: 1px solid #e0e0e0;
+    color: var(--text-dark);
+}
+
+.form-control-custom {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    color: #333;
+    height: 45px;
+    /* Altura más contenida */
+    font-size: 0.95rem;
+}
+
+.form-control-custom::placeholder {
+    color: #999;
+}
+
+.fw-bold,
+.fw-semibold,
+.fw-medium {
+    font-weight: 500 !important;
+}
+
+/* Category Grid Icons */
+.category-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.category-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }

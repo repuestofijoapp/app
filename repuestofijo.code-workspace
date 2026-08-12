@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../../repuestofijo"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"task.quickOpen.history": 5
+	}
+}

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Proveedor — RENUSA × RepuestoFijo</title>
+<link rel="icon" type="image/x-icon" href="favicon.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:#0f1923;color:#e2e8f0;display:flex;min-height:100vh}
+.sidebar{width:240px;background:#0a1117;padding:24px 0;flex-shrink:0;display:flex;flex-direction:column}
+.logo{padding:16px 16px 24px;}
+.logo span{color:#e63946}
+.nav-item{padding:12px 24px;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:0.9rem;color:#94a3b8;transition:.2s}
+.nav-item:hover,.nav-item.active{background:#1a2535;color:#fff;border-left:3px solid #e63946}
+.nav-item.active{color:#e63946}
+.main{flex:1;padding:32px;overflow-y:auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+.topbar h1{font-size:1.4rem;font-weight:600}
+.badge-live{background:#e63946;color:#fff;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:#1a2535;border-radius:12px;padding:20px;border:1px solid #1e3a4a}
+.stat-card .label{font-size:0.75rem;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.stat-card .value{font-size:2rem;font-weight:700;color:#fff}
+.stat-card .sub{font-size:0.8rem;color:#22c55e;margin-top:4px}
+.stat-card .sub.warn{color:#f59e0b}
+.stat-card .sub.danger{color:#e63946}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.card{background:#1a2535;border-radius:12px;padding:24px;border:1px solid #1e3a4a}
+.card h2{font-size:1rem;font-weight:600;margin-bottom:20px;color:#fff}
+.upload-zone{border:2px dashed #334155;border-radius:12px;padding:48px;text-align:center;cursor:pointer;transition:.2s;margin-bottom:16px}
+.upload-zone:hover{border-color:#e63946;background:#1e2a3a}
+.upload-zone .icon{font-size:3rem;margin-bottom:12px}
+.upload-zone p{color:#94a3b8;font-size:0.9rem}
+.upload-zone strong{color:#e63946}
+.btn{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-weight:600;font-size:0.875rem;transition:.2s}
+.btn-primary{background:#e63946;color:#fff}
+.btn-primary:hover{background:#c1121f}
+.btn-outline{background:transparent;color:#94a3b8;border:1px solid #334155}
+.btn-outline:hover{border-color:#e63946;color:#e63946}
+.btn-sm{padding:6px 14px;font-size:0.8rem}
+.btn-success{background:#22c55e;color:#fff}
+.btn-warning{background:#f59e0b;color:#000}
+.columns-info{background:#0f1923;border-radius:8px;padding:16px;margin-top:12px}
+.columns-info p{font-size:0.8rem;color:#64748b;margin-bottom:8px}
+.columns-info .col-tag{display:inline-block;background:#1e3a4a;color:#38bdf8;padding:3px 10px;border-radius:4px;font-size:0.75rem;margin:3px;font-family:monospace}
+.col-tag.required{background:#2d1f1f;color:#e63946}
+.history-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #1e2d3d;font-size:0.85rem}
+.history-item:last-child{border:none}
+.badge{padding:3px 10px;border-radius:12px;font-size:0.7rem;font-weight:600}
+.badge-ok{background:#14532d;color:#22c55e}
+.badge-err{background:#450a0a;color:#e63946}
+.badge-proc{background:#1a2e05;color:#84cc16}
+table{width:100%;border-collapse:collapse;font-size:0.875rem}
+th{text-align:left;padding:12px 16px;color:#64748b;font-size:0.75rem;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #1e2d3d}
+td{padding:12px 16px;border-bottom:1px solid #1e2d3d;color:#cbd5e1}
+tr:hover td{background:#0f1923}
+.stock-ok{color:#22c55e;font-weight:600}
+.stock-low{color:#f59e0b;font-weight:600}
+.stock-out{color:#e63946;font-weight:600}
+.order-row{display:flex;justify-content:space-between;align-items:center;padding:14px;background:#0f1923;border-radius:8px;margin-bottom:8px;border-left:3px solid #e63946}
+.order-row.confirmed{border-left-color:#22c55e}
+.order-row .prod{font-weight:600;font-size:0.9rem;color:#fff}
+.order-row .meta{font-size:0.75rem;color:#64748b;margin-top:2px}
+.actions{display:flex;gap:8px}
+.tab-nav{display:flex;gap:4px;margin-bottom:24px}
+.tab{padding:8px 20px;border-radius:8px;border:1px solid #1e2d3d;cursor:pointer;font-size:0.85rem;color:#64748b;background:transparent}
+.tab.active{background:#e63946;color:#fff;border-color:#e63946}
+.section{display:none}
+.section.active{display:block}
+.alert-low{background:#1a1505;border:1px solid #92400e;border-radius:8px;padding:12px 16px;font-size:0.85rem;color:#fbbf24;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.progress-bar{background:#1e2d3d;border-radius:4px;height:6px;overflow:hidden;margin-top:4px}
+.progress-fill{height:100%;border-radius:4px;background:#e63946}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo">
+    <div>
+      <img src="logo.png" alt="RepuestoFijo" style="width:100%;height:auto;display:block;max-height:48px;object-fit:contain">
+    </div>
+    <small style="font-size:0.9rem;color:#475569;font-weight:400;padding-left:4px">Panel de Socio B2B</small>
+  </div>
+  <div class="nav-item active" onclick="showSection('dashboard',this)"><i class="fa-solid fa-chart-line fa-fw"></i> Dashboard</div>
+  <div class="nav-item" onclick="showSection('pedidos',this)"><i class="fa-solid fa-box fa-fw"></i> Pedidos</div>
+  <div class="nav-item" onclick="showSection('catalogo',this)"><i class="fa-solid fa-folder-open fa-fw"></i> Mi Catálogo</div>
+  <!-- MODALIDAD B (CSV) - Ideal para RENUSA -->
+  <div class="nav-item" onclick="showSection('stock',this)"><i class="fa-solid fa-upload fa-fw"></i> Actualizar Stock (CSV)</div>
+  <div style="flex:1"></div>
+  <div class="nav-item" style="color:#64748b"><i class="fa-solid fa-building-circle-check fa-fw"></i> RENUSA - Cuenta Socio</div>
+  <div class="nav-item" style="color:#e63946" onclick="resetDemo()"><i class="fa-solid fa-rotate-left fa-fw"></i> Reiniciar Demo</div>
+</div>
+
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="section active">
+    <div class="topbar">
+      <div>
+        <h1>Buen día, Repuestos Nuevos S.A. (RENUSA)</h1>
+        <p style="color:#64748b;font-size:.85rem;margin-top:4px">Miercoles 20 de Mayo, 2026</p>
+      </div>
+      <div>
+        <button class="btn btn-outline" onclick="forceSync()" style="margin-right: 15px; background: #1e2a3a; color: white;"><i class="fa-solid fa-rotate"></i> Sincronizar Catálogo</button>
+        <span class="badge-live">● CONEXIÓN B2B ACTIVA</span>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat-card">
+        <div class="label">Pedidos del mes</div>
+        <div class="value" id="stat-orders">182</div>
+        <div class="sub">↑ 14% más que abril</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Productos en Catálogo</div>
+        <div class="value" id="stat-stock">1,420</div>
+        <div class="sub">Marcas NGK, Fras-le, NSK, Baldwin</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Alertas de Stock</div>
+        <div class="value">18</div>
+        <div class="sub warn"><i class="fa-solid fa-triangle-exclamation"></i> Requieren recarga de stock</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Liquidación programada</div>
+        <div class="value" id="stat-money">S/ 12,450</div>
+        <div class="sub">Desembolso: Lunes 9:00 AM</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h2>Últimas Ventas Canal RepuestoFijo</h2>
+        <div id="recent-orders-list">
+        <div class="order-row">
+          <div>
+            <div class="prod">Bujía de encendido NGK Iridium BKR6EIX (Kit x4)</div>
+            <div class="meta">Pedido #2842 · hace 5 min · La Victoria (Recojo en Tienda Grau)</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-success btn-sm">Confirmar Despacho</button>
+            <button class="btn btn-outline btn-sm">✕</button>
+          </div>
+        </div>
+        <div class="order-row">
+          <div>
+            <div class="prod">Pastillas de freno Fras-le Delanteras (Toyota Yaris)</div>
+            <div class="meta">Pedido #2841 · hace 15 min · Santiago de Surco</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-success btn-sm">Confirmar Despacho</button>
+            <button class="btn btn-outline btn-sm">✕</button>
+          </div>
+        </div>
+        <div class="order-row confirmed">
+          <div>
+            <div class="prod">Rodamiento de cubo NSK (Nissan Sentra)</div>
+            <div class="meta">Pedido #2840 · Confirmado · En ruta de consolidación HUB Grau</div>
+          </div>
+          <div class="actions"><span class="badge badge-ok">Despachado</span></div>
+        </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b; margin-right:8px;"></i> Alertas críticas de catálogo</h2>
+        <div class="alert-low">
+          <div>
+            <div>Filtro de aire para maquinaria pesada Baldwin PA1667-FN</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:10%"></div></div>
+          </div>
+          <span>2 uds</span>
+        </div>
+        <div class="alert-low">
+          <div>
+            <div>Rodamiento de rodillos NSK HR30207J</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:5%"></div></div>
+          </div>
+          <span>1 ud</span>
+        </div>
+        <div class="alert-low">
+          <div>
+            <div>Batería Enerjet Professional 13 Placas</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:20%"></div></div>
+          </div>
+          <span>4 uds</span>
+        </div>
+        <div style="margin-top:16px">
+          <button class="btn btn-primary btn-sm" onclick="showSection('stock',document.querySelectorAll('.nav-item')[3])">Actualizar inventario masivo (CSV) →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PEDIDOS -->
+  <div id="pedidos" class="section">
+    <div class="topbar"><h1>Pedidos para Despachar</h1></div>
+    <div class="card">
+      <table id="orders-table">
+        <thead>
+          <tr><th>#</th><th>Producto</th><th>Cant.</th><th>Destino consolidación</th><th>Estado</th><th>Acciones</th></tr>
+        </thead>
+        <tbody id="orders-table-body">
+          <!-- Se llena dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CATÁLOGO -->
+  <div id="catalogo" class="section">
+    <div class="topbar">
+      <h1>Mi Catálogo de Marcas Distribuidas</h1>
+      <button class="btn btn-primary btn-sm" onclick="showSection('stock',document.querySelectorAll('.nav-item')[3])"><i class="fa-solid fa-upload" style="margin-right:6px"></i> Subir Excel/CSV</button>
+    </div>
+    <div class="card">
+      <div style="display:flex;gap:12px;margin-bottom:20px">
+        <input type="text" placeholder="Buscar por código OEM, SKU o marca..." style="flex:1;background:#0f1923;border:1px solid #334155;color:#e2e8f0;padding:10px 16px;border-radius:8px;font-size:.9rem">
+        <select style="background:#0f1923;border:1px solid #334155;color:#94a3b8;padding:10px 16px;border-radius:8px;font-size:.9rem">
+          <option>Todas las marcas</option>
+          <option>NGK Spark Plugs</option>
+          <option>Fras-le Frenos</option>
+          <option>NSK Bearings</option>
+          <option>Baldwin Filters</option>
+          <option>Baterías Enerjet</option>
+        </select>
+      </div>
+      <table>
+        <tr><th>SKU / Código</th><th>Producto</th><th>Marca</th><th>Stock Disponible</th><th>Precio B2B (Fábrica)</th><th>Estado</th></tr>
+        <tr><td style="font-family:monospace;color:#38bdf8">NGK-BKR6E-11</td><td>Bujía de encendido NGK Cobre</td><td>NGK</td><td class="stock-ok">540 uds</td><td>S/ 11.20</td><td><span class="badge badge-ok">Activo</span></td></tr>
+        <tr><td style="font-family:monospace;color:#38bdf8">FL-FR-560</td><td>Pastillas de freno Fras-le (Toyota Yaris)</td><td>Fras-le</td><td class="stock-ok">85 uds</td><td>S/ 72.00</td><td><span class="badge badge-ok">Activo</span></td></tr>
+        <tr><td style="font-family:monospace;color:#38bdf8">NSK-6203-ZZ</td><td>Rodamiento de bolas rígido</td><td>NSK</td><td class="stock-ok">150 uds</td><td>S/ 18.50</td><td><span class="badge badge-ok">Activo</span></td></tr>
+        <tr><td style="font-family:monospace;color:#38bdf8">BAL-B7379</td><td>Filtro de aceite Baldwin heavy-duty</td><td>Baldwin</td><td class="stock-low">4 uds</td><td>S/ 58.00</td><td><span class="badge badge-err">Stock bajo</span></td></tr>
+        <tr><td style="font-family:monospace;color:#38bdf8">ENJ-11-PLATE</td><td>Batería Enerjet Professional 11 placas</td><td>Enerjet</td><td class="stock-out">0 uds</td><td>S/ 245.00</td><td><span class="badge badge-err">Agotado</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ACTUALIZAR STOCK (CSV) - MODALIDAD B -->
+  <div id="stock" class="section">
+    <div class="topbar"><h1>Actualizar Inventario Masivo (CSV / Excel)</h1></div>
+    <div class="grid2">
+      <div class="card">
+        <h2><i class="fa-solid fa-file-csv" style="margin-right:8px; color:#e63946"></i> Carga rápida de stock diario</h2>
+        <p style="color:#64748b; font-size:0.85rem; margin-bottom: 20px;">
+          Sube tu reporte diario de inventario exportado de tu ERP (SAP, Spring, etc.). El sistema mapeará los códigos SKU y actualizará el stock disponible en tiempo real en RepuestoFijo.
+        </p>
+        <div class="upload-zone" ondragover="this.style.borderColor='#e63946'" ondragleave="this.style.borderColor='#334155'">
+          <div class="icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+          <p>Arrastra tu reporte de inventario aquí o</p>
+          <p style="margin-top:8px"><strong>haz clic para examinar tus archivos</strong></p>
+          <p style="margin-top:12px;font-size:.75rem;color:#475569">Formatos aceptados: .csv · .xlsx · .xls</p>
+        </div>
+        <div style="display:flex;gap:12px">
+          <button class="btn btn-primary" style="flex:1"><i class="fa-solid fa-cloud-arrow-up" style="margin-right:6px"></i> Procesar Inventario</button>
+          <button class="btn btn-outline"><i class="fa-solid fa-download" style="margin-right:6px"></i> Plantilla RENUSA.csv</button>
+        </div>
+        <div class="columns-info">
+          <p>Esquema de columnas requerido:</p>
+          <span class="col-tag required">sku_proveedor *</span>
+          <span class="col-tag required">stock_fisico *</span>
+          <span class="col-tag required">precio_b2b *</span>
+          <span class="col-tag">precio_pvp_sugerido</span>
+          <p style="margin-top:12px;font-size:.75rem;color:#475569">* Mínimo requerido para sincronización instantánea.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><i class="fa-solid fa-clock-rotate-left" style="margin-right:8px"></i> Registro de Sincronizaciones B2B</h2>
+        <div class="history-item">
+          <div>
+            <div style="font-weight:600;font-size:.85rem">renusa_stock_20may26.csv</div>
+            <div style="font-size:.75rem;color:#64748b">1,420 SKUs procesados · Hoy 8:05 AM</div>
+          </div>
+          <span class="badge badge-ok">✓ Sincronizado</span>
+        </div>
+        <div class="history-item">
+          <div>
+            <div style="font-weight:600;font-size:.85rem">renusa_stock_19may26.csv</div>
+            <div style="font-size:.75rem;color:#64748b">1,420 SKUs procesados · Ayer 8:00 AM</div>
+          </div>
+          <span class="badge badge-ok">✓ Sincronizado</span>
+        </div>
+        <div class="history-item">
+          <div>
+            <div style="font-weight:600;font-size:.85rem">renusa_test_column.csv</div>
+            <div style="font-size:.75rem;color:#64748b">Cabecera "SKU" no coincide · 18 May</div>
+          </div>
+          <span class="badge badge-err">✕ Rechazado</span>
+        </div>
+        <div style="margin-top:20px;padding:16px;background:#0f1923;border-radius:8px">
+          <p style="font-size:.8rem;color:#94a3b8;margin-bottom:8px">⚙️ <strong style="color:#fff">Sincronización por API REST</strong></p>
+          <p style="font-size:.78rem;color:#64748b">Si tu departamento de TI prefiere automatizar la actualización, disponemos de una API REST segura para consultar tu stock directamente sin subidas manuales.</p>
+          <button class="btn btn-outline btn-sm" style="margin-top:10px">Ver documentación API</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let baseStats = {
+    orders: 182,
+    stock: 1420,
+    money: 12450
+};
+
+function showSection(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(el) el.classList.add('active');
+}
+
+function updateUI() {
+    const orders = JSON.parse(localStorage.getItem('rf_orders_renusa') || '[]');
+    const confirmedOrders = orders.filter(o => o.status === 'Confirmado');
+    
+    const totalOrders = baseStats.orders + confirmedOrders.length;
+    const totalStock = baseStats.stock - confirmedOrders.length;
+    const totalMoney = baseStats.money + confirmedOrders.reduce((acc, o) => acc + o.price, 0);
+
+    document.getElementById('stat-orders').innerText = totalOrders;
+    document.getElementById('stat-stock').innerText = totalStock;
+    document.getElementById('stat-money').innerText = 'S/ ' + totalMoney.toLocaleString();
+}
+
+function loadOrders() {
+    const orders = JSON.parse(localStorage.getItem('rf_orders_renusa') || '[]');
+    const container = document.getElementById('recent-orders-list');
+    const tableBody = document.getElementById('orders-table-body');
+    
+    // Renderizar Dashboard
+    let htmlList = '';
+    orders.forEach((o, index) => {
+        const isNew = index === 0 && (Date.now() - (localStorage.getItem('rf_new_order_renusa') || 0) < 10000);
+        htmlList += `
+            <div class="order-row ${o.status === 'Confirmado' ? 'confirmed' : ''}" id="order-${o.id}" style="${isNew ? 'animation: highlight 2s ease' : ''}">
+              <div>
+                <div class="prod">${o.product}</div>
+                <div class="meta">Pedido #${o.id} · ${o.time} · Consolida en HUB Grau</div>
+              </div>
+              <div class="actions" id="actions-${o.id}">
+                ${o.status === 'Pendiente' ? 
+                    `<button class="btn btn-success btn-sm" onclick="confirmOrder(${o.id})">Confirmar</button>
+                     <button class="btn btn-outline btn-sm">✕</button>` : 
+                    `<span class="badge badge-ok">Despachado</span>`}
+              </div>
+            </div>
+        `;
+    });
+
+    htmlList += `
+        <div class="order-row confirmed">
+          <div>
+            <div class="prod">Bujía de encendido NGK Iridium BKR6EIX (Kit x4)</div>
+            <div class="meta">Pedido #2842 · hace 5 min · La Victoria</div>
+          </div>
+          <div class="actions"><span class="badge badge-ok">Despachado</span></div>
+        </div>
+    `;
+    container.innerHTML = htmlList;
+
+    // Renderizar Tabla de Pedidos Completa
+    let htmlTable = '';
+    orders.forEach(o => {
+        htmlTable += `
+            <tr>
+              <td>#${o.id}</td>
+              <td>${o.product}</td>
+              <td>1 ud</td>
+              <td>Av. Grau 1045</td>
+              <td><span class="badge ${o.status === 'Pendiente' ? 'badge-err' : 'badge-ok'}">${o.status === 'Pendiente' ? 'Pendiente' : 'Despachado'}</span></td>
+              <td>
+                ${o.status === 'Pendiente' ? `<button class="btn btn-success btn-sm" onclick="confirmOrder(${o.id})">Confirmar</button>` : '—'}
+              </td>
+            </tr>
+        `;
+    });
+    
+    // Filas estáticas para rellenar
+    htmlTable += `
+        <tr><td>#2842</td><td>Bujía de encendido NGK Iridium</td><td>1 kit</td><td>Av. Grau 1045</td><td><span class="badge badge-ok">Despachado</span></td><td>—</td></tr>
+        <tr><td>#2840</td><td>Rodamiento de cubo NSK</td><td>1 ud</td><td>Av. Grau 1045</td><td><span class="badge badge-ok">Despachado</span></td><td>—</td></tr>
+    `;
+    tableBody.innerHTML = htmlTable;
+
+    updateUI();
+}
+
+function confirmOrder(id) {
+    let orders = JSON.parse(localStorage.getItem('rf_orders_renusa') || '[]');
+    const order = orders.find(o => o.id === id);
+    if (order) {
+        order.status = 'Confirmado';
+        localStorage.setItem('rf_orders_renusa', JSON.stringify(orders));
+        
+        loadOrders(); 
+        showNotification('¡Despacho Confirmado! Inventario y liquidación sincronizados.');
+    }
+}
+
+function showNotification(msg) {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed; top:20px; right:20px; background:#22c55e; color:white; padding:16px 24px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.5); z-index:1000; font-weight:600; animation: slideIn 0.3s ease';
+    toast.innerHTML = '<i class="fa-solid fa-truck-ramp-box" style="margin-right:10px"></i>' + msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+}
+
+// Estilo para la animación de nuevo pedido
+const style = document.createElement('style');
+style.innerHTML = `
+    @keyframes highlight {
+        0% { background: #e6394633; transform: translateX(-10px); }
+        100% { background: #0f1923; transform: translateX(0); }
+    }
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+`;
+document.head.appendChild(style);
+
+function forceSync() {
+    loadOrders();
+    showNotification('Catálogo sincronizado con sistema central de RENUSA.');
+}
+
+function resetDemo() {
+    localStorage.removeItem('rf_orders_renusa');
+    localStorage.removeItem('rf_new_order_renusa');
+    location.reload();
+}
+
+try {
+    loadOrders();
+    updateUI();
+} catch(err) {
+    console.error('Error al inicializar:', err);
+}
+</script>
+</body>
+</html>

@@ -47,6 +47,15 @@ return [
             'report' => false,
         ],
 
+        'car_images' => [
+            'driver' => 'local',
+            'root' => public_path('images/cars'),
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/images/cars',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

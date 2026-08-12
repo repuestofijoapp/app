@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr" prefix="content: http://purl.org/rss/1.0/modules/content/  dc: http://purl.org/dc/terms/  foaf: http://xmlns.com/foaf/0.1/  og: http://ogp.me/ns#  rdfs: http://www.w3.org/2000/01/rdf-schema#  schema: http://schema.org/  sioc: http://rdfs.org/sioc/ns#  sioct: http://rdfs.org/sioc/types#  skos: http://www.w3.org/2004/02/skos/core#  xsd: http://www.w3.org/2001/XMLSchema# ">
+  <head>
+    <meta charset="utf-8" />
+<meta name="icbm" content="-12.119154404188537, -77.03388830527228" />
+<meta name="geo.placename" content="Lima" />
+<meta name="geo.position" content="-12.119154404188537, -77.03388830527228" />
+<meta name="geo.region" content="PE-LMA" />
+<link rel="canonical" href="https://ojo-publico.com/media/50" />
+<meta property="og:site_name" content="Ojo Público" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://ojo-publico.com/media/50" />
+<meta property="og:title" content="Ojo Público | logoculqi.png" />
+<meta property="og:image" content="https://ojo-publico.com//sites/default/files/2022-06/METADATOS%20LOGO%20OP_0.jpg" />
+<meta property="og:image:url" content="https://ojo-publico.com//sites/default/files/2022-06/METADATOS%20LOGO%20OP_0.jpg" />
+<meta property="og:image:secure_url" content="https://ojo-publico.com//sites/default/files/2022-06/METADATOS%20LOGO%20OP_0.jpg" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="628" />
+<meta property="og:image:alt" content="OjoPúblico" />
+<meta property="place:location:latitude" content="-12.119147135246873" />
+<meta property="place:location:longitude" content="-77.03388830527228" />
+<meta property="og:street_address" content="Avenida José Pardo 513. Oficina 802, Miraflores" />
+<meta property="og:country_name" content="Perú" />
+<meta property="og:email" content="contacto@ojo-publico.com" />
+<meta property="og:locale" content="es_PE" />
+<meta name="twitter:title" content="Ojo Público | logoculqi.png" />
+<meta name="twitter:creator" content="@Ojo_Publico" />
+<meta name="twitter:image" content="https://ojo-publico.com//sites/default/files/2022-06/METADATOS%20LOGO%20OP_0.jpg" />
+<meta name="Generator" content="Drupal 10 (https://www.drupal.org)" />
+<meta name="MobileOptimized" content="width" />
+<meta name="HandheldFriendly" content="true" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>div#sliding-popup, div#sliding-popup .eu-cookie-withdraw-banner, .eu-cookie-withdraw-tab {background: #000000} div#sliding-popup.eu-cookie-withdraw-wrapper { background: transparent; } #sliding-popup h1, #sliding-popup h2, #sliding-popup h3, #sliding-popup p, #sliding-popup label, #sliding-popup div, .eu-cookie-compliance-more-button, .eu-cookie-compliance-secondary-button, .eu-cookie-withdraw-tab { color: #ffffff;} .eu-cookie-withdraw-tab { border-color: #ffffff;}</style>
+<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "Organization",
+            "additionalType": "NewsMediaOrganization",
+            "@id": "https://ojo-publico.com/#organization",
+            "name": "OjoPúblico",
+            "url": "https://ojo-publico.com/",
+            "sameAs": [
+                "https://www.instagram.com/ojopublico/",
+                "https://x.com/Ojo_Publico",
+                "https://www.facebook.com/OjoPublico/",
+                "https://www.youtube.com/c/OjoP%C3%BAblicoPE",
+                "https://www.tiktok.com/@ojopublico"
+            ],
+            "logo": {
+                "@type": "ImageObject",
+                "representativeOfPage": "True",
+                "url": "https://ojo-publico.com/sites/default/files/2022-12/logo-light.png",
+                "width": "1280",
+                "height": "220"
+            },
+            "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "-12.119103521592763",
+                "longitude": "-77.03392547845583"
+            }
+        },
+        {
+            "@type": "WebPage",
+            "@id": "https://ojo-publico.com/#webpage",
+            "description": "OjoPúblico es un medio digital reconocido por sus investigaciones periodísticas en Perú y Latinoamérica.",
+            "isAccessibleForFree": "True",
+            "inLanguage": "es-PE"
+        },
+        {
+            "@type": "WebSite",
+            "@id": "https://ojo-publico.com/#website",
+            "name": "OjoPúblico",
+            "url": "https://ojo-publico.com"
+        }
+    ]
+}</script>
+<link rel="icon" href="/sites/default/files/favicon.ico" type="image/vnd.microsoft.icon" />
+
+    <title>logoculqi.png | Ojo Público</title>
+    <link rel="stylesheet" media="all" href="/sites/default/files/css/css_iJTOFlIQthT6mjoFox9Dl5UrnvXA18rvGPPOdu3M7kg.css?delta=0&amp;language=es&amp;theme=ojo_publico_theme&amp;include=eJxtjkEOwyAMBD9Ew5OQMU7i1MQIm7b5fav0ymVXmtVIi9Acd4gZjAJqp1j6aCALHPAJNBKqPpl-VZswnEhxBlOhFYZ40ENTG1kYNflOlWJWdfMObbKtgCS8zrRNNIM8zC_hcwt2mVP933wxvS3euVQtQ-gLLyJN5g" />
+<link rel="stylesheet" media="all" href="/sites/default/files/css/css_Jpw9Kos7YAtZu-QERih7cIcBJJlbJtOSI-fFxcTInXU.css?delta=1&amp;language=es&amp;theme=ojo_publico_theme&amp;include=eJxtjkEOwyAMBD9Ew5OQMU7i1MQIm7b5fav0ymVXmtVIi9Acd4gZjAJqp1j6aCALHPAJNBKqPpl-VZswnEhxBlOhFYZ40ENTG1kYNflOlWJWdfMObbKtgCS8zrRNNIM8zC_hcwt2mVP933wxvS3euVQtQ-gLLyJN5g" />
+<link rel="stylesheet" media="all" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" />
+<link rel="stylesheet" media="all" href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.3/tiny-slider.css" />
+<link rel="stylesheet" media="all" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&amp;display=swap" />
+<link rel="stylesheet" media="all" href="https://fonts.googleapis.com/css2?family=Gelasio:ital@0;1&amp;display=swap" />
+<link rel="stylesheet" media="all" href="https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,400,400i,600,700,700i,800,800i,900&amp;display=swap" />
+<link rel="stylesheet" media="all" href="https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i&amp;display=swap" />
+<link rel="stylesheet" media="print" href="/sites/default/files/css/css_yeEO7dE-bjuIZOdUAieUv5p7kaOnJiCYpI9bGbNeP6c.css?delta=8&amp;language=es&amp;theme=ojo_publico_theme&amp;include=eJxtjkEOwyAMBD9Ew5OQMU7i1MQIm7b5fav0ymVXmtVIi9Acd4gZjAJqp1j6aCALHPAJNBKqPpl-VZswnEhxBlOhFYZ40ENTG1kYNflOlWJWdfMObbKtgCS8zrRNNIM8zC_hcwt2mVP933wxvS3euVQtQ-gLLyJN5g" />
+
+        <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-D0QW04YM0Z"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-D0QW04YM0Z');
+    </script>
+      <!-- Google Tag Manager HEADER-->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NZW28LG');</script>
+    <!-- End Google Tag Manager -->
+   <!-- Meta Pixel Code -->
+	<script>
+	!function(f,b,e,v,n,t,s)
+	{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+	n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+	if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+	n.queue=[];t=b.createElement(e);t.async=!0;
+	t.src=v;s=b.getElementsByTagName(e)[0];
+	s.parentNode.insertBefore(t,s)}(window, document,'script',
+	'https://connect.facebook.net/en_US/fbevents.js');
+	fbq('init', '1752534465425310');
+	fbq('track', 'PageView');
+	</script>
+	<noscript><img height="1" width="1" style="display:none"
+	src="https://www.facebook.com/tr?id=1752534465425310&ev=PageView&noscript=1"
+	/></noscript> 
+    <!-- End Meta Pixel Code -->
+  <link rel="stylesheet" type="text/css" href="/articlead.css"></head>
+  
+  <body>
+    <div class="op-modal__backdrop"></div>
+        <a href="#main-content" class="visually-hidden focusable">
+      Pasar al contenido principal
+    </a>
+    
+      <div class="dialog-off-canvas-main-canvas" data-off-canvas-main-canvas>
+    
+
+
+<div class="layout-container">
+
+  <header role="banner">
+        <div id="block-ojo-publico-theme-headerblock">
+  
+    
+      
+	<div class="header">
+
+  
+   	<div class="header-inner container">
+		<div class="row">
+			<div class="header__top col col-lg-8 offset-lg-2">
+				<button class="header__mobile-button" id="header-mobile-menu">
+					<i class="fas fa-bars"></i>
+				</button>
+				<div class="header__top-logo">
+						<a class="header__top-logo__image" href="/">
+							<img loading="lazy" class="lazyload" alt="Ojo público" id="main-header-logo" src="/themes/custom/ojo_publico_theme/images/logos/logo-light-default.svg"/>
+						</a>
+					<p class="header__top-slogan"></p>
+				</div>
+				<div id="search-mobile-toggler">
+					<i class="fas fa-search"></i>
+				</div>
+			</div>
+		</div>
+		<div class="row" id="fl-navbar">
+			<div class="header__navbar-container col-12 d-flex">
+				<nav class="header__navbar">
+					<ul class="header__navbar-ul">
+						<li id="header__navbar-logo">
+							<a href="/">
+								<img loading="lazy" class="lazyload" alt="" id="fixed-header-logo" src="/themes/custom/ojo_publico_theme/images/logos/logo-big-light.svg"/>
+							</a>
+						</li>
+						<li class="header__navbar-item" data-menu="news" id="news-menu"><h3>noticias</h3>
+							<i class="fas fa-caret-down"></i>
+						</li>
+						<li class="header__navbar-item" data-menu="specials" id="specials-toggle"><h3>especiales</h3><i class="fas fa-caret-down"></i>
+						</li>
+						<li class="header__navbar-item" data-menu="bionic-eye" id="bionic-eye-toggle"><h3>ojo biónico</h3><i class="fas fa-caret-down"></i>
+						</li>
+						<a href="/america">
+						<li class="header__navbar-item" data-menu="america" id=""><h3>América</h3>
+						</li>
+						</a>
+					</li>
+					<a href="/english">
+						<li class="header__navbar-item" id="bionic-eye-toggle"><h3>english</h3></li>
+					</a>
+					<li class="header__navbar-item" id="ally-button">
+						<a class="btn-aliados" href="/aliados?curl=/media/50&utm_source=boton_web">aliado/a</a>
+					</li>
+          			<li class="header__navbar-item" id="ally-facelift-button">
+						<a class="btn-aliados" href="/aliados?curl=/media/50&utm_source=boton_web" target="_blank">Hazte aliado</a>
+					</li>
+										<li class="header__navbar-item login" id="fl-top-signin-link">
+						<a href="#">Inicia sesión</a>
+					</li>
+										<button class="btn" id="search-tablet-toggler">
+						<i class="fas fa-search"></i>
+					</button>
+				</ul>
+			</nav>
+			<div class="header__leading">
+				<ul class="header__leading-ul">
+					<li class="header__leading-item" id="search-toggler">
+						<i class="fas fa-search"></i>
+					</li>
+																<li class="header__leading-item" data-toggle="login" id="user-login">
+							<i class="fas fa-user-alt"></i>
+						</li>
+														</ul>
+				<ul class="header__hidden-social">
+					<li class="header__hidden-item" id="header__hidden-title">compartir</li>
+					<li class="header__hidden-item">
+						<a class="instagram-icon" href="https://www.instagram.com/ojopublico/" target="_blank">
+							<i class="fab fa-instagram"></i>
+						</a>
+					</li>
+					<li class="header__hidden-item">
+						<a class="twitter-icon" href="https://twitter.com/Ojo_Publico" target="_blank">
+							<i class="fab fa-twitter"></i>
+						</a>
+					</li>
+					<li class="header__hidden-item">
+						<a class="facebook-icon" href="https://es-la.facebook.com/OjoPublico/" target="_blank">
+							<i class="fab fa-facebook-f"></i>
+						</a>
+					</li>
+					<li class="header__hidden-item" id="header__hidden-close">
+						<i class="fas fa-times"></i>
+					</li>
+				</ul>
+									<div class="login-popup" data-menu="login">
+						<div class="login-popup__header">
+							<span class="login-popup__title">iniciar sesión</span>
+							<button class="login-popup__dismiss" data-closes=".login-popup">
+								<i class="fas fa-times"></i>
+							</button>
+						</div>
+						<div class="login-popup__body">
+							<form class="login-popup__form" data-drupal-selector="login-form-2-3" action="/media/50" method="post" id="login-form-2--3" accept-charset="UTF-8">
+  	
+
+
+<div class="mx-auto px-1 row no-gutters">
+	<div class="col-md-12 pad-bottom-mb">
+		<div class="modal-title">Inicia sesión</div>
+        <div class="social-network pt-2">
+          <div class="icons">
+            <a class="loginWithGoogle" href="/user/login/google">
+								<img alt="Logo Google" src="/themes/custom/ojo_publico_theme/images/Logogoogle.png">
+			</a>
+            <a class="loginWithFacebook" href="/user/login/facebook">
+								<img alt="Logo Facebook" src="/themes/custom/ojo_publico_theme/images/facebook-modal.svg">
+			</a>
+          </div>
+        </div>
+	</div>
+	<div class="col-md-12 pt-2">
+		<p class="modal-subtitle">O con tu correo</p>
+	</div>
+	<div class="col-md-12">
+		<div class="field_email_validate"><div class="login-popup__form__input-wrapper js-form-item form-item js-form-type-textfield form-item-nombre-usuario js-form-item-nombre-usuario form-no-label">
+        <input class="login-popup__input form-text" data-drupal-selector="edit-nombre-usuario" type="text" id="edit-nombre-usuario--4" name="nombre_usuario" value="" size="20" maxlength="64" placeholder="Correo electrónico" />
+
+        </div>
+<div class="email-error-message"></div></div>
+	</div>
+	<div class="col-md-12 pt-2">
+	 	<div class="field_password_validate"><div class="login-popup__form__input-wrapper js-form-item form-item js-form-type-password form-item-contrasena js-form-item-contrasena form-no-label">
+        <input class="login-popup__input form-text" data-drupal-selector="edit-contrasena" type="password" id="edit-contrasena--3" name="contrasena" size="20" maxlength="64" placeholder="Su contraseña" />
+
+        </div>
+<div id="error-message" class="login-error-message"></div></div>
+	</div>
+	<div class="col-5 text-left pt-2 pl-2 network-gray">
+		<input type="checkbox" id="cbox2" value="recuer" />
+		<label for="cbox2">Recuérdame</label>
+	</div>
+	<div class="col-7 text-right pt-2 network-gray">
+		<a class="password-link" href="/user/password" id="password-link">Olvidé mi contraseña</a>
+	</div>
+	<div class="col-md-12 pt-1">
+		<input class="btn button js-form-submit form-submit" data-drupal-selector="edit-boton" type="submit" id="edit-boton--5" name="op" value="Ingresar" />
+
+	</div>
+	
+	<div class="col-md-12 pt-0">
+		<input class="btn d-none button js-form-submit form-submit" onclick="event.preventDefault();" id="login-button" data-drupal-selector="edit-actions" type="submit" name="op" value="Inicia sesión" />
+
+	</div>
+	<div class="col-md-12 pt-3 line-footer">
+		<p class="p-0 m-0 gray">¿No tienes una cuenta?</p>
+		<a class="register-link" href="/registro" id="register-link">Regístrate aquí</a>
+	</div>
+</div>
+
+
+
+
+<input autocomplete="off" data-drupal-selector="form-qsivjoiugzlsrtqi0qkhvv0sa1osbzllevydgx21bpe" type="hidden" name="form_build_id" value="form-qSIVJoiugzLsRtqI0qkHVv0sa1oSBZLlevyDGX21BpE" />
+
+
+<input data-drupal-selector="edit-login-form-2-3" type="hidden" name="form_id" value="login_form_2" />
+
+</form>
+
+						</div>
+					</div>
+							</div>
+		</div>
+	</div>
+</div>
+</div>
+
+
+
+<!--Ojo biónico-->
+<div class="bionic-eye-menu menu" data-menu="bionic-eye">
+	<div class="container">
+		<div class="bionic-eye-menu__sidebar">
+			<ul class="bionic-eye-menu__filters">
+									<li class="bionic-eye-menu__filter" id="true" idterm="204">
+            <img loading="lazy" alt="" class="bionic-eye-menu__fl-filter-image lazyload" src="/themes/custom/ojo_publico_theme/images/bionicos/true.svg"/>
+						<span class="bionic-eye-menu__filter-text" style="">Verdadero</span>
+					</li>
+									<li class="bionic-eye-menu__filter" id="misleading" idterm="205">
+            <img loading="lazy" alt="" class="bionic-eye-menu__fl-filter-image lazyload" src="/themes/custom/ojo_publico_theme/images/bionicos/misleading.svg"/>
+						<span class="bionic-eye-menu__filter-text" style="">Engañoso</span>
+					</li>
+									<li class="bionic-eye-menu__filter" id="unverifiable" idterm="207">
+            <img loading="lazy" alt="" class="bionic-eye-menu__fl-filter-image lazyload" src="/themes/custom/ojo_publico_theme/images/bionicos/unverifiable.svg"/>
+						<span class="bionic-eye-menu__filter-text" style="">No verificable</span>
+					</li>
+									<li class="bionic-eye-menu__filter" id="false" idterm="208">
+            <img loading="lazy" alt="" class="bionic-eye-menu__fl-filter-image lazyload" src="/themes/custom/ojo_publico_theme/images/bionicos/false.svg"/>
+						<span class="bionic-eye-menu__filter-text" style="">Falso</span>
+					</li>
+							</ul>
+		</div>
+		<img loading="lazy" class="loader-mas lazyload" src="/themes/custom/ojo_publico_theme/images/OP_preload.gif">
+		  
+  
+  
+
+  
+  
+  
+
+  <div class="bionic-eye-menu__articles menu__articles">
+      
+
+
+
+  
+    
+
+<article class="bionic-eye-menu__article menu__article">
+  <a class="bionic-eye-menu__article-picture menu__article-picture" href="https://ojo-publico.com/6148/es-falsa-la-supuesta-encuesta-que-situa-primer-lugar-lopez-chau">
+    
+              
+<img loading="lazy" src="/sites/default/files/styles/imagen_menu/public/2026-03/Dise%C3%B1o%20sin%20t%C3%ADtulo-compressed.jpg?h=d1cb525d&amp;itok=1rBR9OQ9" width="203" height="114" alt="Es falsa la supuesta encuesta que sitúa en primer lugar en intención de voto al candidato presidencial Alfonso López-Chau" title="Es falsa la supuesta encuesta que sitúa en primer lugar en intención de voto al candidato presidencial Alfonso López-Chau" typeof="foaf:Image" />
+
+
+
+      
+
+        <div class="bionic-eye-menu__article-picture__calification bionic-eye-menu__filter false">
+      <img src="/themes/custom/ojo_publico_theme/images/bionicos/false.svg"
+        alt="Falso" loading="lazy"
+          class="bionic-eye-menu__filter-image">
+      <span class="bionic-eye-menu__filter-text">
+        Falso
+      </span>
+    </div>
+  </a>
+  <h2 class="bionic-eye-menu__article-title menu__article-title">
+    <a href="https://ojo-publico.com/6148/es-falsa-la-supuesta-encuesta-que-situa-primer-lugar-lopez-chau">Es falsa la supuesta encuesta que sitúa en primer lugar a López-Chau</a>
+  </h2>
+</article>
+
+
+  
+
+  
+    
+
+<article class="bionic-eye-menu__article menu__article">
+  <a class="bionic-eye-menu__article-picture menu__article-picture" href="https://ojo-publico.com/6141/video-tormenta-electrica-no-fue-captado-lambayeque">
+    
+              
+<img loading="lazy" src="/sites/default/files/styles/imagen_menu/public/2026-03/Dise%C3%B1o%20sin%20t%C3%ADtulo%20%2841%29-compressed.jpg?h=d1cb525d&amp;itok=kryMEyM8" width="203" height="114" alt="Video alerta de tormenta eléctrica como si fuera de Lambayeque, pero ocurrió en Argentina" title="Video alerta de tormenta eléctrica como si fuera de Lambayeque, pero ocurrió en Argentina" typeof="foaf:Image" />
+
+
+
+      
+
+        <div class="bionic-eye-menu__article-picture__calification bionic-eye-menu__filter false">
+      <img src="/themes/custom/ojo_publico_theme/images/bionicos/false.svg"
+        alt="Falso" loading="lazy"
+          class="bionic-eye-menu__filter-image">
+      <span class="bionic-eye-menu__filter-text">
+        Falso
+      </span>
+    </div>
+  </a>
+  <h2 class="bionic-eye-menu__article-title menu__article-title">
+    <a href="https://ojo-publico.com/6141/video-tormenta-electrica-no-fue-captado-lambayeque">Video de tormenta eléctrica no fue captado en Lambayeque</a>
+  </h2>
+</article>
+
+
+  
+
+  
+    
+
+<article class="bionic-eye-menu__article menu__article">
+  <a class="bionic-eye-menu__article-picture menu__article-picture" href="https://ojo-publico.com/6125/es-falsa-la-imagen-compartida-por-lopez-aliaga-sobre-mitin">
+    
+              
+<img loading="lazy" src="/sites/default/files/styles/imagen_menu/public/2026-02/Portada_Mitin-compressed.jpg?h=d1cb525d&amp;itok=R8PABJlg" width="203" height="114" alt="Es falsa la imagen compartida por López Aliaga sobre supuesto mitin multitudinario de Renovación Popular" title="Es falsa la imagen compartida por López Aliaga sobre supuesto mitin multitudinario de Renovación Popular" typeof="foaf:Image" />
+
+
+
+      
+
+        <div class="bionic-eye-menu__article-picture__calification bionic-eye-menu__filter false">
+      <img src="/themes/custom/ojo_publico_theme/images/bionicos/false.svg"
+        alt="Falso" loading="lazy"
+          class="bionic-eye-menu__filter-image">
+      <span class="bionic-eye-menu__filter-text">
+        Falso
+      </span>
+    </div>
+  </a>
+  <h2 class="bionic-eye-menu__article-title menu__article-title">
+    <a href="https://ojo-publico.com/6125/es-falsa-la-imagen-compartida-por-lopez-aliaga-sobre-mitin">Es falsa la imagen compartida por López Aliaga sobre mitin</a>
+  </h2>
+</article>
+
+
+  
+
+  
+    
+
+<article class="bionic-eye-menu__article menu__article">
+  <a class="bionic-eye-menu__article-picture menu__article-picture" href="https://ojo-publico.com/6122/falso-supuesto-video-desastre-arequipa-fue-creado-ia">
+    
+              
+<img loading="lazy" src="/sites/default/files/styles/imagen_menu/public/2026-02/Dise%C3%B1o%20sin%20t%C3%ADtulo%20%2896%29-compressed.jpg?h=d1cb525d&amp;itok=vGQxEEGY" width="203" height="114" alt="Falso: Supuesto video de reciente desastre natural en Arequipa fue generado con IA" title="Falso: Supuesto video de reciente desastre natural en Arequipa fue generado con IA" typeof="foaf:Image" />
+
+
+
+      
+
+        <div class="bionic-eye-menu__article-picture__calification bionic-eye-menu__filter false">
+      <img src="/themes/custom/ojo_publico_theme/images/bionicos/false.svg"
+        alt="Falso" loading="lazy"
+          class="bionic-eye-menu__filter-image">
+      <span class="bionic-eye-menu__filter-text">
+        Falso
+      </span>
+    </div>
+  </a>
+  <h2 class="bionic-eye-menu__article-title menu__article-title">
+    <a href="https://ojo-publico.com/6122/falso-supuesto-video-desastre-arequipa-fue-creado-ia">Falso: Supuesto video de desastre en Arequipa fue creado con IA</a>
+  </h2>
+</article>
+
+
+  
+
+
+    </div>
+    
+
+  
+  
+
+  
+  
+
+
+	</div>
+	<div class="container">
+		<div class="menu-ext-link">
+			<a href="/ojo-bionico">Ver más chequeos <i class="fas fa-arrow-right"></i></a>
+		</div>
+	</div>
+</div>
+<!--./Ojo biónico-->
+<!--Especiales-->
+<div class="specials-menu menu" data-menu="specials">
+	<div class="js-view-dom-id-d519f2da6e4a18dda652d3b85d5748d184e6b258c9eae339d822d9a16920ec86">
+  
+  
+  
+
+  
+  
+  
+
+  <div class="container">
+      <div class="specials-menu__articles menu__articles">
+        
+
+
+
+  
+    <article class="specials-menu__article menu__article">
+  <span class="menu__article-category body-4">Sala del Poder</span>
+  <a class="menu__article-picture" href="/6147/propuesta-tgp-para-ampliar-su-concesion-no-incluye-ducto-alterno">
+              
+<img loading="lazy" src="/sites/default/files/styles/imagen_menu/public/2026-03/PCM%20-%20TGP%20-%20gas%20natural.jpg?h=08b866d1&amp;itok=6vEKJZrg" width="203" height="114" alt="DAÑO. Transportadora de Gas del Perú (TGP), compañía de capitales estadounidenses, estimó que requiere 14 días para reparar el ducto. Este plazo está sujeto a las condiciones climáticas." title="DAÑO. Transportadora de Gas del Perú (TGP), compañía de capitales estadounidenses, estimó que requiere 14 días para reparar el ducto. Este plazo está sujeto a las condiciones climáticas." typeof="foaf:Image" />
+
+
+
+      </a>
+  <h2 class="menu__article-title">
+      <a href="/6147/propuesta-tgp-para-ampliar-su-concesion-no-incluye-ducto-alterno">
+<span>Propuesta de TGP para ampliar su concesión no incluye ducto alterno</span>
+</a>
+  </h2>
+</article>
+
+
+  
+
+  
+    <article class="specials-menu__article menu__article">
+  <span class="menu__article-category body-4">Latinoamérica</span>
+  <a class="menu__article-picture" href="/6145/guerra-por-el-oro-y-el-control-territorial-frontera-peru-ecuador">
+              
+<img loading="lazy" src="/sites/default/files/styles/imagen_menu/public/2026-03/Frontera%20Peru%20Ecuador%20_%20Mineria%20ilegal_%20OjoPu%CC%81blico.jpg?h=255eabf9&amp;itok=FSXSL-ol" width="203" height="114" alt="FRONTERA TOMADA. Militares ecuatorianos confirmaron la existencia de una carretera ilegal en la frontera de Ecuador y Perú llamada Paso Tres." title="FRONTERA TOMADA. Militares ecuatorianos confirmaron la existencia de una carretera ilegal en la frontera de Ecuador y Perú llamada Paso Tres." typeof="foaf:Image" />
+
+
+
+      </a>
+  <h2 class="menu__article-title">
+      <a href="/6145/guerra-por-el-oro-y-el-control-territorial-frontera-peru-ecuador">
+<span>Guerra por el oro y el control territorial en frontera Perú - Ecuador</span>
+</a>
+  </h2>
+</article>
+
+
+  
+
+  
+    <article class="specials-menu__article menu__article">
+  <span class="menu__article-category body-4">Elecciones 2026</span>
+  <a class="menu__article-picture" href="/6132/el-41-partidos-sin-candidatos-al-congreso-todas-las-regiones">
+              
+<img loading="lazy" src="/sites/default/files/styles/imagen_menu/public/2026-03/carlos%20espa.jpg?h=8abcec71&amp;itok=usVFV2xe" width="203" height="114" alt="AUSENCIA. El partido de Carlos Espá es el que tiene menos listas en las distintas circunscripciones electorales. Estuvo en Lambayeque pese a no tener candidatos a diputados en dicha región." title="AUSENCIA. El partido de Carlos Espá es el que tiene menos listas en las distintas circunscripciones electorales. Estuvo en Lambayeque pese a no tener candidatos a diputados en dicha región." typeof="foaf:Image" />
+
+
+
+      </a>
+  <h2 class="menu__article-title">
+      <a href="/6132/el-41-partidos-sin-candidatos-al-congreso-todas-las-regiones">
+<span>El 41% de partidos sin candidatos al Congreso en todas las regiones</span>
+</a>
+  </h2>
+</article>
+
+
+  
+
+  
+    <article class="specials-menu__article menu__article">
+  <span class="menu__article-category body-4">Latinoamérica</span>
+  <a class="menu__article-picture" href="/6130/investigan-empresa-peruana-por-traficar-mercurio-vinculado-al-cjng">
+              
+<img loading="lazy" src="/sites/default/files/styles/imagen_menu/public/2026-02/Sunat%202.png?h=7a95c454&amp;itok=Vr5KBBrp" width="203" height="114" alt="TÓXICO. Para la inspección del contenedor incautado con mercurio, el personal de la Sunat tuvo que protegerse de los efectos nocivos de esta sustancia química." title="TÓXICO. Para la inspección del contenedor incautado con mercurio, el personal de la Sunat tuvo que protegerse de los efectos nocivos de esta sustancia química." typeof="foaf:Image" />
+
+
+
+      </a>
+  <h2 class="menu__article-title">
+      <a href="/6130/investigan-empresa-peruana-por-traficar-mercurio-vinculado-al-cjng">
+<span>Investigan a empresa peruana por traficar mercurio vinculado al CJNG </span>
+</a>
+  </h2>
+</article>
+
+
+  
+
+  
+    <article class="specials-menu__article menu__article">
+  <span class="menu__article-category body-4">English</span>
+  <a class="menu__article-picture" href="/6134/peruvian-company-investigated-trafficking-mercury-linked-cjng">
+              
+<img loading="lazy" src="/sites/default/files/styles/imagen_menu/public/2026-02/Sunat%202_0.png?h=7a95c454&amp;itok=uB0vg2Jc" width="203" height="114" alt="TOXIC. During the inspection of the container seized with mercury, specialists of the Peruvian customs agency had to shield themselves from the harmful effects of this chemical." title="TOXIC. During the inspection of the container seized with mercury, specialists of the Peruvian customs agency had to shield themselves from the harmful effects of this chemical." typeof="foaf:Image" />
+
+
+
+      </a>
+  <h2 class="menu__article-title">
+      <a href="/6134/peruvian-company-investigated-trafficking-mercury-linked-cjng">
+<span>Peruvian company investigated for trafficking mercury linked to CJNG</span>
+</a>
+  </h2>
+</article>
+
+
+  
+
+
+      </div>
+      <div class="menu-ext-link"><a href="/home-especiales">Ver todos los especiales <i class="fas fa-arrow-right"></i></a></div>
+    </div>
+    
+
+  
+  
+
+  
+  
+</div>
+
+
+</div>
+<!--./Especiales-->
+<div class="news-menu menu" data-menu="news">
+	
+              <div class="news-menu__inner container">
+        <div class="news-grid">
+                          <div class="news-grid__column">
+                <a href="/sala-del-poder" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/1567">Sala del Poder</a>
+                <div class="news-grid__column__list">
+                                                                              <a href="/sala-del-poder/crimen-organizado" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/1790">Crimen organizado</a>
+                      <a href="/sala-del-poder/duenos-la-noticia" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/1450">Dueños de la noticia</a>
+                    
+                                  </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/derechos-humanos" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/1628">Derechos Humanos</a>
+                <div class="news-grid__column__list">
+                                                                              <a href="/derechos-humanos/memoria" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/1795">Memoria</a>
+                      <a href="/derechos-humanos/genero" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/1794">Género</a>
+                      <a href="/derechos-humanos/salud" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/1448">Salud</a>
+                      <a href="/derechos-humanos/emergencia-peru" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/2442">Emergencia en Perú</a>
+                    
+                                  </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/ambiente" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/1446">Ambiente</a>
+                <div class="news-grid__column__list">
+                                                                              <a href="/ambiente/territorio-amazonas" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/1566">Territorio Amazonas</a>
+                      <a href="/ambiente/cop27" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/2428">COP27</a>
+                      <a href="/ambiente/cop28" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/2518">COP28</a>
+                      <a href="/ambiente/cop29" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/2610">COP29</a>
+                    
+                                  </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/opinion" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/9">Opinión</a>
+                <div class="news-grid__column__list">
+                                                                              <a href="/opinion/ojopublico-pregunta" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/1946">OjoPúblico Pregunta</a>
+                      <a href="/opinion/cartas-y-replicas" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/18">Cartas y réplicas</a>
+                    
+                                  </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/edicion-regional" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/1565">Edición Regional</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/politica" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/1447">Política</a>
+                <div class="news-grid__column__list">
+                                                                              <a href="/politica/elecciones-2020" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/1834">Elecciones 2020</a>
+                      <a href="/politica/elecciones-2021" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/2012">Elecciones 2021</a>
+                      <a href="/politica/elecciones-2022" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/2381">Elecciones 2022</a>
+                      <a href="/politica/elecciones-2026" class="news-grid__column__item" data-drupal-link-system-path="taxonomy/term/2675">Elecciones 2026</a>
+                    
+                                  </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/OjoLab" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/1284">OjoLab</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/portafolio/podcast" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/1912">Podcast</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/videoreportajes" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/2650">Videoreportajes</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/english" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/1962">English</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/entrevistas" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/2564">Entrevistas</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/latinoamerica" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/2261">Latinoamérica</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/cultura" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/1484">Cultura</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/la-tienda" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/2633">La Tienda</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/aliadosas" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/2545">Aliados/as</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/ojobionico" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/200">OjoBiónico</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/portafolio-podcast-tecnologia-dataviz/new-york-times" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/1951">The New York Times</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/portafolio-podcast-tecnologia/dataviz" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/2412">Dataviz</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                          <div class="news-grid__column">
+                <a href="/portafolio-podcast/tecnologia" class="news-grid__column__title" data-drupal-link-system-path="taxonomy/term/1883">Tecnología</a>
+                <div class="news-grid__column__list">
+                                                    </div><!--./news-grid__column__list-->
+              </div><!--./news-grid__column-->
+                    </div><!--./news-grid-->
+      </div><!--./news-menu__inner container-->
+      
+
+
+</div>
+
+<div class="mobile-menu">
+
+  <div class="d-flex justify-content-end">
+    <button class="mobile-menu__close btn">
+      <img loading="lazy" src="/themes/custom/ojo_publico_theme/images/close.svg" alt="Cerrar" id="close-mobile-menu">
+    </button>
+  </div>
+	<a href="/user/0/reportajes-guardados">
+		<div class="mobile-menu__reading-list-notice body-4">
+			<img loading="lazy" src="/themes/custom/ojo_publico_theme/images/clock.svg" alt="Reloj">
+			Tienes reportajes guardados
+		</div>
+	</a>	
+	<ul class="mobile-menu__items mobile-login-info">
+		
+			<li class="mobile-menu__item" id="mobile-login-links">
+				<div class="links-container">
+					<a class="login__toggler collapsed" href="#">Iniciar sesión</a>
+					<a class="register__link" href="/registro">Registrarse</a>
+				</div>
+				<div class="mobile-menu__login">
+					<div class="mobile-login__header">
+						<p class="mobile-login__title">inciar sesión</p>
+						<button class="mobile-login__close">
+							<i class="fas fa-times"></i>
+						</button>
+					</div>
+					<form class="mobile-login__form" data-drupal-selector="login-form-2-2" action="/media/50" method="post" id="login-form-2--2" accept-charset="UTF-8">
+  	
+
+
+<div class="mx-auto px-1 row no-gutters">
+	<div class="col-md-12 pad-bottom-mb">
+		<div class="modal-title">Inicia sesión</div>
+        <div class="social-network pt-2">
+          <div class="icons">
+            <a class="loginWithGoogle" href="/user/login/google">
+								<img alt="Logo Google" src="/themes/custom/ojo_publico_theme/images/Logogoogle.png">
+			</a>
+            <a class="loginWithFacebook" href="/user/login/facebook">
+								<img alt="Logo Facebook" src="/themes/custom/ojo_publico_theme/images/facebook-modal.svg">
+			</a>
+          </div>
+        </div>
+	</div>
+	<div class="col-md-12 pt-2">
+		<p class="modal-subtitle">O con tu correo</p>
+	</div>
+	<div class="col-md-12">
+		<div class="field_email_validate"><div class="js-form-item form-item js-form-type-textfield form-item-nombre-usuario js-form-item-nombre-usuario form-no-label">
+        <input class="form-text" data-drupal-selector="edit-nombre-usuario" type="text" id="edit-nombre-usuario--3" name="nombre_usuario" value="" size="26" maxlength="64" placeholder="Correo electrónico" />
+
+        </div>
+<div class="email-error-message"></div></div>
+	</div>
+	<div class="col-md-12 pt-2">
+	 	<div class="field_password_validate"><div class="js-form-item form-item js-form-type-password form-item-contrasena js-form-item-contrasena form-no-label">
+        <input class="form-text" data-drupal-selector="edit-contrasena" type="password" id="edit-contrasena--2" name="contrasena" size="26" maxlength="64" placeholder="Su contraseña" />
+
+        </div>
+<div id="error-message" class="login-error-message"></div></div>
+	</div>
+	<div class="col-5 text-left pt-2 pl-2 network-gray">
+		<input type="checkbox" id="cbox2" value="recuer" />
+		<label for="cbox2">Recuérdame</label>
+	</div>
+	<div class="col-7 text-right pt-2 network-gray">
+		<a class="password-link" href="/user/password" id="password-link">Olvidé mi contraseña</a>
+	</div>
+	<div class="col-md-12 pt-1">
+		<input class="btn button js-form-submit form-submit" data-drupal-selector="edit-boton" type="submit" id="edit-boton--4" name="op" value="Ingresar" />
+
+	</div>
+	
+	<div class="col-md-12 pt-0">
+		<input class="d-none button js-form-submit form-submit" onclick="event.preventDefault();" id="login-button" data-drupal-selector="edit-actions" type="submit" name="op" value="Inicia sesión" />
+
+	</div>
+	<div class="col-md-12 pt-3 line-footer">
+		<p class="p-0 m-0 gray">¿No tienes una cuenta?</p>
+		<a class="register-link" href="/registro" id="register-link">Regístrate aquí</a>
+	</div>
+</div>
+
+
+
+
+<input autocomplete="off" data-drupal-selector="form-u2wllspqzyd4canmlj6r5o-4ii4bczgmwt4wbmtkg14" type="hidden" name="form_build_id" value="form-u2WllSPQZYD4cAnMLJ6r5o_4Ii4bCzgmwt4WBMTKG14" />
+
+
+<input data-drupal-selector="edit-login-form-2-2" type="hidden" name="form_id" value="login_form_2" />
+
+</form>
+
+				</div>
+			</li>
+
+		
+	</ul>
+
+	<ul class="mobile-menu__items mobile-menu__sections">
+
+		<li class="mobile-menu__item">
+			<a aria-controls="news-mobile-menu" aria-expanded="false" class="mobile-menu__link body-4" data-toggle="collapse" href="#news-mobile-menu" role="button">Noticias
+				<i class="fas fa-caret-down"></i>
+			</a>
+		</li>
+					
+              <div class="collapse" id="news-mobile-menu">
+        <div class="news-mobile-grid">
+                          <div class="news-mobile-grid__column">
+                <a href="/derechos-humanos" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/1628">Derechos Humanos</a>
+
+                                                <div class="news-mobile-grid__column__list">
+                                        <a href="/derechos-humanos/emergencia-peru" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/2442">Emergencia en Perú</a>
+                      <a href="/derechos-humanos/salud" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/1448">Salud</a>
+                      <a href="/derechos-humanos/genero" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/1794">Género</a>
+                      <a href="/derechos-humanos/memoria" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/1795">Memoria</a>
+                    
+                </div><!--./news-grid__column__list-->
+                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/videoreportajes" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/2650">Videoreportajes</a>
+
+                                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/sala-del-poder" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/1567">Sala del Poder</a>
+
+                                                <div class="news-mobile-grid__column__list">
+                                        <a href="/sala-del-poder/duenos-la-noticia" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/1450">Dueños de la noticia</a>
+                      <a href="/sala-del-poder/crimen-organizado" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/1790">Crimen organizado</a>
+                    
+                </div><!--./news-grid__column__list-->
+                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/ambiente" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/1446">Ambiente</a>
+
+                                                <div class="news-mobile-grid__column__list">
+                                        <a href="/ambiente/territorio-amazonas" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/1566">Territorio Amazonas</a>
+                      <a href="/ambiente/cop27" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/2428">COP27</a>
+                      <a href="/ambiente/cop28" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/2518">COP28</a>
+                      <a href="/ambiente/cop29" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/2610">COP29</a>
+                    
+                </div><!--./news-grid__column__list-->
+                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/english" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/1962">English</a>
+
+                                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/politica" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/1447">Política</a>
+
+                                                <div class="news-mobile-grid__column__list">
+                                        <a href="/politica/elecciones-2020" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/1834">Elecciones 2020</a>
+                      <a href="/politica/elecciones-2021" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/2012">Elecciones 2021</a>
+                      <a href="/politica/elecciones-2022" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/2381">Elecciones 2022</a>
+                      <a href="/politica/elecciones-2026" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/2675">Elecciones 2026</a>
+                    
+                </div><!--./news-grid__column__list-->
+                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/opinion" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/9">Opinión</a>
+
+                                                <div class="news-mobile-grid__column__list">
+                                        <a href="/opinion/ojopublico-pregunta" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/1946">OjoPúblico Pregunta</a>
+                      <a href="/opinion/cartas-y-replicas" class="news-mobile-grid__column__item" data-drupal-link-system-path="taxonomy/term/18">Cartas y réplicas</a>
+                    
+                </div><!--./news-grid__column__list-->
+                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/edicion-regional" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/1565">Edición Regional</a>
+
+                                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/OjoLab" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/1284">OjoLab</a>
+
+                                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/la-tienda" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/2633">La Tienda</a>
+
+                                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/aliadosas" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/2545">Aliados/as</a>
+
+                                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/entrevistas" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/2564">Entrevistas</a>
+
+                                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/portafolio-podcast-tecnologia-dataviz/new-york-times" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/1951">The New York Times</a>
+
+                                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/portafolio-podcast-tecnologia/dataviz" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/2412">Dataviz</a>
+
+                                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/latinoamerica" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/2261">Latinoamérica</a>
+
+                                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/portafolio-podcast/tecnologia" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/1883">Tecnología</a>
+
+                                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/ojobionico" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/200">OjoBiónico</a>
+
+                                
+              </div><!--./news-grid__column-->
+                          <div class="news-mobile-grid__column">
+                <a href="/cultura" class="news-mobile-grid__column__title" data-drupal-link-system-path="taxonomy/term/1484">Cultura</a>
+
+                                
+              </div><!--./news-grid__column-->
+                    </div><!--./news-grid-->
+      </div><!--./news-menu__inner container-->
+      
+
+
+				<li class="mobile-menu__item">
+			<a class="mobile-menu__link body-4" href="/home-especiales">Especiales</a>
+		</li>
+		<li class="mobile-menu__item">
+			<a class="mobile-menu__link body-4" href="/ojo-bionico">Ojo biónico</a>
+		</li>
+		<li class="mobile-menu__item">
+			<a class="mobile-menu__link body-4" href="/english">english</a>
+		</li>
+		<li class="mobile-menu__item">
+			<a class="mobile-menu__link body-4" href="/america">América</a>
+		</li>
+	</ul>
+
+  <a id="become-partner" class="op-button tomato btn-aliados" href="/aliados?curl=/media/50&utm_source=boton_web_mobile">
+    hazte aliado
+  </a>
+
+  <div id="store-links" class="d-flex align-items-center">
+    <a href="/tienda" id="store-link" class="body-4 text-uppercase">la tienda</a>
+    <span class="border"></span>
+
+			<a id="signin" class="body-4 login-mobile">Inicia sesión</a>
+		<span class="border"></span>
+		<a class="register__link" id="registro" href="/registro">Registrarse</a>
+	
+  </div>
+
+
+
+	<ul class="contact-mobile-menu-items">
+
+		<li class="mobile-menu__item">
+			<a class="mobile-menu__link body-4" href="/institucional" title="Acerca de nosotros">acerca de nosotros</a>
+		</li>
+		<li class="mobile-menu__item">
+			<a class="mobile-menu__link body-4" href="/contacto" title="Contáctenos">contáctenos</a>
+		</li>
+		<li class="mobile-menu__item">
+			<a class="mobile-menu__link body-4" href="/institucional/politica-de-proteccion-de-datos-personales" title="Términos y condiciones">términos y condiciones</a>
+		</li>
+
+	</ul>
+
+	<div
+		class="secondary-section__social">
+		<div class="secondary-section__social__logo subscribe-mobile-menu">
+      					</div>
+		<div class="main-container-mobile-menu-redes">
+			<div class="redes-sociales-menu-mobile">
+				<span class="secondary-section__social__logo-title text-uppercase">síganos en nuestras redes</span>
+			</div>
+
+
+			<div class="mobile-menu__social-icons">
+				<a class="instagram-icon mobile-menu-social-icon" href="https://www.instagram.com/ojopublico/" target="_blank">
+					<i class="fab fa-instagram footer__social-icon"></i>
+				</a>
+				<a class="twitter-icon mobile-menu-social-icon" href="https://twitter.com/Ojo_Publico" target="_blank">
+					<i class="fab fa-twitter footer__social-icon"></i>
+				</a>
+				<a class="facebook-icon mobile-menu-social-icon" href="https://es-la.facebook.com/OjoPublico/" target="_blank">
+					<i class="fab fa-facebook-f footer__social-icon"></i>
+				</a>
+				<a class="youtube-icon mobile-menu-social-icon" href="https://www.youtube.com/channel/UCJ9jc43mpW42ZjVM86LOzL" target="_blank">
+					<i class="fab fa-youtube footer__social-icon"></i>
+				</a>
+			</div>
+
+
+		</div>
+
+	</div>
+	</div>
+
+<div class="search-menu">
+
+	<div class="internal-search-menu">
+
+  <div class="search-menu__header d-flex justify-content-end">
+    <button id="search-menu-close" type="button">
+			<img loading="lazy" src="/themes/custom/ojo_publico_theme/images/close_white.svg" alt="Cerrar buscador">
+		</button>
+  </div>
+
+	<div class="search-menu__inner">
+		<input class="search-menu__input" name="keys" placeholder="Buscar" type="text"/>
+		<button class="search-button">
+			<i class="fas fa-search"></i>
+		</button>
+	</div>
+
+
+
+  
+    <div class="search-menu__recommended-search">
+      <p class="search-menu__recommended-search__title body-3">Búsquedas recomendadas</p>
+
+      <ul class="search-menu__recommended-search__items">
+                  <li><a href="/search-api?search_api_fulltext=" class="body-3"></a></li>
+              </ul>
+    </div>
+
+  
+	</div>
+
+</div>
+
+  </div>
+
+
+  </header>
+
+  
+  
+
+  
+
+  
+
+  
+
+  <main role="main">
+    <a id="main-content" tabindex="-1"></a>
+    <div class="layout-content">
+      
+
+      <div>
+      <div data-drupal-messages-fallback class="hidden"></div>
+<div>
+  
+  
+      <div class="op-modal__picture">
+      <div class="op-modal__picture-container">
+          <a href="/sites/default/files/2022-05/logoculqi.png">
+<img loading="lazy" src="/sites/default/files/2022-05/logoculqi.png" width="1366" height="418" alt="culqi" title="culqi" typeof="foaf:Image" />
+</a>
+
+      </div>
+      <div class="op-modal__picture-info">
+        <h1 class="op-modal__picture-author"></h1>
+        <p class="op-modal__picture-footnote">
+          <span class="op-modal__picture-footnote__highligth">pie de foto.</span>
+          culqi
+        </p>
+      </div>
+    </div>
+      <div class="op-modal__picture">
+      <div class="op-modal__picture-container">
+          <a href="/sites/default/files/2022-05/paypal.png">
+<img loading="lazy" src="/sites/default/files/2022-05/paypal.png" width="1200" height="600" alt="paypal" title="paypal" typeof="foaf:Image" />
+</a>
+
+      </div>
+      <div class="op-modal__picture-info">
+        <h1 class="op-modal__picture-author"></h1>
+        <p class="op-modal__picture-footnote">
+          <span class="op-modal__picture-footnote__highligth">pie de foto.</span>
+          paypal
+        </p>
+      </div>
+    </div>
+  
+</div>
+
+  </div>
+
+    </div>
+    
+    
+  </main>
+
+      <footer role="contentinfo">
+        <div>
+    <div id="block-footerblock">
+  
+    
+      <div id="block-footerblock">
+<div class="container">
+<footer class="footer row">
+<div class="col-lg-4 col-md-12 main-logo-footer">
+<section class="footer__logo" style=""><img alt="Ojo púbico" class="d-none d-md-block lazyload op-facelift" loading="lazy" src="/themes/custom/ojo_publico_theme/images/logos/logo-light-default.svg" style="max-width: 174px;" /><img alt="Ojo púbico" class="d-none img-suscribase lazyload" loading="lazy" src="/themes/custom/ojo_publico_theme/images/logos/logo-light.svg" /><a class="mt-3" href="https://www.sipiapa.org/" style="" target="_blank"><img alt="Sociedad Interamericana de Prensa" class="lazyload gi-facelift" loading="lazy" src="/sites/default/files/2025-12/Logo-SIP.png" style="max-width: 174px;" /></a><a class="mt-3" href="https://gijn.org/" style="" target="_blank"><img alt="Global investigative" class="lazyload gi-facelift" loading="lazy" src="/sites/default/files/2023-10/GIJN-Logo-dark.png" style="max-width: 174px;" /></a> <a class="OCCRP-logo mt-3 mx-2" href="https://www.occrp.org/en" style="" target="_blank"><img alt="OCCRP" class="lazyload gi-facelift" loading="lazy" src="https://ojo-publico.com/sites/default/files/2024-05/logo-occrp.png" style="max-width: 160px;" /></a> <a class="OCCRP-logo mt-3 mx-2" href="https://www.ngosource.org/join-ngosource" style="" target="_blank"><img alt="Logo NGO Source" class="lazyload gi-facelift" loading="lazy" src="https://ojo-publico.com/sites/default/files/2025-10/logo-NGOsource-ED.png" style="max-width: 160px;" /></a></section>
+</div>
+
+<div class="col-lg-4 col-md-6" id="fl-contact-information">
+<section class="footer__contact">
+<ul class="footer__contact__links">
+	<li class="footer__contact__link body-4 mb-1"><a>sobre nosotros</a></li>
+	<li><a class="footer-contact-subitem" href="/institucional/#equipo">Conoce a nuestro equipo </a> <a class="footer-contact-subitem" href="/contacto"> Contáctanos </a> <a class="footer-contact-subitem" href="/institucional/mision-vision-valores"> Misión visión y valores </a></li>
+	<li class="footer__contact__link body-4 mb-1"><a>politicas</a></li>
+	<li><a class="footer-contact-subitem" href="/institucional/politica_de_independencia_editorial_ante_aliados">Independencia editorial ante nuestros aliados. </a> <a class="footer-contact-subitem" href="/institucional/politica_de_cumplimiento_de_la_ley"> Sobre el secreto profesional y periodístico. </a> <a class="footer-contact-subitem" href="/institucional/politica-de-proteccion-de-datos-personales"> Protección de datos personales. </a> <a class="footer-contact-subitem" href="/institucional/politica_de_rectificacion"> El derecho a la rectificación. </a> <a class="footer-contact-subitem" href="/institucional/ojo_bionico_politicas_verificacion"> OjoBiónico: políticas y criterios de corrección</a></li>
+   <li class="footer__contact__link body-4 mb-1"><a>La tienda</a></li>
+   <li><a class="footer-contact-subitem" target="_blank" href="https://tienda.ojo-publico.com">Visite nuestra tienda.</a>
+</ul>
+</section>
+</div>
+
+<div class="col-lg-4 col-md-6 px-0" id="fl-footer-subscription">
+<section class="pt-5">
+<div class="footer__subscribe">
+   <a href="/suscripcion-boletin?utm_source=footer_op" title="Suscríbase a nuestro boletín">
+      <img alt="Suscripción a boletín" src="https://ojo-publico.com/sites/default/files/2025-02/boletin-footer-op.gif"/>
+   </a>
+</div>
+</section>
+</div>
+</footer>
+</div>
+
+<div class="footer-bar">
+<div class="container justify-content-between row">
+<div class="col-md-6 order-mobile-2 text-center-cm" style=""><a> Todos los derechos reservados © <span class="footer-actual-year">2026</span> OjoPublico. </a></div>
+
+<div class="col-md-6">
+<div class="footer__social-links" id="footer-mobile-social-links" style="flex-direction: row;">
+<p class="footer__social-links__title" style="">síganos en</p>
+
+<div class="footer__social-icons">
+                     <a class="instagram-icon" href="https://www.instagram.com/ojopublico/" target="_blank">
+                     <i class="fab fa-instagram footer__social-icon"></i>
+                     </a>
+                     <a class="twitter-icon" href="https://twitter.com/Ojo_Publico" target="_blank">
+  					<img alt="Logo X" src="/themes/custom/ojo_publico_theme/images/x-twitter-light.svg"></a>
+                     <a class="facebook-icon" href="https://es-la.facebook.com/OjoPublico/" target="_blank">
+                     <i class="fab fa-facebook-f footer__social-icon"></i>
+                     </a>
+                     <a class="youtube-icon" href="https://www.youtube.com/c/OjoPúblicoPE" target="_blank">
+                     <i class="fab fa-youtube footer__social-icon"></i>
+                     </a>
+                     <a class="tiktok-icon" href="https://www.tiktok.com/@ojopublico" target="_blank">
+                     <i class="fab fa-tiktok footer__social-icon"></i>
+                     </a>
+                  </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+  </div>
+
+  </div>
+
+    </footer>
+  
+
+<div class="login-popup-bookmark">
+    <div class="login-popup-bookmark-header">
+      <i class="fas fa-times"></i>
+    </div>
+    <div class="modal-content-main">
+        <div class="left-section">
+            <h2 class="left-title"><div class="strong-text">Bienvenido</div> a OjoPúblico</h2>
+            <div class="linea"></div>
+            <p class="left-paragraph desktop-resume"> <b>OjoPúblico</b> fue fundado para contar historias
+desde una narrativa latinoamericana sobre
+temas urgentes y relevantes para la sociedad.
+Detrás de este medio no hay accionistas
+millonarios o grupos económicos de poder.
+Para apoyar al periodismo de investigación,
+te pedimos que inicies sesión mientras lees
+nuestros reportajes o crees un usuario si no
+lo tuvieras. </p>
+            <p class="left-paragraph mobile-resume">  Las historias que otros no te quieren contar </p>
+                    </div>
+        <div class="right-section">
+          <div class="main-container-modal">
+            <div class='login-main'>
+              <form class="login-popup__form" data-drupal-selector="login-form-2" action="/media/50" method="post" id="login-form-2" accept-charset="UTF-8">
+  	
+
+
+<div class="mx-auto px-1 row no-gutters">
+	<div class="col-md-12 pad-bottom-mb">
+		<div class="modal-title">Inicia sesión</div>
+        <div class="social-network pt-2">
+          <div class="icons">
+            <a class="loginWithGoogle" href="/user/login/google">
+								<img alt="Logo Google" src="/themes/custom/ojo_publico_theme/images/Logogoogle.png">
+			</a>
+            <a class="loginWithFacebook" href="/user/login/facebook">
+								<img alt="Logo Facebook" src="/themes/custom/ojo_publico_theme/images/facebook-modal.svg">
+			</a>
+          </div>
+        </div>
+	</div>
+	<div class="col-md-12 pt-2">
+		<p class="modal-subtitle">O con tu correo</p>
+	</div>
+	<div class="col-md-12">
+		<div class="field_email_validate"><div class="login-popup__form__input-wrapper js-form-item form-item js-form-type-textfield form-item-nombre-usuario js-form-item-nombre-usuario form-no-label">
+        <input class="login-popup__input form-text" data-drupal-selector="edit-nombre-usuario" type="text" id="edit-nombre-usuario" name="nombre_usuario" value="" size="20" maxlength="64" placeholder="Correo electrónico" />
+
+        </div>
+<div class="email-error-message"></div></div>
+	</div>
+	<div class="col-md-12 pt-2">
+	 	<div class="field_password_validate"><div class="login-popup__form__input-wrapper js-form-item form-item js-form-type-password form-item-contrasena js-form-item-contrasena form-no-label">
+        <input class="login-popup__input form-text" data-drupal-selector="edit-contrasena" type="password" id="edit-contrasena" name="contrasena" size="20" maxlength="64" placeholder="Su contraseña" />
+
+        </div>
+<div id="error-message" class="login-error-message"></div></div>
+	</div>
+	<div class="col-5 text-left pt-2 pl-2 network-gray">
+		<input type="checkbox" id="cbox2" value="recuer" />
+		<label for="cbox2">Recuérdame</label>
+	</div>
+	<div class="col-7 text-right pt-2 network-gray">
+		<a class="password-link" href="/user/password" id="password-link">Olvidé mi contraseña</a>
+	</div>
+	<div class="col-md-12 pt-1">
+		<input class="btn button js-form-submit form-submit" data-drupal-selector="edit-boton" type="submit" id="edit-boton" name="op" value="Ingresar" />
+
+	</div>
+	
+	<div class="col-md-12 pt-0">
+		<input class="btn d-none button js-form-submit form-submit" onclick="event.preventDefault();" id="login-button" data-drupal-selector="edit-actions" type="submit" name="op" value="Inicia sesión" />
+
+	</div>
+	<div class="col-md-12 pt-3 line-footer">
+		<p class="p-0 m-0 gray">¿No tienes una cuenta?</p>
+		<a class="register-link" href="/registro" id="register-link">Regístrate aquí</a>
+	</div>
+</div>
+
+
+
+
+<input autocomplete="off" data-drupal-selector="form-9sy35tudld4fhfxbst1g-ao9ylf-qw3ge6h67jwujjg" type="hidden" name="form_build_id" value="form-9sY35TUdLd4FhFxBst1g_aO9yLf_QW3Ge6H67jwUJjg" />
+
+
+<input data-drupal-selector="edit-login-form-2" type="hidden" name="form_id" value="login_form_2" />
+
+</form>
+
+            </div>
+            <div class='reset-main'>
+                <div class="modal-title">Restablecer contraseña</div>
+              <form class="login-popup__form" data-drupal-selector="reset-password-modal" action="/media/50" method="post" id="reset-password-modal" accept-charset="UTF-8">
+  
+	
+
+
+<div class="mx-auto px-2 pb-3 row no-gutters position-relative">
+	<div class="col-md-12">
+		
+        <p class="reset-paragraph mb-4">Las instrucciones para restablecer la clave se enviarán a la dirección de correo electrónico con la que se registró como usuario.</p>
+	</div>
+		<div class="email-success-message" id="success-message"><p class="full-text-reset"></p><div class="image-check-container"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Eo_circle_yellow_checkmark.svg/1200px-Eo_circle_yellow_checkmark.svg.png" alt="check"></div></div>
+	<div class="col-md-12 pt-2">
+		<div class="field_email_reset_validate"><div class="login-popup__form__input-wrapper js-form-item form-item js-form-type-textfield form-item-usuario js-form-item-usuario form-no-label">
+        <input class="login-popup__input form-text" data-drupal-selector="edit-usuario" type="text" id="edit-usuario" name="usuario" value="" size="20" maxlength="64" placeholder="Correo electrónico" />
+
+        </div>
+<div class="email-reset-error-message"></div></div>
+	</div>
+	
+	<div class="col-md-12 pt-3">
+		<input class="btn button js-form-submit form-submit" data-drupal-selector="edit-boton" type="submit" id="edit-boton--2" name="op" value="Enviar" />
+
+	</div>
+	
+	<div class="col-md-12 pt-0">
+		<input class="btn d-none button js-form-submit form-submit" onclick="event.preventDefault();" id="login-button" data-drupal-selector="edit-actions" type="submit" name="op" value="Enviar" />
+
+	</div>
+</div>
+
+
+
+
+<input autocomplete="off" data-drupal-selector="form-y43zqxdo-v96zfhvbvddgibpdmirgq7f-08rwipvjea" type="hidden" name="form_build_id" value="form-Y43zqXDo_v96zfhVBvdDGibpdmiRGQ7F-08rwiPVJeA" />
+
+
+<input data-drupal-selector="edit-reset-password-modal" type="hidden" name="form_id" value="reset_password_modal" />
+
+</form>
+
+            </div>
+            <div class='register-main'>
+              <div class="modal-title">Mi registro</div>
+              <form class="login-popup__form_register" data-drupal-selector="register-form-modal" action="/media/50" method="post" id="register-form-modal" accept-charset="UTF-8">
+  	
+
+
+<div class="mx-auto px-2 row no-gutters position-relative">
+	<div class="col-md-12">
+        <div class="social-network">
+		<p class="subtitle-register">Continuar con</p>
+          <div class="icons">
+            <a class="loginWithGoogle" href="/user/login/google">
+								<img alt="Logo Google" src="/themes/custom/ojo_publico_theme/images/Logogoogle.png">
+			</a>
+            <a class="loginWithFacebook" href="/user/login/facebook">
+								<img alt="Logo Facebook" src="/themes/custom/ojo_publico_theme/images/facebook-modal.svg">
+			</a>
+          </div>
+        </div>
+	</div>
+		<div class="register-success-message"><p class="full-text-register"></p><div class="image-check-container"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Eo_circle_yellow_checkmark.svg/1200px-Eo_circle_yellow_checkmark.svg.png" alt="check"></div></div>
+	<div class="col-md-12 pt-3">
+		<div class="login-popup__form__input-wrapper js-form-item form-item js-form-type-textfield form-item-nombre-usuario js-form-item-nombre-usuario form-no-label">
+        <input class="login-popup__input register_input form-text" data-drupal-selector="edit-nombre-usuario" type="text" id="edit-nombre-usuario--2" name="nombre_usuario" value="" size="20" maxlength="64" placeholder="Nombre" />
+
+        </div>
+
+	</div>
+	<div class="col-md-12 pt-2">
+	 	<div class="login-popup__form__input-wrapper js-form-item form-item js-form-type-textfield form-item-apellido js-form-item-apellido form-no-label">
+        <input class="login-popup__input register_input form-text" data-drupal-selector="edit-apellido" type="text" id="edit-apellido" name="apellido" value="" size="20" maxlength="64" placeholder="Apellido" />
+
+        </div>
+
+	</div>
+	<div class="col-md-12 pt-2">
+	 	<div class="field_register_validate"><div class="login-popup__form__input-wrapper js-form-item form-item js-form-type-textfield form-item-correo js-form-item-correo form-no-label">
+        <input class="login-popup__input form-text" data-drupal-selector="edit-correo" type="text" id="edit-correo" name="correo" value="" size="20" maxlength="64" placeholder="Correo electronico" />
+
+        </div>
+<div class="register-error-message"></div></div>
+	</div>
+	<div class="col-md-12 pt-md-2">
+		<p class="terms-register text-left">*Al registrarme, acepto recibir los boletines de OjoPúblico con las mejores historias cada miércoles.</p>
+	</div>
+
+	<div class="col-md-12">
+		    <div class="captcha"><input data-drupal-selector="edit-captcha-sid" type="hidden" name="captcha_sid" value="120390228" />
+<input data-drupal-selector="edit-captcha-token" type="hidden" name="captcha_token" value="oPPyZmIedr3Q-RsPd9nyk_wckYGioKIhr-DApPeIahc" />
+<input data-drupal-selector="edit-captcha-response" type="hidden" name="captcha_response" value="" />
+<div class="g-recaptcha" data-sitekey="6LenpcwZAAAAAM3c-xxxAMgHvTFSENoqynaxlg_N" data-theme="light" data-type="image"></div><input data-drupal-selector="edit-captcha-cacheable" type="hidden" name="captcha_cacheable" value="1" />
+</div>
+
+	</div>
+	
+	<div class="col-md-12 pt-2">
+		<input class="btn btn-register button js-form-submit form-submit" data-drupal-selector="edit-boton" type="submit" id="edit-boton--3" name="op" value="Crear nueva cuenta" />
+
+	</div>
+	
+	<div class="col-md-12 pt-0">
+		<input class="btn d-none button js-form-submit form-submit" onclick="event.preventDefault();" id="login-button" data-drupal-selector="edit-actions" type="submit" name="op" value="Registrarse" />
+
+	</div>
+
+	<div class="col-md-12 pt-3 line-footer">
+		<p class="p-0 m-0 gray">¿Ya tienes cuenta?</p>
+		<a class="login-link" href="/" id="login-link">Iniciar sesion</a>
+	</div>
+</div>
+
+
+
+
+
+
+<input autocomplete="off" data-drupal-selector="form-zm6wlv-r4gf0vboo7cstd-sw-p5dcvmvkycomtimx-c" type="hidden" name="form_build_id" value="form-Zm6wLV_R4Gf0vboo7cstd-Sw_p5DCVmVKycomTIMX_c" />
+
+
+<input data-drupal-selector="edit-register-form-modal" type="hidden" name="form_id" value="register_form_modal" />
+
+</form>
+
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+  </div>
+
+    
+
+    <!--Modal-->
+    <div class="op-modal modal-multimedia" data-modal="1">
+      <div class="op-modal__header">
+        <button class="op-modal__dismiss" data-modal="1"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="op-modal__body">
+      </div><!--./op-modal__body-->
+    </div><!--./modal-multimedia-->
+    <script src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&amp;version=v3.2" defer async crossorigin="anonymous"></script>
+<script src="https://www.google.com/recaptcha/api.js?hl=es&amp;render=explicit&amp;onload=drupalRecaptchaOnload" async defer></script>
+
+    <script charset="UTF-8" src="//web.webpushs.com/js/push/de7e2a0299abb975d95ce49e022f586b_1.js" async></script>
+    
+    <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
+    <script type="application/json" data-drupal-selector="drupal-settings-json">{"path":{"baseUrl":"\/","pathPrefix":"","currentPath":"media\/50","currentPathIsAdmin":false,"isFront":false,"currentLanguage":"es"},"pluralDelimiter":"\u0003","suppressDeprecationErrors":true,"ajaxPageState":{"libraries":"eJx9UFuOwyAMvBCUIyEDE0JiMALSbW-_6UPVVkL747HmIdnjqQ6_knHUofyOkIY0K8gOwdQm1xTQul5EBto_hhV0osJhvciecEKunKh4mBlpAxY6eCjZxNbDcfJis4SDYWijm2aJqczUTDdGiet3dKzIMO48s49GdaIt5MFpmcUiChrxTGFxxLqPO6cSJ4bumzDrIgF666rBvwuNIpFx-RAWf9XPpvq9D-RX_9eEn26e8_Io4Yt4vf8LIYupww","theme":"ojo_publico_theme","theme_token":null},"ajaxTrustedUrl":{"form_action_p_pvdeGsVG5zNF_XLGPTvYSKCf43t8qZYSwcfZl2uzM":true,"\/media\/50?ajax_form=1":true},"schemadotorg":{"request":{"method":"GET"}},"eu_cookie_compliance":{"cookie_policy_version":"1.0.0","popup_enabled":true,"popup_agreed_enabled":false,"popup_hide_agreed":false,"popup_clicking_confirmation":false,"popup_scrolling_confirmation":false,"popup_html_info":"\u003Cdiv aria-labelledby=\u0022popup-text\u0022  class=\u0022eu-cookie-compliance-banner eu-cookie-compliance-banner-info eu-cookie-compliance-banner--opt-in\u0022\u003E\n  \u003Cdiv class=\u0022popup-content info eu-cookie-compliance-content\u0022\u003E\n        \u003Cdiv id=\u0022popup-text\u0022 class=\u0022eu-cookie-compliance-message\u0022 role=\u0022document\u0022\u003E\n      \u003Ch2\u003E\u003Cstrong\u003EOjoP\u00fablico\u003C\/strong\u003E se preocupa por tu privacidad\u003C\/h2\u003E\u003Cp\u003ENosotros usamos cookies para acceder, almacenar y procesar datos personales sobre la audiencia para mejorar el contenido period\u00edstico que te proporcionamos. Tambi\u00e9n con el objetivo de fortalecer el modelo de financiamiento sostenible de \u003Cstrong\u003EOjoP\u00fablico\u003C\/strong\u003E.\u003C\/p\u003E\u003Cp\u003EPuedes leer nuestra \u003Ca href=\u0022https:\/\/ojo-publico.com\/institucional\/politica-de-proteccion-de-datos-personales\u0022 target=\u0022_blank\u0022 title=\u0022Pol\u00edtica de protecci\u00f3n de datos\u0022\u003Epol\u00edtica de protecci\u00f3n de datos\u0026nbsp; aqu\u00ed\u003C\/a\u003E y aceptarla o rechazarla.\u003C\/p\u003E\n          \u003C\/div\u003E\n\n    \n    \u003Cdiv id=\u0022popup-buttons\u0022 class=\u0022eu-cookie-compliance-buttons\u0022\u003E\n            \u003Cbutton type=\u0022button\u0022 class=\u0022agree-button eu-cookie-compliance-secondary-button\u0022\u003EAceptar y cerrar\u003C\/button\u003E\n              \u003Cbutton type=\u0022button\u0022 class=\u0022decline-button eu-cookie-compliance-default-button\u0022\u003ERechazar\u003C\/button\u003E\n          \u003C\/div\u003E\n  \u003C\/div\u003E\n\u003C\/div\u003E","use_mobile_message":false,"mobile_popup_html_info":"\u003Cdiv aria-labelledby=\u0022popup-text\u0022  class=\u0022eu-cookie-compliance-banner eu-cookie-compliance-banner-info eu-cookie-compliance-banner--opt-in\u0022\u003E\n  \u003Cdiv class=\u0022popup-content info eu-cookie-compliance-content\u0022\u003E\n        \u003Cdiv id=\u0022popup-text\u0022 class=\u0022eu-cookie-compliance-message\u0022 role=\u0022document\u0022\u003E\n      \n          \u003C\/div\u003E\n\n    \n    \u003Cdiv id=\u0022popup-buttons\u0022 class=\u0022eu-cookie-compliance-buttons\u0022\u003E\n            \u003Cbutton type=\u0022button\u0022 class=\u0022agree-button eu-cookie-compliance-secondary-button\u0022\u003EAceptar y cerrar\u003C\/button\u003E\n              \u003Cbutton type=\u0022button\u0022 class=\u0022decline-button eu-cookie-compliance-default-button\u0022\u003ERechazar\u003C\/button\u003E\n          \u003C\/div\u003E\n  \u003C\/div\u003E\n\u003C\/div\u003E","mobile_breakpoint":768,"popup_html_agreed":false,"popup_use_bare_css":false,"popup_height":350,"popup_width":"100%","popup_delay":1000,"popup_link":"\/","popup_link_new_window":true,"popup_position":false,"fixed_top_position":true,"popup_language":"es","store_consent":false,"better_support_for_screen_readers":false,"cookie_name":"","reload_page":false,"domain":"","domain_all_sites":false,"popup_eu_only":false,"popup_eu_only_js":false,"cookie_lifetime":100,"cookie_session":0,"set_cookie_session_zero_on_disagree":0,"disagree_do_not_show_popup":false,"method":"opt_in","automatic_cookies_removal":true,"allowed_cookies":"op_modal","withdraw_markup":"\u003Cbutton type=\u0022button\u0022 class=\u0022eu-cookie-withdraw-tab\u0022\u003EOpciones de privacidad\u003C\/button\u003E\n\u003Cdiv aria-labelledby=\u0022popup-text\u0022 class=\u0022eu-cookie-withdraw-banner\u0022\u003E\n  \u003Cdiv class=\u0022popup-content info eu-cookie-compliance-content\u0022\u003E\n    \u003Cdiv id=\u0022popup-text\u0022 class=\u0022eu-cookie-compliance-message\u0022 role=\u0022document\u0022\u003E\n      \u003Ch2\u003EWe use cookies on this site to enhance your user experience\u003C\/h2\u003E\u003Cp\u003EYou have given your consent for us to set cookies.\u003C\/p\u003E\n    \u003C\/div\u003E\n    \u003Cdiv id=\u0022popup-buttons\u0022 class=\u0022eu-cookie-compliance-buttons\u0022\u003E\n      \u003Cbutton type=\u0022button\u0022 class=\u0022eu-cookie-withdraw-button \u0022\u003EWithdraw consent\u003C\/button\u003E\n    \u003C\/div\u003E\n  \u003C\/div\u003E\n\u003C\/div\u003E","withdraw_enabled":false,"reload_options":0,"reload_routes_list":"","withdraw_button_on_info_popup":false,"cookie_categories":[],"cookie_categories_details":[],"enable_save_preferences_button":true,"cookie_value_disagreed":"0","cookie_value_agreed_show_thank_you":"1","cookie_value_agreed":"2","containing_element":"body","settings_tab_enabled":false,"olivero_primary_button_classes":"","olivero_secondary_button_classes":"","close_button_action":"close_banner","open_by_default":true,"modules_allow_popup":true,"hide_the_banner":false,"geoip_match":true,"unverified_scripts":[]},"ajax":{"edit-actions--3":{"callback":"::ajaxRegisterCallback","event":"click","url":"\/media\/50?ajax_form=1","httpMethod":"POST","dialogType":"ajax","submit":{"_triggering_element_name":"op","_triggering_element_value":"Registrarse"}},"edit-boton--3":{"callback":"::ajaxRegisterCallback","event":"click","url":"\/media\/50?ajax_form=1","httpMethod":"POST","dialogType":"ajax","submit":{"_triggering_element_name":"op","_triggering_element_value":"Crear nueva cuenta"}},"edit-actions--2":{"callback":"::ajaxResetCallback","event":"click","url":"\/media\/50?ajax_form=1","httpMethod":"POST","dialogType":"ajax","submit":{"_triggering_element_name":"op","_triggering_element_value":"Enviar"}},"edit-boton--2":{"callback":"::ajaxResetCallback","event":"click","url":"\/media\/50?ajax_form=1","httpMethod":"POST","dialogType":"ajax","submit":{"_triggering_element_name":"op","_triggering_element_value":"Enviar"}},"edit-actions":{"callback":"::ajaxSubmitCallback","event":"click","url":"\/media\/50?ajax_form=1","httpMethod":"POST","dialogType":"ajax","submit":{"_triggering_element_name":"op","_triggering_element_value":"Inicia sesi\u00f3n"}},"edit-boton":{"callback":"::ajaxSubmitCallback","event":"click","url":"\/media\/50?ajax_form=1","httpMethod":"POST","dialogType":"ajax","submit":{"_triggering_element_name":"op","_triggering_element_value":"Ingresar"}},"edit-actions--5":{"callback":"::ajaxSubmitCallback","event":"click","url":"\/media\/50?ajax_form=1","httpMethod":"POST","dialogType":"ajax","submit":{"_triggering_element_name":"op","_triggering_element_value":"Inicia sesi\u00f3n"}},"edit-boton--5":{"callback":"::ajaxSubmitCallback","event":"click","url":"\/media\/50?ajax_form=1","httpMethod":"POST","dialogType":"ajax","submit":{"_triggering_element_name":"op","_triggering_element_value":"Ingresar"}},"edit-actions--4":{"callback":"::ajaxSubmitCallback","event":"click","url":"\/media\/50?ajax_form=1","httpMethod":"POST","dialogType":"ajax","submit":{"_triggering_element_name":"op","_triggering_element_value":"Inicia sesi\u00f3n"}},"edit-boton--4":{"callback":"::ajaxSubmitCallback","event":"click","url":"\/media\/50?ajax_form=1","httpMethod":"POST","dialogType":"ajax","submit":{"_triggering_element_name":"op","_triggering_element_value":"Ingresar"}}},"basePath":"https:\/\/ojo-publico.com","themePath":"\/themes\/custom\/ojo_publico_theme","payments":{"cancel_subscription_redirect_url":"","title_modal":"Tarjeta de cr\u00e9dito asociada","text_modal":"Tiene actualmente una tarjeta de cr\u00e9dito asociada con su cuenta en OjoP\u00fablico","positive_button":"Pagar con esa tarjeta","negative_button":"Pagar con una tarjeta diferente","confirmation_cancel_subscription_text":"\u00bfEst\u00e1s seguro de cancelar tu suscripci\u00f3n?"},"culqi_public_key":"pk_live_f1d91032cdf03751","culqi_secret_key":"sk_live_89954714db4a4664","culqi_checkout_title":"Gracias por tu respaldo","culqi_checkout_description":"Estas a un solo paso de fortalecer la independencia de OjoP\u00fablico.","culqi_checkout_params":{"customButton":"Pagar","installments":true,"style":{"logo":"https:\/\/ojo-publico.com\/sites\/default\/files\/payments\/OjoPu%CC%81blico%20Isotipo.jpg"}},"user":{"role":"anonymous","uid":0,"permissionsHash":"73df26b324968cc81191c7f951abf7d3b3b376c4b89358279bdf19f1d88ceb60"},"csp":{"nonce":"KPsNhNQheuFgh6HQXxmS6g"},"views":{"ajax_path":"\/views\/ajax","ajaxViews":{"views_dom_id:a526beff719be1b620de32b578297569abada8582b388360d4892e513c1948e5":{"view_name":"header","view_display_id":"block_bionico_header","view_args":"","view_path":"\/media\/50","view_base_path":null,"view_dom_id":"a526beff719be1b620de32b578297569abada8582b388360d4892e513c1948e5","pager_element":0}}}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"></script>
+<script src="/core/assets/vendor/jquery/jquery.min.js?v=3.7.1"></script>
+<script src="/core/assets/vendor/once/once.min.js?v=1.0.1"></script>
+<script src="/sites/default/files/languages/es_bzPujVvZZYADOtKCLgxDdOUjYh7m_GUy0cJNf9wJBOI.js?tbkhad"></script>
+<script src="/core/misc/drupalSettingsLoader.js?v=10.6.2"></script>
+<script src="/core/misc/drupal.js?v=10.6.2"></script>
+<script src="/core/misc/drupal.init.js?v=10.6.2"></script>
+<script src="/themes/custom/ojo_publico_theme/libraries/bootstrap/js/popper.min.js?v=1.x"></script>
+<script src="/themes/custom/ojo_publico_theme/libraries/bootstrap/js/bootstrap.min.js?v=1.x"></script>
+<script src="/themes/custom/ojo_publico_theme/libraries/OwlCarousel/dist/owl.carousel.min.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/libraries/aos.min.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/general.js?v=223.x"></script>
+<script src="/core/assets/vendor/tabbable/index.umd.min.js?v=6.3.0"></script>
+<script src="/modules/custom/ckeditor_oembed/js/providers/twitter.js?tbkhad"></script>
+<script src="/modules/custom/ckeditor_oembed/js/providers/instagram.js?tbkhad"></script>
+<script src="/modules/contrib/eu_cookie_compliance/js/eu_cookie_compliance.min.js?tbkhad"></script>
+<script src="/modules/custom/ojo_publico_module/scripts/ajax-login.js?v=1.2.x"></script>
+<script src="/modules/custom/ojo_publico_module/scripts/maxlenght.js?v=10.6.2"></script>
+<script src="/themes/custom/ojo_publico_theme/js/search.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/home.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/save-for-later.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/iframe.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/special-scroll.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/submodal.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/breaking.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/especial-carrousel.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/carrousel-institucional.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/jquery.timeago.js?v=223.x"></script>
+<script src="https://static-content.vnforapps.com/v2/js/checkout.js"></script>
+<script src="/themes/custom/ojo_publico_theme/js/checktest.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/forms.js?v=223.x"></script>
+<script src="https://cdn.jsdelivr.net/npm/blockadblock@3.2.1/blockadblock.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+<script src="/themes/custom/ojo_publico_theme/js/detection.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/resize.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/ad-sidebar.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/slick-carousel.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/change-photo.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/login.js?v=223.x"></script>
+<script src="/themes/custom/ojo_publico_theme/js/scrollNode.js?v=1.x"></script>
+<script src="/modules/contrib/recaptcha/js/recaptcha.js?tbkhad"></script>
+<script src="/core/misc/jquery.form.js?v=4.3.0"></script>
+<script src="/core/misc/progress.js?v=10.6.2"></script>
+<script src="/core/assets/vendor/loadjs/loadjs.min.js?v=4.3.0"></script>
+<script src="/core/misc/debounce.js?v=10.6.2"></script>
+<script src="/core/misc/announce.js?v=10.6.2"></script>
+<script src="/core/misc/message.js?v=10.6.2"></script>
+<script src="/core/misc/ajax.js?v=10.6.2"></script>
+<script src="/core/modules/views/js/base.js?v=10.6.2"></script>
+<script src="/core/modules/views/js/ajax_view.js?v=10.6.2"></script>
+
+    <!-- Google Tag Manager (noscript) BODY -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NZW28LG"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+  </body>
+</html>

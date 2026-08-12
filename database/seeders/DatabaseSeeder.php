@@ -3,13 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
@@ -20,6 +17,15 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'password' => bcrypt('password'), // Simple password for testing
+            'role' => 'mechanic',
+        ]);
+
+        $this->call([
+            CategorySeeder::class,
+            VehicleSeeder::class,
+            OemProductSeeder::class,
+            ProviderSeeder::class,
         ]);
     }
 }

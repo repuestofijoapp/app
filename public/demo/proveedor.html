@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Proveedor — RepuestoFijo</title>
+<link rel="icon" type="image/x-icon" href="favicon.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:#0f1923;color:#e2e8f0;display:flex;min-height:100vh}
+.sidebar{width:240px;background:#0a1117;padding:24px 0;flex-shrink:0;display:flex;flex-direction:column}
+.logo{padding:16px 16px 24px;}
+.logo span{color:#e63946}
+.nav-item{padding:12px 24px;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:0.9rem;color:#94a3b8;transition:.2s}
+.nav-item:hover,.nav-item.active{background:#1a2535;color:#fff;border-left:3px solid #e63946}
+.nav-item.active{color:#e63946}
+.main{flex:1;padding:32px;overflow-y:auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+.topbar h1{font-size:1.4rem;font-weight:600}
+.badge-live{background:#e63946;color:#fff;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:#1a2535;border-radius:12px;padding:20px;border:1px solid #1e3a4a}
+.stat-card .label{font-size:0.75rem;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.stat-card .value{font-size:2rem;font-weight:700;color:#fff}
+.stat-card .sub{font-size:0.8rem;color:#22c55e;margin-top:4px}
+.stat-card .sub.warn{color:#f59e0b}
+.stat-card .sub.danger{color:#e63946}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.card{background:#1a2535;border-radius:12px;padding:24px;border:1px solid #1e3a4a}
+.card h2{font-size:1rem;font-weight:600;margin-bottom:20px;color:#fff}
+.upload-zone{border:2px dashed #334155;border-radius:12px;padding:48px;text-align:center;cursor:pointer;transition:.2s;margin-bottom:16px}
+.upload-zone:hover{border-color:#e63946;background:#1e2a3a}
+.upload-zone .icon{font-size:3rem;margin-bottom:12px}
+.upload-zone p{color:#94a3b8;font-size:0.9rem}
+.upload-zone strong{color:#e63946}
+.btn{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-weight:600;font-size:0.875rem;transition:.2s}
+.btn-primary{background:#e63946;color:#fff}
+.btn-primary:hover{background:#c1121f}
+.btn-outline{background:transparent;color:#94a3b8;border:1px solid #334155}
+.btn-outline:hover{border-color:#e63946;color:#e63946}
+.btn-sm{padding:6px 14px;font-size:0.8rem}
+.btn-success{background:#22c55e;color:#fff}
+.btn-warning{background:#f59e0b;color:#000}
+.columns-info{background:#0f1923;border-radius:8px;padding:16px;margin-top:12px}
+.columns-info p{font-size:0.8rem;color:#64748b;margin-bottom:8px}
+.columns-info .col-tag{display:inline-block;background:#1e3a4a;color:#38bdf8;padding:3px 10px;border-radius:4px;font-size:0.75rem;margin:3px;font-family:monospace}
+.col-tag.required{background:#2d1f1f;color:#e63946}
+.history-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #1e2d3d;font-size:0.85rem}
+.history-item:last-child{border:none}
+.badge{padding:3px 10px;border-radius:12px;font-size:0.7rem;font-weight:600}
+.badge-ok{background:#14532d;color:#22c55e}
+.badge-err{background:#450a0a;color:#e63946}
+.badge-proc{background:#1a2e05;color:#84cc16}
+table{width:100%;border-collapse:collapse;font-size:0.875rem}
+th{text-align:left;padding:12px 16px;color:#64748b;font-size:0.75rem;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #1e2d3d}
+td{padding:12px 16px;border-bottom:1px solid #1e2d3d;color:#cbd5e1}
+tr:hover td{background:#0f1923}
+.stock-ok{color:#22c55e;font-weight:600}
+.stock-low{color:#f59e0b;font-weight:600}
+.stock-out{color:#e63946;font-weight:600}
+.order-row{display:flex;justify-content:space-between;align-items:center;padding:14px;background:#0f1923;border-radius:8px;margin-bottom:8px;border-left:3px solid #e63946}
+.order-row.confirmed{border-left-color:#22c55e}
+.order-row .prod{font-weight:600;font-size:0.9rem;color:#fff}
+.order-row .meta{font-size:0.75rem;color:#64748b;margin-top:2px}
+.actions{display:flex;gap:8px}
+.tab-nav{display:flex;gap:4px;margin-bottom:24px}
+.tab{padding:8px 20px;border-radius:8px;border:1px solid #1e2d3d;cursor:pointer;font-size:0.85rem;color:#64748b;background:transparent}
+.tab.active{background:#e63946;color:#fff;border-color:#e63946}
+.section{display:none}
+.section.active{display:block}
+.alert-low{background:#1a1505;border:1px solid #92400e;border-radius:8px;padding:12px 16px;font-size:0.85rem;color:#fbbf24;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.progress-bar{background:#1e2d3d;border-radius:4px;height:6px;overflow:hidden;margin-top:4px}
+.progress-fill{height:100%;border-radius:4px;background:#e63946}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo">
+    <div>
+      <img src="logo.png" alt="RepuestoFijo" style="width:100%;height:auto;display:block;max-height:48px;object-fit:contain">
+    </div>
+    <small style="font-size:1rem;color:#475569;font-weight:400;padding-left:4px">Panel de Proveedor</small>
+  </div>
+  <div class="nav-item active" onclick="showSection('dashboard',this)"><i class="fa-solid fa-chart-line fa-fw"></i> Dashboard</div>
+  <div class="nav-item" onclick="showSection('pedidos',this)"><i class="fa-solid fa-box fa-fw"></i> Pedidos</div>
+  <div class="nav-item" onclick="showSection('catalogo',this)"><i class="fa-solid fa-folder-open fa-fw"></i> Mi Catálogo</div>
+  <!-- MODALIDAD A (API) / MODALIDAD B (CSV) -->
+  <div class="nav-item" onclick="showSection('stock',this)"><i class="fa-solid fa-upload fa-fw"></i> Actualizar Stock</div>
+  <!-- MODALIDAD C (ZettaBot) - Descomentar para proveedores sin sistema -->
+  <!-- <div class="nav-item" onclick="showSection('zettabot',this)"><i class="fa-solid fa-robot fa-fw"></i> ZettaBot</div> -->
+  <div style="flex:1"></div>
+  <div class="nav-item"><i class="fa-solid fa-gear fa-fw"></i> Configuración</div>
+  <div class="nav-item" style="color:#e63946" onclick="resetDemo()"><i class="fa-solid fa-arrow-right-from-bracket fa-fw"></i> Cerrar sesión (Reiniciar Demo)</div>
+</div>
+
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="section active">
+    <div class="topbar">
+      <div>
+        <h1>Buen día, Autorex Peruana S.A.</h1>
+        <p style="color:#64748b;font-size:.85rem;margin-top:4px">Miercoles 29 de Abril, 2026</p>
+      </div>
+      <div>
+        <button class="btn btn-outline" onclick="forceSync()" style="margin-right: 15px; background: #1e2a3a; color: white;"><i class="fa-solid fa-rotate"></i> Sincronizar</button>
+        <span class="badge-live">● EN VIVO</span>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat-card">
+        <div class="label">Pedidos hoy</div>
+        <div class="value" id="stat-orders">12</div>
+        <div class="sub">↑ 3 más que ayer</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Productos</div>
+        <div class="value" id="stat-stock">847</div>
+        <div class="sub">Catálogo vigente</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Stock bajo</div>
+        <div class="value">23</div>
+        <div class="sub warn"><i class="fa-solid fa-triangle-exclamation"></i> Productos Requieren atención</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Liquidación semanal</div>
+        <div class="value" id="stat-money">S/ 4,280</div>
+        <div class="sub">Pago el Lunes</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h2>Pedidos recientes</h2>
+        <div id="recent-orders-list">
+        <div class="order-row">
+          <div>
+            <div class="prod">Pastillas de freno Toyota Corolla</div>
+            <div class="meta">Pedido #1042 · hace 8 min · Miraflores</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-success btn-sm">Confirmar</button>
+            <button class="btn btn-outline btn-sm">✕</button>
+          </div>
+        </div>
+        <div class="order-row">
+          <div>
+            <div class="prod">Filtro de aceite Nissan Sentra B17</div>
+            <div class="meta">Pedido #1041 · hace 22 min · San Isidro</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-success btn-sm">Confirmar</button>
+            <button class="btn btn-outline btn-sm">✕</button>
+          </div>
+        </div>
+        <div class="order-row confirmed">
+          <div>
+            <div class="prod">Kit distribución Honda Civic</div>
+            <div class="meta">Pedido #1040 · Confirmado · En camino</div>
+          </div>
+          <div class="actions"><span class="badge badge-ok">Entregando</span></div>
+        </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b; margin-right:8px;"></i> Alertas de stock bajo</h2>
+        <div class="alert-low">
+          <div>
+            <div>Disco freno delantero Toyota Yaris</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:15%"></div></div>
+          </div>
+          <span>3 uds</span>
+        </div>
+        <div class="alert-low">
+          <div>
+            <div>Bujías NGK Kia Sportage 2.0</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:8%"></div></div>
+          </div>
+          <span>1 ud</span>
+        </div>
+        <div class="alert-low">
+          <div>
+            <div>Amortiguador trasero Hyundai Tucson</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:20%"></div></div>
+          </div>
+          <span>4 uds</span>
+        </div>
+        <div style="margin-top:16px">
+          <button class="btn btn-primary btn-sm" onclick="showSection('stock',document.querySelectorAll('.nav-item')[3])">Actualizar stock ahora →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PEDIDOS -->
+  <div id="pedidos" class="section">
+    <div class="topbar"><h1>Pedidos Activos</h1></div>
+    <div class="card">
+      <table id="orders-table">
+        <thead>
+          <tr><th>#</th><th>Producto</th><th>Cant.</th><th>Distrito</th><th>Estado</th><th>Acciones</th></tr>
+        </thead>
+        <tbody id="orders-table-body">
+          <!-- Se llena dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CATÁLOGO -->
+  <div id="catalogo" class="section">
+    <div class="topbar">
+      <h1>Mi Catálogo</h1>
+      <button class="btn btn-primary btn-sm" onclick="showSection('stock',document.querySelectorAll('.nav-item')[3])"><i class="fa-solid fa-upload" style="margin-right:6px"></i> Actualizar Stock</button>
+    </div>
+    <div class="card">
+      <div style="display:flex;gap:12px;margin-bottom:20px">
+        <input type="text" placeholder="Buscar producto o código OEM..." style="flex:1;background:#0f1923;border:1px solid #334155;color:#e2e8f0;padding:10px 16px;border-radius:8px;font-size:.9rem">
+        <select style="background:#0f1923;border:1px solid #334155;color:#94a3b8;padding:10px 16px;border-radius:8px;font-size:.9rem">
+          <option>Todas las categorías</option>
+          <option>Frenos</option><option>Motor</option><option>Filtros</option><option>Suspensión</option>
+        </select>
+      </div>
+      <table>
+        <tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Stock</th><th>Precio B2B</th><th>Estado</th></tr>
+        <tr><td style="font-family:monospace;color:#38bdf8">AE-47</td><td>Pastillas freno Toyota Corolla</td><td>Frenos</td><td class="stock-ok">48 uds</td><td>S/ 65.00</td><td><span class="badge badge-ok">Activo</span></td></tr>
+        <tr><td style="font-family:monospace;color:#38bdf8">NO-211</td><td>Filtro aceite Nissan Sentra B17</td><td>Filtros</td><td class="stock-ok">120 uds</td><td>S/ 18.00</td><td><span class="badge badge-ok">Activo</span></td></tr>
+        <tr><td style="font-family:monospace;color:#38bdf8">HC-KD1</td><td>Kit distribución Honda Civic 1.8</td><td>Motor</td><td class="stock-low">8 uds</td><td>S/ 210.00</td><td><span class="badge badge-ok">Activo</span></td></tr>
+        <tr><td style="font-family:monospace;color:#38bdf8">TY-DB3</td><td>Disco freno delantero Toyota Yaris</td><td>Frenos</td><td class="stock-low">3 uds</td><td>S/ 95.00</td><td><span class="badge badge-err">Stock bajo</span></td></tr>
+        <tr><td style="font-family:monospace;color:#38bdf8">KR-AM7</td><td>Amortiguador trasero Kia Rio</td><td>Suspensión</td><td class="stock-out">0 uds</td><td>S/ 145.00</td><td><span class="badge badge-err">Sin stock</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ACTUALIZAR STOCK (CSV) - MODALIDAD B -->
+  <div id="stock" class="section">
+    <div class="topbar"><h1>Actualizar Stock</h1></div>
+    <div class="grid2">
+      <div class="card">
+        <h2><i class="fa-solid fa-file-csv" style="margin-right:8px; color:#e63946"></i> Cargar archivo CSV</h2>
+        <div class="upload-zone" ondragover="this.style.borderColor='#e63946'" ondragleave="this.style.borderColor='#334155'">
+          <div class="icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+          <p>Arrastra tu archivo CSV aquí o</p>
+          <p style="margin-top:8px"><strong>haz clic para seleccionarlo</strong></p>
+          <p style="margin-top:12px;font-size:.75rem;color:#475569">Formatos: .csv · .xlsx · .xls · Máx. 10MB</p>
+        </div>
+        <div style="display:flex;gap:12px">
+          <button class="btn btn-primary" style="flex:1"><i class="fa-solid fa-cloud-arrow-up" style="margin-right:6px"></i> Subir y actualizar catálogo</button>
+          <button class="btn btn-outline"><i class="fa-solid fa-download" style="margin-right:6px"></i> Descargar plantilla</button>
+        </div>
+        <div class="columns-info">
+          <p>Columnas requeridas en el archivo:</p>
+          <span class="col-tag required">codigo_oem *</span>
+          <span class="col-tag required">stock *</span>
+          <span class="col-tag required">precio_b2b *</span>
+          <span class="col-tag">nombre_producto</span>
+          <span class="col-tag">categoria</span>
+          <span class="col-tag">precio_pvp</span>
+          <p style="margin-top:12px;font-size:.75rem;color:#475569">* Campos obligatorios. Las columnas opcionales se actualizan si se incluyen.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><i class="fa-solid fa-clock-rotate-left" style="margin-right:8px"></i> Historial de cargas</h2>
+        <div class="history-item">
+          <div>
+            <div style="font-weight:600;font-size:.85rem">catalogo_abril_25.csv</div>
+            <div style="font-size:.75rem;color:#64748b">847 productos · hace 2 días</div>
+          </div>
+          <span class="badge badge-ok">✓ Exitoso</span>
+        </div>
+        <div class="history-item">
+          <div>
+            <div style="font-weight:600;font-size:.85rem">stock_actualizado.csv</div>
+            <div style="font-size:.75rem;color:#64748b">312 productos · hace 5 días</div>
+          </div>
+          <span class="badge badge-ok">✓ Exitoso</span>
+        </div>
+        <div class="history-item">
+          <div>
+            <div style="font-weight:600;font-size:.85rem">catalogo_marzo.csv</div>
+            <div style="font-size:.75rem;color:#64748b">Error en columna · hace 12 días</div>
+          </div>
+          <span class="badge badge-err">✕ Error</span>
+        </div>
+        <div style="margin-top:20px;padding:16px;background:#0f1923;border-radius:8px">
+          <p style="font-size:.8rem;color:#94a3b8;margin-bottom:8px">💡 <strong style="color:#fff">Actualización automática</strong></p>
+          <p style="font-size:.78rem;color:#64748b">Configura una URL de descarga automática de tu CSV y RepuestoFijo actualizará tu catálogo cada noche sin que tengas que hacer nada.</p>
+          <button class="btn btn-outline btn-sm" style="margin-top:10px">Configurar auto-sincronización</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZETTABOT - MODALIDAD C (Descomentar si aplica) -->
+  <!--
+  <div id="zettabot" class="section">
+    <div class="topbar"><h1>ZettaBot — Conexión WhatsApp</h1></div>
+    <div class="grid2">
+      <div class="card">
+        <h2>Estado de conexión</h2>
+        <div style="text-align:center;padding:32px 0">
+          <div style="font-size:4rem;margin-bottom:16px">🤖</div>
+          <div style="display:inline-flex;align-items:center;gap:8px;background:#14532d;color:#22c55e;padding:8px 20px;border-radius:20px;font-weight:600;margin-bottom:16px">
+            <span style="width:8px;height:8px;background:#22c55e;border-radius:50%;display:inline-block"></span>
+            ZettaBot activo
+          </div>
+          <p style="color:#64748b;font-size:.85rem">Número conectado: +51 999 888 777</p>
+          <p style="color:#64748b;font-size:.85rem;margin-top:4px">Tiempo de respuesta promedio: <strong style="color:#22c55e">4.2 min</strong></p>
+        </div>
+        <div style="background:#0f1923;border-radius:8px;padding:16px">
+          <p style="font-size:.8rem;color:#94a3b8;margin-bottom:8px">Tiempo máximo de respuesta permitido</p>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="progress-bar" style="flex:1;height:8px"><div class="progress-fill" style="width:47%;background:#22c55e"></div></div>
+            <span style="color:#fff;font-weight:600">9 min</span>
+          </div>
+          <p style="font-size:.75rem;color:#475569;margin-top:6px">Si no respondes en 9 minutos, el pedido se redirige automáticamente a otro proveedor.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Últimas consultas recibidas</h2>
+        <div class="history-item">
+          <div><div style="font-size:.85rem;font-weight:600">Pastillas freno AE-47</div><div style="font-size:.75rem;color:#64748b">Toyota Corolla · hace 8 min</div></div>
+          <span class="badge badge-ok">Respondido</span>
+        </div>
+        <div class="history-item">
+          <div><div style="font-size:.85rem;font-weight:600">Filtro aceite NO-211</div><div style="font-size:.75rem;color:#64748b">Nissan Sentra · hace 22 min</div></div>
+          <span class="badge badge-ok">Respondido</span>
+        </div>
+        <div class="history-item">
+          <div><div style="font-size:.85rem;font-weight:600">Kit embrague KE-90</div><div style="font-size:.75rem;color:#64748b">Honda Civic · hace 1h</div></div>
+          <span class="badge badge-err">Sin stock · Rechazado</span>
+        </div>
+        <div style="margin-top:16px;padding:12px;background:#1a1505;border:1px solid #92400e;border-radius:8px">
+          <p style="font-size:.78rem;color:#fbbf24">⚠ Período de prueba gratuita: <strong>4 meses y 12 días restantes</strong></p>
+          <p style="font-size:.75rem;color:#64748b;margin-top:4px">Luego se activará la suscripción mensual de S/ 79.00/mes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  -->
+
+</div>
+
+<script>
+let baseStats = {
+    orders: 12,
+    stock: 847,
+    money: 4280
+};
+
+function showSection(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(el) el.classList.add('active');
+}
+
+function updateUI() {
+    const orders = JSON.parse(localStorage.getItem('rf_orders') || '[]');
+    const confirmedOrders = orders.filter(o => o.status === 'Confirmado');
+    
+    const totalOrders = baseStats.orders + confirmedOrders.length;
+    const totalStock = baseStats.stock - confirmedOrders.length;
+    const totalMoney = baseStats.money + confirmedOrders.reduce((acc, o) => acc + o.price, 0);
+
+    document.getElementById('stat-orders').innerText = totalOrders;
+    document.getElementById('stat-stock').innerText = totalStock;
+    document.getElementById('stat-money').innerText = 'S/ ' + totalMoney.toLocaleString();
+}
+
+function loadOrders() {
+    const orders = JSON.parse(localStorage.getItem('rf_orders') || '[]');
+    const container = document.getElementById('recent-orders-list');
+    const tableBody = document.getElementById('orders-table-body');
+    
+    // Renderizar Dashboard
+    let htmlList = '';
+    orders.forEach((o, index) => {
+        const isNew = index === 0 && (Date.now() - (localStorage.getItem('rf_new_order') || 0) < 10000);
+        htmlList += `
+            <div class="order-row ${o.status === 'Confirmado' ? 'confirmed' : ''}" id="order-${o.id}" style="${isNew ? 'animation: highlight 2s ease' : ''}">
+              <div>
+                <div class="prod">${o.product}</div>
+                <div class="meta">Pedido #${o.id} · ${o.time} · Lima / San Luis</div>
+              </div>
+              <div class="actions" id="actions-${o.id}">
+                ${o.status === 'Pendiente' ? 
+                    `<button class="btn btn-success btn-sm" onclick="confirmOrder(${o.id})">Confirmar</button>
+                     <button class="btn btn-outline btn-sm">✕</button>` : 
+                    `<span class="badge badge-ok">En camino</span>`}
+              </div>
+            </div>
+        `;
+    });
+
+    htmlList += `
+        <div class="order-row">
+          <div>
+            <div class="prod">Pastillas de freno Toyota Corolla</div>
+            <div class="meta">Pedido #1042 · hace 8 min · Miraflores</div>
+          </div>
+          <div class="actions"><span class="badge badge-ok">Entregado</span></div>
+        </div>
+    `;
+    container.innerHTML = htmlList;
+
+    // Renderizar Tabla de Pedidos Completa
+    let htmlTable = '';
+    orders.forEach(o => {
+        htmlTable += `
+            <tr>
+              <td>#${o.id}</td>
+              <td>${o.product}</td>
+              <td>1 ud</td>
+              <td>San Luis</td>
+              <td><span class="badge ${o.status === 'Pendiente' ? 'badge-err' : 'badge-ok'}">${o.status === 'Pendiente' ? 'Pendiente' : 'Motorizado en camino'}</span></td>
+              <td>
+                ${o.status === 'Pendiente' ? `<button class="btn btn-success btn-sm" onclick="confirmOrder(${o.id})">Confirmar</button>` : '—'}
+              </td>
+            </tr>
+        `;
+    });
+    
+    // Filas estáticas para rellenar
+    htmlTable += `
+        <tr><td>#1042</td><td>Pastillas freno Corolla</td><td>2 jgs</td><td>Miraflores</td><td><span class="badge badge-ok">Entregado</span></td><td>—</td></tr>
+        <tr><td>#1040</td><td>Kit distribución Civic</td><td>1 kit</td><td>San Borja</td><td><span class="badge badge-ok">Entregado</span></td><td>—</td></tr>
+    `;
+    tableBody.innerHTML = htmlTable;
+
+    updateUI();
+}
+
+function confirmOrder(id) {
+    let orders = JSON.parse(localStorage.getItem('rf_orders') || '[]');
+    const order = orders.find(o => o.id === id);
+    if (order) {
+        order.status = 'Confirmado';
+        localStorage.setItem('rf_orders', JSON.stringify(orders));
+        
+        loadOrders(); // Recarga la lista y actualiza stats
+        showNotification('¡Pedido Confirmado! Incremento en liquidación y stock actualizado.');
+        showNotification('¡Motorizado asignado! Recogida en sede San Luis en 15 min.');
+    }
+}
+
+function showNotification(msg) {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed; top:20px; right:20px; background:#22c55e; color:white; padding:16px 24px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.5); z-index:1000; font-weight:600; animation: slideIn 0.3s ease';
+    toast.innerHTML = '<i class="fa-solid fa-motorcycle" style="margin-right:10px"></i>' + msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+}
+
+// Estilo para la animación de nuevo pedido
+const style = document.createElement('style');
+style.innerHTML = `
+    @keyframes highlight {
+        0% { background: #e6394633; transform: translateX(-10px); }
+        100% { background: #0f1923; transform: translateX(0); }
+    }
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+`;
+document.head.appendChild(style);
+
+// Escuchar cambios desde la otra pestaña
+window.addEventListener('storage', (e) => {
+    if (e.key === 'rf_new_order' || e.key === 'rf_orders') {
+        loadOrders();
+        if (e.key === 'rf_new_order') {
+            showNotification('¡Nuevo pedido recibido!');
+        }
+    }
+});
+
+// Canal de comunicación secundario (BroadcastChannel) para saltarse problemas de caché
+const channel = new BroadcastChannel('rf_demo_channel');
+channel.onmessage = (event) => {
+    if (event.data === 'new_order') {
+        loadOrders();
+        showNotification('¡Nuevo pedido recibido (Live)!');
+    }
+};
+
+function forceSync() {
+    loadOrders();
+    showNotification('Sincronización manual completada.');
+}
+
+// Fail-safe: Revisar cada 3 segundos por si el evento storage falla en este navegador
+setInterval(() => {
+    loadOrders();
+}, 3000);
+
+// Limpiar demo al cargar para que empiece de cero
+// localStorage.removeItem('rf_orders'); 
+
+function resetDemo() {
+    if(confirm('¿Quieres reiniciar la demo? Se borrarán los pedidos simulados.')) {
+        localStorage.removeItem('rf_orders');
+        localStorage.removeItem('rf_new_order');
+        location.reload();
+    }
+}
+
+try {
+    loadOrders();
+    updateUI();
+} catch(err) {
+    console.error('Error al inicializar:', err);
+}
+</script>
+</body>
+</html>

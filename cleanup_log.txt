@@ -1,0 +1,52 @@
+﻿
+--- PASO A: Eliminar vehicles de prueba ---
+Encontrados: 0
+Ô£à Eliminados: 0 vehicles. Quedan: 889
+
+--- PASO B: Limpiar campos innecesarios de car_models ---
+Ô£à Limpiados 0 registros
+
+--- PASO C: Separar modelos m├║ltiples ---
+Encontrados: 4
+  Separando: [DAEWOO] RACER, LEMAN 1.5L, LANOS, ESPERO, CIELO, NUBIRA, LACETTI
+    ÔåÆ 'RACER' ID:208 (exist├¡a)
+    ÔåÆ 'LEMAN 1.5L' ID:209 (exist├¡a)
+    ÔåÆ 'LANOS' ID:210 (exist├¡a)
+    ÔåÆ 'ESPERO' ID:211 (exist├¡a)
+    ÔåÆ 'CIELO' ID:212 (exist├¡a)
+    ÔåÆ 'NUBIRA' ID:213 (exist├¡a)
+    ÔåÆ 'LACETTI' ID:214 (exist├¡a)
+    Producto ID:17 actualizado
+    Producto ID:18 actualizado
+    Producto ID:51 actualizado
+    Producto ID:52 actualizado
+    1 motores ÔåÆ ID:208
+    Ô£à Eliminado registro m├║ltiple
+  Separando: [DAEWOO] LANOS, NUBIRA, ESPERO, AVEO 1.6
+    ÔåÆ 'LANOS' ID:210 (exist├¡a)
+    ÔåÆ 'NUBIRA' ID:213 (exist├¡a)
+    ÔåÆ 'ESPERO' ID:211 (exist├¡a)
+    ÔåÆ 'AVEO 1.6' ID:215 (nuevo)
+    Producto ID:19 actualizado
+    Producto ID:20 actualizado
+    Producto ID:21 actualizado
+    Producto ID:22 actualizado
+    1 motores ÔåÆ ID:210
+    Ô£à Eliminado registro m├║ltiple
+  Separando: [CHEVROLET] SPARK, AVEO, SAIL
+    ÔåÆ 'SPARK' ID:182 (exist├¡a)
+    ÔåÆ 'AVEO' ID:78 (exist├¡a)
+    ÔåÆ 'SAIL' ID:41 (exist├¡a)
+    Producto ID:53 actualizado
+    Producto ID:54 actualizado
+    Producto ID:55 actualizado
+    Producto ID:56 actualizado
+    Producto ID:57 actualizado
+    1 motores ÔåÆ ID:182
+    Ô£à Eliminado registro m├║ltiple
+  Separando: [CHEVROLET] G6, MALIBU, MONTANA, RELAY, RENDEZVOUS
+    ÔåÆ 'G6' ID:216 (nuevo)
+    ÔåÆ 'MALIBU' ID:217 (nuevo)
+    ÔåÆ 'MONTANA' ID:218 (nuevo)
+    ÔåÆ 'RELAY' ID:219 (nuevo)
+    ÔåÆ 'RENDEZVOUS' ID:220 (nuevo)
