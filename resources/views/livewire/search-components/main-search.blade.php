@@ -533,7 +533,7 @@
 
                                             <div style="height: 140px;"
                                                 class="mb-3 d-flex align-items-center justify-content-center">
-                                                <img src="{{ $fp->product->image_path ? asset('storage/' . $fp->product->image_path) : 'https://via.placeholder.com/150?text=Sin+Imagen' }}"
+                                                <img src="{{ $fp->product->image_path ? Storage::url($fp->product->image_path) : 'https://via.placeholder.com/150?text=Sin+Imagen' }}"
                                                     class="img-fluid" style="max-height: 100%; object-fit: contain;">
                                             </div>
 
