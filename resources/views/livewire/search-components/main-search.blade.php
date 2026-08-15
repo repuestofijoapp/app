@@ -336,15 +336,18 @@
                                 </div>
                             </div>
 
-                            {{-- MODELO --}}
-                            <div class="mb-3 position-relative" x-data="{ open: false }" @click.outside="open = false">
+                            {{-- MODELO (con buscador integrado) --}}
+                            <div class="mb-3 position-relative"
+                                x-data="{ open: false, modelSearch: '' }"
+                                @click.outside="open = false">
                                 <div
                                     class="filter-step @if($selectedBrand && !$selectedModel) step-active @elseif($selectedModel) step-done @else step-inactive @endif">
                                     2</div>
+                                {{-- Trigger button --}}
                                 <button type="button"
                                     class="btn w-100 text-start ps-5 py-2 pe-4 bg-white border-0 position-relative d-flex align-items-center justify-content-between"
                                     style="height: auto; min-height: 45px; border-radius: 4px; {{ empty($selectedBrand) ? 'opacity:.5; cursor:not-allowed;' : '' }}"
-                                    @click="if($wire.selectedBrand) open = !open">
+                                    @click="if($wire.selectedBrand) { open = !open; if(open) $nextTick(() => $refs.modelSearchInput.focus()); if(!open) modelSearch = ''; }">
                                     <span class="text-wrap me-2" style="font-size: 0.9rem; color: #333;">
                                         @if($selectedModel)
                                             @php $selMod = collect($models)->firstWhere('id', $selectedModel); @endphp
@@ -353,18 +356,45 @@
                                             <span class="text-muted">Elija un modelo</span>
                                         @endif
                                     </span>
-                                    <i class="fas fa-chevron-down small text-muted"></i>
+                                    <i class="fas fa-chevron-down small text-muted" :style="open ? 'transform:rotate(180deg)' : ''"
+                                        style="transition: transform 0.2s ease;"></i>
                                 </button>
-                                <div x-show="open" x-transition class="position-absolute w-100 bg-white shadow-lg"
-                                    style="max-height: 300px; overflow-y: auto; border-radius: 4px; top: 100%; left: 0; z-index: 9999;">
-                                    @foreach($models as $model)
-                                        <button class="dropdown-item w-100 text-start" type="button" @click="open = false"
-                                            wire:click="selectModel('{{ $model['id'] }}')">
-                                            <div class="text-wrap px-3 py-2" style="font-size: 0.9rem; color: #111;">
-                                                {{ strtoupper($model['label']) }}
-                                            </div>
-                                        </button>
-                                    @endforeach
+                                {{-- Dropdown panel --}}
+                                <div x-show="open" x-transition:enter="transition ease-out duration-150"
+                                    x-transition:enter-start="opacity-0 transform scale-y-95"
+                                    x-transition:enter-end="opacity-100 transform scale-y-100"
+                                    class="position-absolute w-100 bg-white shadow-lg"
+                                    style="border-radius: 4px; top: 100%; left: 0; z-index: 9999; border: 1px solid #e9ecef;">
+                                    {{-- Search input --}}
+                                    <div class="px-2 pt-2 pb-1" style="border-bottom: 1px solid #f0f0f0;">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-white border-end-0 text-muted"
+                                                style="border-radius: 6px 0 0 6px; font-size:0.8rem;">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                            <input
+                                                type="text"
+                                                x-model="modelSearch"
+                                                x-ref="modelSearchInput"
+                                                @keydown.escape="open = false; modelSearch = ''"
+                                                placeholder="Buscar modelo..."
+                                                class="form-control border-start-0"
+                                                style="border-radius: 0 6px 6px 0; font-size: 0.85rem; box-shadow: none;">
+                                        </div>
+                                    </div>
+                                    {{-- Filtered list --}}
+                                    <div style="max-height: 240px; overflow-y: auto;">
+                                        @foreach($models as $model)
+                                            <button class="dropdown-item w-100 text-start" type="button"
+                                                x-show="modelSearch === '' || '{{ addslashes(strtolower($model['label'])) }}'.includes(modelSearch.toLowerCase())"
+                                                @click="open = false; modelSearch = ''"
+                                                wire:click="selectModel('{{ $model['id'] }}')">
+                                                <div class="text-wrap px-3 py-2" style="font-size: 0.9rem; color: #111;">
+                                                    {{ strtoupper($model['label']) }}
+                                                </div>
+                                            </button>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
 
