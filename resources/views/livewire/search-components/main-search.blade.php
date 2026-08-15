@@ -228,16 +228,15 @@
 
     {{-- 3. INTERMEDIATE SECTION --}}
     <div class="bg-section-custom" style="padding-top: 130px; padding-bottom: 40px;">
-        <div class="container">
+        <div class="container pt-5 pt-md-0">
             {{-- ALERTS --}}
-
 
             {{-- SEARCH + BANNER --}}
             @if(!$showLeadForm && in_array($viewState, ['default', 'categories', 'product_list', 'initial', '', null]))
                 <div class="row g-4">
                     {{-- LEFT: PLATE SEARCH & FILTERS --}}
-                    <div class="col-lg-4">
-                        <div class="card card-custom h-100 p-4 shadow-sm border-0 mt-4 mt-md-0"
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <div class="card card-custom h-100 p-4 shadow-sm border-0"
                             style="background-color: #132530; overflow: visible;">
                             @if(\App\Models\SystemSetting::getBool('enable_plate_search', true))
                                 <span class="badge px-3 py-1 rounded-pill"
@@ -262,7 +261,8 @@
                                 </div>
                             @endif
 
-                            <h6 class="fw-medium mb-3 text-white {{ \App\Models\SystemSetting::getBool('enable_plate_search', true) ? 'mt-2' : '' }} d-flex align-items-center justify-content-between">
+                            <h6
+                                class="fw-medium mb-3 text-white {{ \App\Models\SystemSetting::getBool('enable_plate_search', true) ? 'mt-2' : '' }} d-flex align-items-center justify-content-between">
                                 Seleccione su modelo de auto
                                 <i class="fas fa-sync-alt text-white ms-2 cursor-pointer btn-reload-manual"
                                     wire:click="clearManualSearch" title="Limpiar búsqueda"></i>
@@ -408,26 +408,169 @@
                         </div>
                     </div>
 
-                    {{-- RIGHT: BANNER (Orange) --}}
+                    {{-- RIGHT: BANNER SLIDER (dinámico) --}}
                     <div class="col-lg-8">
-                        <div
-                            class="promo-content d-flex align-items-center h-100 bg-orange p-4 p-md-5 text-white rounded shadow-sm position-relative overflow-hidden">
-                            <div class="z-1">
-                                <div class="bg-dark bg-opacity-25 d-inline-block p-2 rounded mb-3"><i
-                                        class="fas fa-bullhorn fa-2x"></i></div>
-                                <h1 class="display-5 display-md-4 fw-medium mb-2">¡Consigue un cupón de S/.50.00</h1>
-                                <p class="lead mb-4 fw-medium">al suscribirte a nuestra newsletter!</p>
-                                <button class="btn btn-dark btn-lg fw-medium px-4 px-md-5 py-2 py-md-3 shadow"
-                                    style="border-radius: 3px;">SUSCRÍBETE AHORA</button>
-                            </div>
-                            {{-- Placeholder for a decorative element or image --}}
+                        @php $bannerSlides = \App\Models\BannerSlide::getActive(); @endphp
+
+                        @if($bannerSlides->isEmpty())
+                            {{-- Fallback: cuadro rojo original si no hay slides --}}
                             <div
-                                class="position-absolute end-0 bottom-0 opacity-25 translate-middle-x mb-5 me-5 d-none d-md-block">
-                                <i class="fas fa-envelope fa-10x"></i>
+                                class="promo-content d-flex align-items-center h-100 bg-orange p-4 p-md-5 text-white rounded shadow-sm position-relative overflow-hidden">
+                                <div class="z-1">
+                                    <div class="bg-dark bg-opacity-25 d-inline-block p-2 rounded mb-3">
+                                        <i class="fas fa-bullhorn fa-2x"></i>
+                                    </div>
+                                    <h1 class="display-5 display-md-4 fw-medium mb-2">¡Consigue un cupón de S/.50.00</h1>
+                                    <p class="lead mb-4 fw-medium">al suscribirte a nuestra newsletter!</p>
+                                    <button class="btn btn-dark btn-lg fw-medium px-4 px-md-5 py-2 py-md-3 shadow"
+                                        style="border-radius: 3px;">SUSCRÍBETE AHORA</button>
+                                </div>
+                                <div
+                                    class="position-absolute end-0 bottom-0 opacity-25 translate-middle-x mb-5 me-5 d-none d-md-block">
+                                    <i class="fas fa-envelope fa-10x"></i>
+                                </div>
                             </div>
+                        @else
+                            {{-- Slider de banners --}}
+                            <div id="repuestoBannerSlider" class="carousel slide h-100" data-bs-ride="carousel"
+                                data-bs-interval="5000">
+
+
+                                {{-- Slides --}}
+                                <div class="carousel-inner rounded shadow-sm" style="height:100%; min-height:220px;">
+                                    @foreach($bannerSlides as $i => $slide)
+                                        <div class="carousel-item {{ $i === 0 ? 'active' : '' }} h-100">
+                                            <img src="{{ Storage::url($slide->image_path) }}" class="d-block w-100 h-100"
+                                                style="object-fit:cover; object-position:center;"
+                                                alt="{{ $slide->title ?? 'Banner promocional' }}">
+
+                                            {{-- Overlay con texto (si tiene título) --}}
+                                            @if($slide->title || $slide->button_text)
+                                                <div class="carousel-caption d-flex flex-column justify-content-end text-start"
+                                                    style="background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%); inset:0; border-radius: inherit; padding: 2rem 2.5rem;">
+                                                    @if($slide->title)
+                                                        <h4 class="fw-bold text-white mb-1 drop-shadow"
+                                                            style="text-shadow:0 2px 8px rgba(0,0,0,0.6);">
+                                                            {{ $slide->title }}
+                                                        </h4>
+                                                    @endif
+                                                    @if($slide->subtitle)
+                                                        <p class="text-white mb-2 small" style="text-shadow:0 1px 4px rgba(0,0,0,0.5);">
+                                                            {{ $slide->subtitle }}
+                                                        </p>
+                                                    @endif
+                                                    @if($slide->button_text)
+                                                        <div>
+                                                            <a href="{{ $slide->button_url ?: '#' }}"
+                                                                class="btn btn-danger btn-sm fw-bold px-3" style="border-radius:4px;">
+                                                                {{ $slide->button_text }}
+                                                            </a>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                {{-- Controles prev/next si hay más de 1 --}}
+                                @if($bannerSlides->count() > 1)
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#repuestoBannerSlider"
+                                        data-bs-slide="prev" style="width:40px;">
+                                        <span class="carousel-control-prev-icon"
+                                            style="filter:drop-shadow(0 1px 3px rgba(0,0,0,0.5));"></span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#repuestoBannerSlider"
+                                        data-bs-slide="next" style="width:40px;">
+                                        <span class="carousel-control-next-icon"
+                                            style="filter:drop-shadow(0 1px 3px rgba(0,0,0,0.5));"></span>
+                                    </button>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+
+                </div>
+            @endif
+
+            {{-- ── NOVEDADES EN REPUESTOFIJO (Slider de productos destacados) ── --}}
+            @if($viewState === 'initial')
+                @php $featuredProductsList = \App\Models\FeaturedProduct::getActive(); @endphp
+
+                @if($featuredProductsList->count() > 0)
+                    <div class="mt-5 mb-5 w-100">
+                        <h4 class="text-center mb-4"
+                            style="color: #4B5563; font-family: 'Syne', sans-serif; letter-spacing: 1px;">
+                            NOVEDADES
+                        </h4>
+
+                        <div class="position-relative px-4">
+                            {{-- Left Arrow --}}
+                            <button
+                                class="btn btn-light shadow-sm position-absolute start-0 top-50 translate-middle-y z-1 rounded-0 d-flex align-items-center justify-content-center"
+                                onclick="document.getElementById('featured-products-container').scrollBy({left: -260, behavior: 'smooth'})"
+                                style="width: 40px; height: 40px; border: 1px solid #dee2e6; background-color: white;">
+                                <i class="fas fa-chevron-left" style="color: #6c757d;"></i>
+                            </button>
+
+                            {{-- Scroll Container --}}
+                            <style>
+                                .hide-scrollbar::-webkit-scrollbar {
+                                    display: none;
+                                }
+
+                                .hide-scrollbar {
+                                    -ms-overflow-style: none;
+                                    scrollbar-width: none;
+                                }
+                            </style>
+                            <div id="featured-products-container" class="d-flex gap-4 overflow-x-auto hide-scrollbar"
+                                style="scroll-snap-type: x mandatory; padding: 10px 0; scroll-behavior: smooth;">
+                                @foreach($featuredProductsList as $fp)
+                                    <div class="card border-0 flex-shrink-0"
+                                        style="width: 240px; scroll-snap-align: start; background-color: #F8F9FB;">
+                                        <div class="card-body text-center p-4 d-flex flex-column h-100">
+
+                                            <div style="height: 140px;"
+                                                class="mb-3 d-flex align-items-center justify-content-center">
+                                                <img src="{{ $fp->product->image_path ? asset('storage/' . $fp->product->image_path) : 'https://via.placeholder.com/150?text=Sin+Imagen' }}"
+                                                    class="img-fluid" style="max-height: 100%; object-fit: contain;">
+                                            </div>
+
+                                            <div class="position-relative mb-3">
+                                                <hr class="border-secondary opacity-25 m-0">
+                                                <div class="position-absolute top-50 start-50 translate-middle"
+                                                    style="width: 6px; height: 6px; background-color: #f97316; border-radius: 50%;">
+                                                </div>
+                                            </div>
+
+                                            <h6 class="mb-3 text-secondary px-1"
+                                                style="font-size: 0.85rem; min-height: 3.6rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                                {{ $fp->product->name }}
+                                            </h6>
+
+                                            <div class="mt-auto pt-2">
+                                                <button wire:click="searchFeaturedProduct({{ $fp->product->id }})"
+                                                    class="btn w-100 fw-bold py-2 text-white shadow-sm"
+                                                    style="background-color: #132530; font-size: 0.85rem; border-radius: 3px;">
+                                                    Descubrir ahora
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            {{-- Right Arrow --}}
+                            <button
+                                class="btn btn-light shadow-sm position-absolute end-0 top-50 translate-middle-y z-1 rounded-0 d-flex align-items-center justify-content-center"
+                                onclick="document.getElementById('featured-products-container').scrollBy({left: 260, behavior: 'smooth'})"
+                                style="width: 40px; height: 40px; border: 1px solid #dee2e6; background-color: white;">
+                                <i class="fas fa-chevron-right" style="color: #6c757d;"></i>
+                            </button>
                         </div>
                     </div>
-                </div>
+                @endif
             @endif
 
             {{-- UNIVERSAL BREADCRUMB BANNER --}}
@@ -561,12 +704,15 @@
                     .rf-sticky-banner .rf-detail-card-desktop {
                         transition: border-radius 0.3s ease, box-shadow 0.3s ease, margin-bottom 0.3s ease, padding 0.3s ease;
                     }
+
                     .rf-sticky-banner .rf-breadcrumb-row {
                         transition: margin-bottom 0.3s ease;
                     }
+
                     .rf-sticky-banner .rf-mobile-card {
                         transition: border-radius 0.3s ease, box-shadow 0.3s ease, margin-bottom 0.3s ease;
                     }
+
                     .rf-sticky-banner.is-scrolled .rf-detail-card-desktop {
                         border-radius: 0 !important;
                         box-shadow: none !important;
@@ -576,9 +722,11 @@
                         border: none !important;
                         border-bottom: 1px solid #dee2e6 !important;
                     }
+
                     .rf-sticky-banner.is-scrolled .rf-breadcrumb-row {
                         margin-bottom: 0 !important;
                     }
+
                     .rf-sticky-banner.is-scrolled .rf-mobile-card {
                         border-radius: 0 !important;
                         box-shadow: none !important;
@@ -589,15 +737,12 @@
                     }
                 </style>
 
-                <div
-                    x-data="{ isScrolled: false }"
-                    x-init="
-                        const checkScroll = () => { isScrolled = window.scrollY > 20; };
-                        window.addEventListener('scroll', checkScroll, { passive: true });
-                        checkScroll();
-                    "
-                    :class="{ 'is-scrolled': isScrolled }"
-                    class="rf-sticky-banner position-sticky z-3 mb-4" style="top: 70px; transition: top 0.3s ease;">
+                <div x-data="{ isScrolled: false }" x-init="
+                            const checkScroll = () => { isScrolled = window.scrollY > 20; };
+                            window.addEventListener('scroll', checkScroll, { passive: true });
+                            checkScroll();
+                        " :class="{ 'is-scrolled': isScrolled }" class="rf-sticky-banner position-sticky z-3 mb-4"
+                    style="top: 70px; transition: top 0.3s ease;">
 
                     @php
                         $carImage = null;
@@ -664,7 +809,8 @@
                             style="padding: 12px 18px; border: 1px solid #E9ECEF;">
                             <div style="width: 65px; height: 50px; border-radius: 8px; border: 1px solid #eee; display: flex; align-items: center; justify-content: center; background-color: #fff;"
                                 class="flex-shrink-0 me-3">
-                                <img src="{{ $carImage ?? asset('images/cars/Car_hide.webp') }}" alt="Auto" style="width: 95%; height: 95%; object-fit: contain;">
+                                <img src="{{ $carImage ?? asset('images/cars/Car_hide.webp') }}" alt="Auto"
+                                    style="width: 95%; height: 95%; object-fit: contain;">
                             </div>
 
                             <div class="d-flex align-items-center gap-4">
@@ -725,7 +871,8 @@
                             <div class="d-flex gap-2 align-items-center mb-1">
                                 <div style="width: 55px; height: 42px; border-radius: 6px; border: 1px solid #eee; background-color: #fff; display: flex; align-items: center; justify-content: center;"
                                     class="flex-shrink-0">
-                                    <img src="{{ $carImage ?? asset('images/cars/Car_hide.webp') }}" alt="Auto" style="width: 95%; height: 95%; object-fit: contain;">
+                                    <img src="{{ $carImage ?? asset('images/cars/Car_hide.webp') }}" alt="Auto"
+                                        style="width: 95%; height: 95%; object-fit: contain;">
                                 </div>
                                 <div class="flex-grow-1">
                                     <div class="text-dark fw-medium text-uppercase" style="font-size: 13px;">
@@ -2273,8 +2420,8 @@
                                             <button wire:click="loadSavedAddress({{ $idx }})"
                                                 class="btn text-start p-2 rounded-3 position-relative"
                                                 style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
-                                                                                                                                                           max-width: 100%; transition: all .2s;
-                                                                                                                                                           {{ ($deliveryType === ($addr['type'] ?? '') &&
+                                                                                                                                                                               max-width: 100%; transition: all .2s;
+                                                                                                                                                                               {{ ($deliveryType === ($addr['type'] ?? '') &&
                                     ($deliveryAddress === ($addr['address'] ?? '') || $deliveryAgency === ($addr['agency'] ?? '')))
                                     ? 'border-color:#BE3C3B!important; background:rgba(190,60,59,0.12)!important;' : '' }}"
                                                 onmouseover="this.style.background='rgba(255,255,255,0.1)'"

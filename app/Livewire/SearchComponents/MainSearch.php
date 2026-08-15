@@ -25,6 +25,15 @@ class MainSearch extends Component
     public $oemSearch = '';
     public $plateSearch = '';
 
+    public function searchFeaturedProduct($productId)
+    {
+        $product = Product::find($productId);
+        if ($product) {
+            $this->oemSearch = $product->name; // search by product name exactly
+            $this->performSearch('oem');
+        }
+    }
+
     public function getZbotProviders()
     {
         $providerIds = collect($this->repairList)->pluck('product.provider_id')->unique()->toArray();
