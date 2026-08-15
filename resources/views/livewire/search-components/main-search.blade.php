@@ -975,6 +975,9 @@
                             @php
                                 $activeOversizes = $product->oversizes->where('is_active', true)->sortBy('oversize');
                                 $hasMultipleOversizes = $activeOversizes->count() > 1;
+                                // Filtros nunca llevan sobremedida — sólo mostrar Diámetro y Combustible
+                                $filterCategoryIds = [34, 47, 48, 49, 50, 51];
+                                $isFilter = in_array($product->category_id, $filterCategoryIds);
                             @endphp
                             <div class="col-12" x-data="{ selectedOversize: '' }"
                                 wire:key="prod-card-{{ $product->id }}-{{ $activeOversizes->pluck('oversize')->implode('-') }}">
@@ -1024,9 +1027,8 @@
 
                                                 {{-- Specs: MEDIDA + DIÁMETRO/PISTÓN + COMBUSTIBLE --}}
                                                 <div class="d-flex gap-2 flex-wrap">
-                                                    @if($activeOversizes->count() > 0)
-                                                        {{-- Unified Oversize UI: always show standard measures and a select
-                                                        dropdown --}}
+                                                    @if(!$isFilter && $activeOversizes->count() > 0)
+                                                        {{-- Unified Oversize UI: always show standard measures and a select dropdown --}}
                                                         <div
                                                             class="d-flex flex-wrap align-items-start justify-content-between gap-3 bg-light rounded-3 px-3 py-2 flex-fill">
                                                             <div>
@@ -1041,7 +1043,6 @@
                                                                             : ['STD', '025', '050', '075', '100', '125', '150'];
 
                                                                         $activeOversizeNames = $activeOversizes->pluck('oversize')->toArray();
-                                                                        // Si el producto tiene sobremedidas raras (ej. 200), las agregamos al array
                                                                         foreach ($activeOversizeNames as $aov) {
                                                                             if (!in_array($aov, $stdOversizes)) {
                                                                                 $stdOversizes[] = $aov;
@@ -1142,7 +1143,7 @@
                                                         <i class="fas fa-list-check"></i>
                                                         <span>Ver detalles</span>
                                                     </button>
-                                                    @if($activeOversizes->count() > 0)
+                                                    @if(!$isFilter && $activeOversizes->count() > 0)
                                                         <button
                                                             @click="if(!selectedOversize) { alert('Por favor, elige una medida.'); } else { $wire.addToRepairWithOversize({{ $product->id }}, selectedOversize) }"
                                                             class="btn fw-bold d-flex align-items-center justify-content-center gap-1 flex-grow-1"
