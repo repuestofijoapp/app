@@ -360,7 +360,7 @@
                                         style="transition: transform 0.2s ease;"></i>
                                 </button>
                                 {{-- Dropdown panel --}}
-                                <div x-show="open" x-transition:enter="transition ease-out duration-150"
+                                <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-150"
                                     x-transition:enter-start="opacity-0 transform scale-y-95"
                                     x-transition:enter-end="opacity-100 transform scale-y-100"
                                     class="position-absolute w-100 bg-white shadow-lg"
