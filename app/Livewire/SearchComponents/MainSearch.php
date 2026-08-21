@@ -222,7 +222,7 @@ class MainSearch extends Component
         $link = url("/proveedor/confirmar/{$token}");
 
         $orderMsg = $ws->formatZbotOrder($items, rand(1000, 9999));
-        $menuMsg = "{$orderMsg}\n\n*🔗 Confirma tu stock y precios aquí:*\n{$link}\n\nO si prefieres, responde por WhatsApp:\n1️⃣ - ✅ Sí tengo todo el stock\n2️⃣ - ❌ No tengo stock";
+        $menuMsg = "{$orderMsg}\n\n*🔗 Confirma tu stock y precios aquí:*\n{$link}";
 
         $res = $ws->sendMessage($provider->whatsapp_number, $menuMsg);
 
@@ -1796,7 +1796,7 @@ class MainSearch extends Component
             $link = url("/proveedor/confirmar/{$token}");
 
             $orderMsg = $ws->formatZbotOrder($items, $pedido->id); // Use real pedido ID
-            $menuMsg = "{$orderMsg}\n\n*🔗 Confirma tu stock y precios aquí:*\n{$link}\n\nO si prefieres, responde por WhatsApp:\n1️⃣ - ✅ Sí tengo todo el stock\n2️⃣ - ❌ No tengo stock";
+            $menuMsg = "{$orderMsg}\n\n*🔗 Confirma tu stock y precios aquí:*\n{$link}";
 
             $res = $ws->sendMessage($provider->whatsapp_number, $menuMsg);
 
