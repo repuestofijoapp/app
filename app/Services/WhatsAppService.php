@@ -71,7 +71,7 @@ class WhatsAppService
             $response = Http::post($url, [
                 'chatId' => $chatId,
                 'message' => $message,
-                'linkPreview' => false,
+                'linkPreview' => true,
             ]);
 
             if ($response->successful()) {
