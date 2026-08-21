@@ -337,8 +337,7 @@
                             </div>
 
                             {{-- MODELO (con buscador integrado) --}}
-                            <div class="mb-3 position-relative"
-                                x-data="{ open: false, modelSearch: '' }"
+                            <div class="mb-3 position-relative" x-data="{ open: false, modelSearch: '' }"
                                 @click.outside="open = false">
                                 <div
                                     class="filter-step @if($selectedBrand && !$selectedModel) step-active @elseif($selectedModel) step-done @else step-inactive @endif">
@@ -356,7 +355,8 @@
                                             <span class="text-muted">Elija un modelo</span>
                                         @endif
                                     </span>
-                                    <i class="fas fa-chevron-down small text-muted" :style="open ? 'transform:rotate(180deg)' : ''"
+                                    <i class="fas fa-chevron-down small text-muted"
+                                        :style="open ? 'transform:rotate(180deg)' : ''"
                                         style="transition: transform 0.2s ease;"></i>
                                 </button>
                                 {{-- Dropdown panel --}}
@@ -372,13 +372,9 @@
                                                 style="border-radius: 6px 0 0 6px; font-size:0.8rem;">
                                                 <i class="fas fa-search"></i>
                                             </span>
-                                            <input
-                                                type="text"
-                                                x-model="modelSearch"
-                                                x-ref="modelSearchInput"
+                                            <input type="text" x-model="modelSearch" x-ref="modelSearchInput"
                                                 @keydown.escape="open = false; modelSearch = ''"
-                                                placeholder="Buscar modelo..."
-                                                class="form-control border-start-0"
+                                                placeholder="Buscar modelo..." class="form-control border-start-0"
                                                 style="border-radius: 0 6px 6px 0; font-size: 0.85rem; box-shadow: none;">
                                         </div>
                                     </div>
@@ -768,11 +764,11 @@
                 </style>
 
                 <div x-data="{ isScrolled: false }" x-init="
-                            const checkScroll = () => { isScrolled = window.scrollY > 20; };
-                            window.addEventListener('scroll', checkScroll, { passive: true });
-                            checkScroll();
-                        " :class="{ 'is-scrolled': isScrolled }" class="rf-sticky-banner position-sticky z-3 mb-4"
-                    style="top: 70px; transition: top 0.3s ease;">
+                                                                            const checkScroll = () => { isScrolled = window.scrollY > 20; };
+                                                                            window.addEventListener('scroll', checkScroll, { passive: true });
+                                                                            checkScroll();
+                                                                        " :class="{ 'is-scrolled': isScrolled }"
+                    class="rf-sticky-banner position-sticky z-3 mb-4" style="top: 70px; transition: top 0.3s ease;">
 
                     @php
                         $carImage = null;
@@ -1058,7 +1054,8 @@
                                                 {{-- Specs: MEDIDA + DIÁMETRO/PISTÓN + COMBUSTIBLE --}}
                                                 <div class="d-flex gap-2 flex-wrap">
                                                     @if(!$isFilter && $activeOversizes->count() > 0)
-                                                        {{-- Unified Oversize UI: always show standard measures and a select dropdown --}}
+                                                        {{-- Unified Oversize UI: always show standard measures and a select
+                                                        dropdown --}}
                                                         <div
                                                             class="d-flex flex-wrap align-items-start justify-content-between gap-3 bg-light rounded-3 px-3 py-2 flex-fill">
                                                             <div>
@@ -1148,7 +1145,8 @@
                                                                         <div class="fw-bold mb-1"
                                                                             style="font-size: 0.6rem; letter-spacing: 1px; color: {{ $fc['text'] }}; opacity: 0.8;">
                                                                             MOTOR</div>
-                                                                        <div class="fw-bold" style="font-size: 0.85rem; color: {{ $fc['text'] }};">
+                                                                        <div class="fw-bold"
+                                                                            style="font-size: 0.85rem; color: {{ $fc['text'] }};">
                                                                             {{ $fc['icon'] }} {{ $fc['label'] }}
                                                                         </div>
                                                                     </div>
@@ -1250,7 +1248,19 @@
                                                         <div class="d-flex align-items-center gap-2">
                                                             <div class="bg-primary rounded-circle" style="width: 6px; height: 6px;">
                                                             </div>
-                                                            <span class="text-dark small">{{ $item['product']['name'] }}</span>
+                                                            <div>
+                                                                <div class="fw-bold small" style="color:#1d4ed8;">
+                                                                    {{ $item['product']['supplier_code'] ?? $item['product']['oem_code'] ?? '' }}
+                                                                    @if(!empty($item['product']['oversize']) && $item['product']['oversize'] !== 'STD')
+                                                                        <span
+                                                                            style="color:#1d4ed8;">{{ $item['product']['oversize'] }}</span>
+                                                                    @elseif(($item['product']['oversize'] ?? '') === 'STD')
+                                                                        <span style="color:#1d4ed8;">STD</span>
+                                                                    @endif
+                                                                </div>
+                                                                <div class="text-muted" style="font-size:0.78rem;">
+                                                                    {{ $item['product']['name'] }}</div>
+                                                            </div>
                                                         </div>
                                                         <span class="text-muted small">x{{ $item['qty'] }}</span>
                                                     </div>
@@ -1411,9 +1421,15 @@
                                                                 $effectiveSubtotal = $unitPrice * $effectiveQty;
                                                                 $totalCalculated += $effectiveSubtotal;
 
-                                                                // Oversize label from product model
-                                                                $productModel = \App\Models\Product::find($rItem['product']['id']);
-                                                                $oversizeLabel = $productModel ? $productModel->getOversizeLabel() : null;
+                                                                // Oversize label from the cart snapshot (the one the user actually chose)
+                                                                $selectedOversize = $rItem['product']['oversize'] ?? null;
+                                                                if ($selectedOversize && $selectedOversize !== 'STD') {
+                                                                    $oversizeLabel = '+' . $selectedOversize;
+                                                                } elseif ($selectedOversize === 'STD') {
+                                                                    $oversizeLabel = 'STD';
+                                                                } else {
+                                                                    $oversizeLabel = null;
+                                                                }
                                                               @endphp
                                                             <div class="py-3 {{ !$loop->first ? 'border-top border-light-subtle' : '' }}"
                                                                 style="{{ $isExcluded ? 'opacity:0.45;' : '' }} transition: opacity .2s;">
@@ -1423,8 +1439,8 @@
                                                                     {{-- Producto info --}}
                                                                     <div class="flex-grow-1" style="min-width: 250px;">
                                                                         <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                                                                            <span class="fw-bold text-dark fs-6"
-                                                                                style="{{ $isExcluded ? 'text-decoration:line-through;' : '' }}">{{ $oem }}</span>
+                                                                            <span class="fw-bold fs-6"
+                                                                                style="color:#1d4ed8; {{ $isExcluded ? 'text-decoration:line-through;' : '' }}">{{ $oem }}</span>
 
                                                                             @if($oversizeLabel)
                                                                                 <span class="badge rounded-pill px-2"
@@ -1669,6 +1685,10 @@
                             </div>
                         </div>
                     @elseif(count($repairList) > 0)
+                        <div
+                            class="d-flex align-items-center justify-content-center justify-content-md-start mb-3 mt-md-0 pt-2 pt-md-0">
+                            <h3 class="fw-bold text-primary-custom mb-0">MI REPARACIÓN</h3>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle border-light">
                                 <thead class="table-light text-muted small">
@@ -1683,13 +1703,20 @@
                                         <tr>
                                             <td class="border-0">
                                                 <div class="d-flex align-items-center">
-                                                    <img src="{{ $item['product']['image_url'] ?? 'https://via.placeholder.com/50' }}"
+                                                    <img src="{{ isset($item['product']['image_path']) && $item['product']['image_path'] ? asset('storage/' . $item['product']['image_path']) : 'https://via.placeholder.com/50' }}"
                                                         class="rounded me-3 border p-1"
                                                         style="width: 50px; height: 50px; object-fit: contain;">
                                                     <div>
-                                                        <div class="fw-medium text-dark small">{{ $item['product']['name'] }}</div>
-                                                        <div class="text-muted x-small">Código Original:
-                                                            {{ $item['product']['oem_code'] }}
+                                                        <div class="fw-bold text-primary" style="font-size: 1rem;">
+                                                            {{ $item['product']['supplier_code'] ?? $item['product']['oem_code'] }}
+                                                            @if(isset($item['product']['oversize']) && $item['product']['oversize'] && $item['product']['oversize'] !== 'STD')
+                                                                <span class="text-primary">{{ $item['product']['oversize'] }}</span>
+                                                            @elseif(isset($item['product']['oversize']) && $item['product']['oversize'] === 'STD')
+                                                                <span class="text-primary">STD</span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="text-muted small">
+                                                            {{ $item['product']['name'] }}
                                                         </div>
                                                         <div class="mt-1">
                                                             @php
@@ -1717,16 +1744,16 @@
                                                 <div class="input-group input-group-sm d-inline-flex border rounded overflow-hidden"
                                                     style="width: 100px;">
                                                     <button class="btn btn-light border-0"
-                                                        wire:click="updateQuantity({{ $id }}, {{ $item['qty'] - 1 }})">-</button>
+                                                        wire:click="updateQuantity('{{ $id }}', {{ $item['qty'] - 1 }})">-</button>
                                                     <input type="text" class="form-control text-center border-0 fw-medium"
                                                         value="{{ $item['qty'] }}" readonly>
                                                     <button class="btn btn-light border-0"
-                                                        wire:click="updateQuantity({{ $id }}, {{ $item['qty'] + 1 }})">+</button>
+                                                        wire:click="updateQuantity('{{ $id }}', {{ $item['qty'] + 1 }})">+</button>
                                                 </div>
                                             </td>
                                             <td class="text-end border-0">
                                                 <button class="btn btn-link text-danger p-1"
-                                                    onclick="confirmRemoval({{ $id }}, '{{ $item['product']['name'] }}')">
+                                                    onclick="confirmRemoval('{{ $id }}', '{{ addslashes($item['product']['name']) }}')">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </td>
@@ -1734,10 +1761,28 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <div class="mt-4 border-top pt-4">
+                            <div class="mt-4 border-top pt-4" x-data="{
+                                                            consultarConConfirmacion() {
+                                                                Swal.fire({
+                                                                    title: '<span style=\'font-size: 1.2rem; font-weight: 700; color: #132530;\'>Las cantidades y productos no se pueden modificar una vez confirmados</span>',
+                                                                    html: '<span style=\'font-size: 1rem; color: #6c757d;\'></span>',
+                                                                    icon: 'warning',
+                                                                    showCancelButton: true,
+                                                                    confirmButtonColor: '#BE3C3B',
+                                                                    cancelButtonColor: '#0d6efd',
+                                                                    confirmButtonText: 'Estoy seguro, quiero consultar',
+                                                                    cancelButtonText: 'Modificar consulta',
+                                                                    reverseButtons: true,
+                                                                }).then((result) => {
+                                                                    if (result.isConfirmed) {
+                                                                        $wire.openDeliveryModal();
+                                                                    }
+                                                                });
+                                                            }
+                                                        }">
                                 <button
                                     class="btn btn-primary-custom w-100 py-3 fw-bold shadow d-flex align-items-center justify-content-center gap-2"
-                                    wire:click="openDeliveryModal">
+                                    @click="consultarConConfirmacion()">
                                     @if($this->isOrderFullyPrePriced())
                                         <i class="fas fa-credit-card fs-5"></i>
                                         <span>PROCEDER AL PAGO</span>
@@ -1747,7 +1792,6 @@
                                     @endif
                                     <i class="fas fa-arrow-right small opacity-75"></i>
                                 </button>
-
                             </div>
                         </div>
                     @else
@@ -2451,8 +2495,8 @@
                                             <button wire:click="loadSavedAddress({{ $idx }})"
                                                 class="btn text-start p-2 rounded-3 position-relative"
                                                 style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
-                                                                                                                                                                               max-width: 100%; transition: all .2s;
-                                                                                                                                                                               {{ ($deliveryType === ($addr['type'] ?? '') &&
+                                                                                                                                                                                                                                                                                                                                                                                                                               max-width: 100%; transition: all .2s;
+                                                                                                                                                                                                                                                                                                                                                                                                                               {{ ($deliveryType === ($addr['type'] ?? '') &&
                                     ($deliveryAddress === ($addr['address'] ?? '') || $deliveryAgency === ($addr['agency'] ?? '')))
                                     ? 'border-color:#BE3C3B!important; background:rgba(190,60,59,0.12)!important;' : '' }}"
                                                 onmouseover="this.style.background='rgba(255,255,255,0.1)'"
@@ -3865,16 +3909,24 @@
                                     @foreach($userSelectedOrder->items as $item)
                                         <tr class="border-bottom border-light">
                                             <td>
-                                                <div class="fw-bold text-dark">
-                                                    {{ $item->product ? $item->product->name : 'Producto #' . $item->product_id }}
-                                                </div>
-                                                <div class="extra-small text-muted d-flex align-items-center gap-1 flex-wrap">
-                                                    <span>OEM:
-                                                        {{ $item->product ? ($item->product->oem_code ?? $item->product->supplier_code) : 'N/A' }}</span>
-                                                    @if($item->product && $item->product->oversize)
-                                                        <span class="badge rounded-pill px-2 py-0"
-                                                            style="background:#eff6ff;color:#1d4ed8;font-size:9px;font-weight:700;border:1px solid #bfdbfe;">{{ $item->product->getOversizeLabel() }}</span>
-                                                    @endif
+                                                <div>
+                                                    <div class="fw-bold small" style="color:#1d4ed8; margin-bottom: 2px;">
+                                                        {{ $item->product ? ($item->product->supplier_code ?? $item->product->oem_code) : 'N/A' }}
+                                                        @php
+                                                            $itemOversize = $item->oversize;
+                                                            if (empty($itemOversize) && $item->product) {
+                                                                $itemOversize = $item->product->oversize; // Fallback to base product oversize just in case
+                                                            }
+                                                        @endphp
+                                                        @if(!empty($itemOversize) && $itemOversize !== 'STD')
+                                                            <span style="color:#1d4ed8;">+{{ $itemOversize }}</span>
+                                                        @elseif(($itemOversize ?? '') === 'STD')
+                                                            <span style="color:#1d4ed8;">STD</span>
+                                                        @endif
+                                                    </div>
+                                                    <div class="text-muted" style="font-size:0.85rem; line-height: 1.3;">
+                                                        {{ $item->product ? $item->product->name : 'Producto #' . $item->product_id }}
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td class="text-center text-dark">{{ $item->cantidad }}</td>
@@ -4023,7 +4075,31 @@
 
         <script>
             document.addEventListener('livewire:initialized', () => {
-                @this.on('print-invoice', () => {
+                // Confirmación antes de consultar
+                window.confirmConsultation = function () {
+                    Swal.fire({
+                        title: '<span style="font-size: 1.3rem; font-weight: 700; color: #132530;">Las cantidades y productos a consultar no se pueden modificar una vez confirmados</span>',
+                        html: '<span style="font-size: 1.05rem; color: #6c757d;">Si desea añadir algo, debe hacer un pedido nuevo</span>',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#BE3C3B',
+                        cancelButtonColor: '#0d6efd',
+                        confirmButtonText: 'Consultar',
+                        cancelButtonText: 'Modificar consulta',
+                        reverseButtons: true,
+                        customClass: {
+                            confirmButton: 'px-4 py-2 fw-bold shadow-sm',
+                            cancelButton: 'px-4 py-2 fw-bold shadow-sm'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Livewire.getByName('main-search')[0].call('openDeliveryModal');
+                        }
+                    });
+                };
+
+                // Imprimir factura
+                Livewire.getByName('main-search')[0].on('print-invoice', () => {
                     setTimeout(() => {
                         window.print();
                     }, 500);

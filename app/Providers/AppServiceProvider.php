@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
         Paginator::defaultView('vendor.pagination.custom-repuestofijo');
         Paginator::defaultSimpleView('vendor.pagination.simple-bootstrap-5');
 
-        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+        if ($this->app->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
     }

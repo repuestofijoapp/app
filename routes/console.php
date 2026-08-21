@@ -11,3 +11,8 @@ Artisan::command('inspire', function () {
 
 // Expirar ZbotQueries vencidas y cancelar pedidos sin stock → cada minuto
 Schedule::job(new ExpireZbotQueries)->everyMinute();
+
+// Ejecutar trabajos en cola (como el escaneo de PDF)
+Schedule::command('queue:work --stop-when-empty')
+    ->everyMinute()
+    ->withoutOverlapping();

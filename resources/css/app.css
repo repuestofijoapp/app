@@ -33,17 +33,19 @@
 }
 
 .btn-primary-custom {
-    background-color: #0066cc;
-    /* Azul similar al de la imagen */
-    border-color: #0066cc;
+    background-color: #0d6efd; /* Bootstrap blue */
+    border-color: #0d6efd;
     color: #fff;
     font-weight: 600;
     padding: 0.5rem 1.5rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.btn-primary-custom:hover {
-    background-color: #0052a3;
-    border-color: #0052a3;
+.btn-primary-custom:hover,
+.btn-primary-custom:focus {
+    background-color: #0b5ed7; /* Bootstrap hover blue */
+    border-color: #0a58ca;
+    color: #fff;
 }
 
 .card-custom {

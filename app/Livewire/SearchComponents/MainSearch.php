@@ -1931,6 +1931,7 @@ class MainSearch extends Component
                     PedidoItem::create([
                         'pedido_id' => $pedido->id,
                         'product_id' => $data['product']['id'],
+                        'oversize' => $data['product']['oversize'] ?? null,
                         'provider_id' => $providerId,
                         'cantidad' => $qtyConfirmed > 0 ? $qtyConfirmed : $data['qty'],
                         'precio_unitario' => $precioUnitWithMarkup,
@@ -2185,6 +2186,7 @@ class MainSearch extends Component
                     PedidoItem::create([
                         'pedido_id' => $pedido->id,
                         'product_id' => $data['product']['id'],
+                        'oversize' => $data['product']['oversize'] ?? null,
                         'provider_id' => $providerId,
                         'cantidad' => $qtyConfirmed,
                         'precio_unitario' => $precioUnitWithMarkup,
@@ -2341,6 +2343,7 @@ class MainSearch extends Component
                         PedidoItem::create([
                             'pedido_id' => $pedido->id,
                             'product_id' => $data['product']['id'],
+                            'oversize' => $data['product']['oversize'] ?? null,
                             'provider_id' => $providerId,
                             'cantidad' => $qtyConfirmed,
                             'precio_unitario' => $precioUnitWithMarkup,

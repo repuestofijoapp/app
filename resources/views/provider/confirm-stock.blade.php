@@ -424,7 +424,9 @@
 
     <div class="container">
         <header>
-            <a href="#" class="logo">⚡ Repuesto<span>Fijo</span></a>
+            <div style="margin-bottom: 15px;">
+                <img src="{{ asset('images/logo.png') }}" alt="RepuestoFijo" style="max-height: 45px; width: auto;">
+            </div>
             <div>
                 @if(isset($pedido))
                     <span class="badge-pedido">Pedido #{{ $pedido->id }} · Confirmación de Stock</span>
