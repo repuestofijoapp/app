@@ -70,10 +70,16 @@ class BillingService
             
             // Build oversize label for the product code (supplier_code + super/oversize)
             $oversizeLabel = '';
-            if (!empty($item->product->oversize)) {
-                $oversizeLabel = ($item->product->oversize === 'STD')
+            
+            $itemOversize = $item->oversize;
+            if (empty($itemOversize) && $item->product) {
+                $itemOversize = $item->product->oversize;
+            }
+
+            if (!empty($itemOversize)) {
+                $oversizeLabel = ($itemOversize === 'STD')
                     ? ' STD'
-                    : ' +' . $item->product->oversize;
+                    : ' +' . $itemOversize;
             }
 
             // Supplier code always shown WITH oversize next to it

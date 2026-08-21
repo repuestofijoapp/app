@@ -418,8 +418,16 @@
                                                 </div>
                                                 <div class="extra-small opacity-50">
                                                     {{ $item->product->supplier_code }}
-                                                    @if($item->product->oversize)
-                                                        <span class="badge ms-1 rounded-pill" style="background:rgba(59,130,246,.2);color:#93c5fd;font-size:9px;font-weight:700;">{{ $item->product->getOversizeLabel() }}</span>
+                                                    @php
+                                                        $itemOversize = $item->oversize;
+                                                        if (empty($itemOversize) && $item->product) {
+                                                            $itemOversize = $item->product->oversize;
+                                                        }
+                                                    @endphp
+                                                    @if(!empty($itemOversize) && $itemOversize !== 'STD')
+                                                        <span class="badge ms-1 rounded-pill" style="background:rgba(59,130,246,.2);color:#93c5fd;font-size:9px;font-weight:700;">+{{ $itemOversize }}</span>
+                                                    @elseif(($itemOversize ?? '') === 'STD')
+                                                        <span class="badge ms-1 rounded-pill" style="background:rgba(59,130,246,.2);color:#93c5fd;font-size:9px;font-weight:700;">STD</span>
                                                     @endif
                                                     @if($item->product->oem_code) · OEM: {{ $item->product->oem_code }} @endif
                                                 </div>
