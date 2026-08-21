@@ -9,9 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->json('fuel_types')->nullable()->after('fuel_type');
-        });
+        if (!Schema::hasColumn('products', 'fuel_types')) {
+            Schema::table('products', function (Blueprint $table) {
+                $table->json('fuel_types')->nullable()->after('fuel_type');
+            });
+        }
 
         // Migrate existing fuel_type data → fuel_types array
         DB::statement("
