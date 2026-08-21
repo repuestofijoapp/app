@@ -61,9 +61,17 @@
                                                 style="background: #1E293B; border-radius: 12px; font-size: 0.9rem;">
                                                 <option value="">— Seleccionar Categoría —</option>
                                                 @foreach($categories as $c)
-                                                    <option value="{{ $c->id }}">
-                                                        {{ $c->parent ? $c->parent->name . ' › ' : '' }}{{ $c->name }}
-                                                    </option>
+                                                    @php
+                                                        $catPath = '';
+                                                        if ($c->parent) {
+                                                            if ($c->parent->parent) {
+                                                                $catPath = $c->parent->parent->name . ' › ' . $c->parent->name . ' › ';
+                                                            } else {
+                                                                $catPath = $c->parent->name . ' › ';
+                                                            }
+                                                        }
+                                                    @endphp
+                                                    <option value="{{ $c->id }}">{{ $catPath }}{{ $c->name }}</option>
                                                 @endforeach
                                             </select>
                                             @error('category_id') <small class="text-danger mt-1 d-block">{{ $message }}</small>
@@ -84,15 +92,19 @@
                                         <div class="mb-3">
                                             <label class="small fw-bold text-gray-300 mb-2 d-block">TIPO DE COMBUSTIBLE
                                                 *</label>
-                                            <select wire:model="fuel_type" class="form-select border-0 text-white px-3 py-3"
-                                                style="background: #1E293B; border-radius: 12px; font-size: 0.9rem;">
-                                                <option value="">Elije tipo de combustible</option>
-                                                <option value="GASOLINA">⛽ GASOLINA</option>
-                                                <option value="DIESEL">🛢️ DIESEL</option>
-                                                <option value="GAS">💨 GAS</option>
-                                                <option value="HIBRIDO">🔋 HÍBRIDO</option>
-                                            </select>
-                                            @error('fuel_type') <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                                            @php $fuelConf = \App\Models\Product::fuelConfig(); @endphp
+                                            <div class="d-flex flex-wrap gap-3 mt-1 p-3 rounded" style="background: #1E293B; border-radius: 12px;">
+                                                @foreach($fuelConf as $key => $fc)
+                                                    <label class="d-flex align-items-center gap-2 m-0" style="cursor:pointer; font-size:0.9rem;">
+                                                        <input type="checkbox" wire:model="fuel_types" value="{{ $key }}"
+                                                            style="width:16px; height:16px; accent-color:{{ $fc['text'] }};">
+                                                        <span style="color: {{ in_array($key, $fuel_types) ? $fc['text'] : '#94a3b8' }}; font-weight:600;">
+                                                            {{ $fc['icon'] }} {{ $fc['label'] }}
+                                                        </span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                            @error('fuel_types') <small class="text-danger mt-1 d-block">{{ $message }}</small>
                                             @enderror
                                         </div>
 
@@ -108,6 +120,8 @@
                                             @error('vehicle_make') <small
                                             class="text-danger mt-1 d-block">{{ $message }}</small> @enderror
                                         </div>
+
+
                                     </div>
                                 </div>
 
@@ -191,7 +205,16 @@
                                                         <div class="col-6 fw-bold text-white">{{ $brand }}</div>
 
                                                         <div class="col-6 text-gray-400">Combustible:</div>
-                                                        <div class="col-6 fw-bold text-white">{{ $fuel_type }}</div>
+                                                        <div class="col-6 fw-bold text-white d-flex flex-wrap gap-1">
+                                                            @foreach($fuel_types as $ft)
+                                                                @php $fc = \App\Models\Product::fuelConfig()[$ft] ?? null; @endphp
+                                                                @if($fc)
+                                                                    <span style="font-size: 0.7rem; background: {{ $fc['admin_bg'] }}; color: {{ $fc['admin_text'] }}; border: 1px solid {{ $fc['admin_border'] }}; border-radius: 4px; padding: 1px 4px;">
+                                                                        {{ $fc['icon'] }} {{ $fc['label'] }}
+                                                                    </span>
+                                                                @endif
+                                                            @endforeach
+                                                        </div>
 
                                                         <div class="col-6 text-gray-400">Marca Vehículo:</div>
                                                         <div class="col-6 fw-bold text-white">{{ $vehicle_make }}</div>
@@ -200,12 +223,15 @@
                                                 <div
                                                     class="col-md-5 d-flex align-items-center justify-content-center border-start border-secondary border-opacity-10">
                                                     @if($tempImage)
-                                                        <img src="{{ $tempImage->temporaryUrl() }}" class="rounded-3 shadow-md border"
-                                                            style="max-height: 100px; max-width: 100%; object-fit: contain; border-color: rgba(255,255,255,0.1);">
+                                                        <div class="text-center text-purple-glow">
+                                                            <i class="fas fa-image fa-2x mb-2 d-block"></i>
+                                                            <div class="text-white fw-bold text-xs">Imagen en memoria</div>
+                                                        </div>
                                                     @else
-                                                        <div class="text-gray-400 text-xs text-center"><i
-                                                                class="fas fa-image fa-2x mb-2 d-block opacity-40"></i> Sin imagen
-                                                            cargada</div>
+                                                        <div class="text-gray-400 text-xs text-center">
+                                                            <i class="fas fa-image fa-2x mb-2 d-block opacity-40"></i> 
+                                                            Sin imagen
+                                                        </div>
                                                     @endif
                                                 </div>
                                             </div>
@@ -251,19 +277,31 @@
                                                 @enderror
                                             </div>
 
+                                            @if($isParsing)
+                                                <div wire:poll.3s="checkScanStatus" style="display:none;"></div>
+                                            @endif
+                                            
                                             <div class="d-flex gap-3 mt-4">
                                                 <button wire:click="prevStep"
                                                     class="btn btn-outline-secondary py-3 fw-bold rounded-4 text-white"
-                                                    style="flex: 1;">
+                                                    style="flex: 1;" @if($isParsing) disabled @endif>
                                                     <i class="fas fa-arrow-left me-2"></i> Atrás
                                                 </button>
                                                 <button wire:click="scanPdfCatalog"
                                                     class="btn btn-purple-glow py-3 fw-bold rounded-4 text-white" style="flex: 2;"
-                                                    wire:loading.attr="disabled" wire:target="scanPdfCatalog">
-                                                    <span wire:loading.remove wire:target="scanPdfCatalog"><i
-                                                            class="fas fa-robot me-2"></i> ESCANEAR PDF Y ANALIZAR</span>
-                                                    <span wire:loading wire:target="scanPdfCatalog"><i
-                                                            class="fas fa-spinner fa-spin me-2"></i> PROCESANDO...</span>
+                                                    @if($isParsing) disabled @endif
+                                                    wire:loading.attr="disabled"
+                                                    wire:target="scanPdfCatalog">
+                                                    <span wire:loading.remove wire:target="scanPdfCatalog">
+                                                        @if(!$isParsing)
+                                                            <i class="fas fa-robot me-2"></i> ESCANEAR PDF Y ANALIZAR
+                                                        @else
+                                                            <i class="fas fa-spinner fa-spin me-2"></i> PROCESANDO EN SEGUNDO PLANO...
+                                                        @endif
+                                                    </span>
+                                                    <span wire:loading wire:target="scanPdfCatalog">
+                                                        <i class="fas fa-spinner fa-spin me-2"></i> PROCESANDO, ESPERA...
+                                                    </span>
                                                 </button>
                                             </div>
                                         </div>

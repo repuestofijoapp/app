@@ -15,6 +15,7 @@ class Product extends Model
         'category_id',
         'brand',
         'fuel_type',
+        'fuel_types',
         'vehicle_make',
         'supplier_code',
         'oem_code',
@@ -41,6 +42,7 @@ class Product extends Model
         'compatible_model_ids' => 'array',
         'compatible_engine_ids' => 'array',
         'specs' => 'array',
+        'fuel_types' => 'array',
         'price' => 'decimal:2',
         'is_active' => 'boolean',
     ];
@@ -140,5 +142,34 @@ class Product extends Model
             return asset('storage/' . $this->image_path);
         }
         return 'https://via.placeholder.com/300?text=No+Foto';
+    }
+
+    /**
+     * Returns the list of fuel types as a clean array.
+     * Falls back to the legacy fuel_type string column for backward compatibility.
+     */
+    public function getFuelTypesListAttribute(): array
+    {
+        if (!empty($this->fuel_types) && is_array($this->fuel_types)) {
+            return array_filter($this->fuel_types);
+        }
+        // Legacy fallback
+        if (!empty($this->fuel_type)) {
+            return [$this->fuel_type];
+        }
+        return [];
+    }
+
+    /**
+     * Fuel type config: returns colors and icons per type.
+     */
+    public static function fuelConfig(): array
+    {
+        return [
+            'GASOLINA' => ['icon' => '🔴', 'label' => 'GASOLINA', 'bg' => '#FEE2E2', 'text' => '#DC2626', 'border' => '#FECACA', 'admin_bg' => 'rgba(220,38,38,0.15)', 'admin_text' => '#f87171', 'admin_border' => 'rgba(220,38,38,0.3)'],
+            'DIESEL'   => ['icon' => '🟡', 'label' => 'DIESEL',   'bg' => '#FEF3C7', 'text' => '#D97706', 'border' => '#FDE68A', 'admin_bg' => 'rgba(217,119,6,0.15)',  'admin_text' => '#fbbf24', 'admin_border' => 'rgba(217,119,6,0.3)'],
+            'GAS'      => ['icon' => '💚', 'label' => 'GAS',      'bg' => '#D1FAE5', 'text' => '#059669', 'border' => '#6EE7B7', 'admin_bg' => 'rgba(5,150,105,0.15)',   'admin_text' => '#34d399', 'admin_border' => 'rgba(5,150,105,0.3)'],
+            'HIBRIDO'  => ['icon' => '🔵', 'label' => 'HÍBRIDO',  'bg' => '#DBEAFE', 'text' => '#2563EB', 'border' => '#BFDBFE', 'admin_bg' => 'rgba(37,99,235,0.15)',   'admin_text' => '#60a5fa', 'admin_border' => 'rgba(37,99,235,0.3)'],
+        ];
     }
 }

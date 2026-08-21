@@ -53,7 +53,7 @@ class ProductManagement extends Component
     public $oem_code = '';
     public $additional_oem_codes = '';
     public $oversize = '';
-    public $fuel_type = '';
+    public $fuel_types = [];
     public $name = '';
     public $specs_raw = '';
     public $specs_radial = '';
@@ -321,7 +321,7 @@ class ProductManagement extends Component
         $this->oem_code = '';
         $this->additional_oem_codes = '';
         $this->oversize = '';
-        $this->fuel_type = '';
+        $this->fuel_types = [];
         $this->name = '';
         $this->specs_raw = '';
         $this->specs_radial = '';
@@ -372,7 +372,7 @@ class ProductManagement extends Component
         $this->oem_code = $p->oem_code;
         $this->additional_oem_codes = implode(', ', $p->additional_oem_codes ?? []);
         $this->oversize = $p->oversize ?? '';
-        $this->fuel_type = $p->fuel_type ?? '';
+        $this->fuel_types = $p->fuel_types_list;
         $this->name = $p->name;
         $specs = $p->specs ?? [];
         $this->specs_raw = is_array($specs['raw'] ?? null) ? implode(' ', $specs['raw']) : ($specs['raw'] ?? '');
@@ -573,7 +573,8 @@ class ProductManagement extends Component
             'oem_code' => $primaryOem,
             'additional_oem_codes' => $allAdditionalCodes ?: null,
             'oversize' => $legacyOversize,
-            'fuel_type' => strtoupper(trim($this->fuel_type)) ?: null,
+            'fuel_type'  => count($this->fuel_types) === 1 ? $this->fuel_types[0] : null,
+            'fuel_types' => !empty($this->fuel_types) ? array_values($this->fuel_types) : null,
             'name' => trim($this->name) ?: null,
             'compatible_engines' => $engines ?: null,
             'compatible_vehicles' => !empty($vehicles) ? implode(', ', $vehicles) : null,

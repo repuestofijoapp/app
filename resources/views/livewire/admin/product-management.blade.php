@@ -414,19 +414,17 @@
                                 @else
                                     <span class="text-white text-xs">—</span>
                                 @endif
-                                @if($product->fuel_type)
-                                    <div class="mt-1">
-                                        @php
-                                            $fuelIcon = match($product->fuel_type) {
-                                                'DIESEL'  => '🛢️',
-                                                'GAS'     => '💨',
-                                                'HIBRIDO' => '🔋',
-                                                default   => '⛽',
-                                            };
-                                        @endphp
-                                        <span style="font-size: 0.68rem; background: rgba(234,179,8,0.15); color: #fbbf24; border: 1px solid rgba(234,179,8,0.3); border-radius: 5px; padding: 2px 7px; font-weight: 700;">
-                                            {{ $fuelIcon }} {{ $product->fuel_type }}
-                                        </span>
+                                @if($product->fuel_type || !empty($product->fuel_types))
+                                    <div class="mt-1 d-flex flex-wrap gap-1">
+                                        @php $fuelConf = \App\Models\Product::fuelConfig(); @endphp
+                                        @foreach($product->fuel_types_list as $ft)
+                                            @php $fc = $fuelConf[$ft] ?? null; @endphp
+                                            @if($fc)
+                                                <span style="font-size: 0.68rem; background: {{ $fc['admin_bg'] }}; color: {{ $fc['admin_text'] }}; border: 1px solid {{ $fc['admin_border'] }}; border-radius: 5px; padding: 2px 7px; font-weight: 700;">
+                                                    {{ $fc['icon'] }} {{ $fc['label'] }}
+                                                </span>
+                                            @endif
+                                        @endforeach
                                     </div>
                                 @endif
                             </td>
@@ -676,13 +674,18 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Tipo de Combustible</label>
-                            <select wire:model="fuel_type" class="form-input">
-                                <option value="">— Sin especificar —</option>
-                                <option value="GASOLINA">⛽ GASOLINA</option>
-                                <option value="DIESEL">🛢️ DIESEL</option>
-                                <option value="GAS">💨 GAS</option>
-                                <option value="HIBRIDO">🔋 HÍBRIDO</option>
-                            </select>
+                            @php $fuelConf = \App\Models\Product::fuelConfig(); @endphp
+                            <div class="d-flex flex-wrap gap-2 mt-1">
+                                @foreach($fuelConf as $key => $fc)
+                                    <label class="d-flex align-items-center gap-1" style="cursor:pointer; font-size:0.88rem;">
+                                        <input type="checkbox" wire:model="fuel_types" value="{{ $key }}"
+                                            style="width:15px; height:15px; accent-color:{{ $fc['text'] }};">
+                                        <span style="color: {{ in_array($key, $fuel_types) ? $fc['text'] : '#6b7280' }}; font-weight:600;">
+                                            {{ $fc['icon'] }} {{ $fc['label'] }}
+                                        </span>
+                                    </label>
+                                @endforeach
+                            </div>
                         </div>
 
                         <div class="col-md-6">

@@ -1137,23 +1137,23 @@
                                                             </div>
                                                         </div>
                                                     @endif
-                                                    @if($product->fuel_type)
-                                                        @php
-                                                            $fuelIcon = match ($product->fuel_type) {
-                                                                'DIESEL' => '🛢️',
-                                                                'GAS' => '💨',
-                                                                'HIBRIDO' => '🔋',
-                                                                default => '⛽',
-                                                            };
-                                                        @endphp
-                                                        <div class="rounded-3 px-3 py-2 text-center flex-fill"
-                                                            style="background: #fff9e6; border: 1px solid #fde68a;">
-                                                            <div class="fw-bold mb-1"
-                                                                style="font-size: 0.6rem; letter-spacing: 1px; color: #92400e;">
-                                                                MOTOR</div>
-                                                            <div class="fw-bold" style="font-size: 0.85rem; color: #b45309;">
-                                                                {{ $fuelIcon }} {{ $product->fuel_type }}
-                                                            </div>
+                                                    @if($product->fuel_type || !empty($product->fuel_types))
+                                                        <div class="d-flex flex-fill gap-1">
+                                                            @php $fuelConf = \App\Models\Product::fuelConfig(); @endphp
+                                                            @foreach($product->fuel_types_list as $ft)
+                                                                @php $fc = $fuelConf[$ft] ?? null; @endphp
+                                                                @if($fc)
+                                                                    <div class="rounded-3 px-2 py-2 text-center flex-fill"
+                                                                        style="background: {{ $fc['bg'] }}; border: 1px solid {{ $fc['border'] }};">
+                                                                        <div class="fw-bold mb-1"
+                                                                            style="font-size: 0.6rem; letter-spacing: 1px; color: {{ $fc['text'] }}; opacity: 0.8;">
+                                                                            MOTOR</div>
+                                                                        <div class="fw-bold" style="font-size: 0.85rem; color: {{ $fc['text'] }};">
+                                                                            {{ $fc['icon'] }} {{ $fc['label'] }}
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
+                                                            @endforeach
                                                         </div>
                                                     @endif
                                                 </div>
