@@ -1052,25 +1052,98 @@
                                             <div class="d-flex flex-column gap-3">
 
                                                 {{-- Specs: MEDIDA + DIÁMETRO/PISTÓN + COMBUSTIBLE --}}
-                                                <div class="d-flex gap-2 flex-wrap">
+                                                <div class="d-flex flex-column gap-3">
                                                     @if(!$isFilter && $activeOversizes->count() > 0)
-                                                        {{-- Unified Oversize UI: always show standard measures and a select
-                                                        dropdown --}}
                                                         <style>
-                                                            .measure-btn-valid {
-                                                                border: 1px solid #e2e8f0;
+                                                            .measure-btn {
+                                                                width: 80px;
+                                                                height: 52px;
+                                                                border-radius: 10px;
+                                                                border: 1.5px solid #d1d5db;
+                                                                background: #f9fafb;
+                                                                display: flex;
+                                                                align-items: center;
+                                                                justify-content: center;
+                                                                font-size: 1.05rem;
+                                                                font-weight: 600;
+                                                                color: #111827;
+                                                                cursor: pointer;
+                                                                position: relative;
+                                                                overflow: hidden;
+                                                                transition: border-color 0.15s, background 0.15s, color 0.15s;
+                                                                user-select: none;
                                                             }
-                                                            .measure-btn-valid:hover {
+                                                            .measure-btn:hover:not(.measure-btn--disabled) {
+                                                                border-color: #3b82f6;
+                                                                color: #3b82f6;
+                                                            }
+                                                            .measure-btn--disabled {
+                                                                opacity: 0.5;
+                                                                cursor: not-allowed;
+                                                                color: #9ca3af;
+                                                                background: #f3f4f6;
+                                                            }
+                                                            .measure-btn--selected {
+                                                                background: #3b82f6 !important;
+                                                                color: #fff !important;
                                                                 border-color: #3b82f6 !important;
-                                                                color: #3b82f6 !important;
+                                                            }
+                                                            .measure-btn__strike {
+                                                                position: absolute;
+                                                                width: 130%;
+                                                                height: 1.5px;
+                                                                background: #9ca3af;
+                                                                top: 50%;
+                                                                left: -15%;
+                                                                transform: rotate(-22deg);
+                                                                pointer-events: none;
+                                                            }
+                                                            .measure-btn__check {
+                                                                position: absolute;
+                                                                bottom: 4px;
+                                                                right: 5px;
+                                                                width: 15px;
+                                                                height: 15px;
+                                                                background: rgba(255,255,255,0.25);
+                                                                border: 1.5px solid rgba(255,255,255,0.7);
+                                                                border-radius: 50%;
+                                                                display: flex;
+                                                                align-items: center;
+                                                                justify-content: center;
+                                                            }
+                                                            .measure-btn__check i {
+                                                                font-size: 7px;
+                                                                color: #fff;
+                                                            }
+                                                            @media (max-width: 767px) {
+                                                                .measure-btn {
+                                                                    width: 68px;
+                                                                    height: 46px;
+                                                                    font-size: 0.95rem;
+                                                                }
+                                                                .w-md-auto {
+                                                                    width: 100% !important;
+                                                                }
+                                                            }
+                                                            @media (min-width: 768px) {
+                                                                .w-md-auto {
+                                                                    width: auto !important;
+                                                                }
+                                                                .ms-md-auto {
+                                                                    margin-left: auto !important;
+                                                                }
                                                             }
                                                         </style>
-                                                        <div class="w-100 flex-fill mb-2">
+                                                        
+                                                        {{-- Row 1: Oversize buttons + fuel type (right on desktop, below on mobile) --}}
+                                                        <div class="w-100">
                                                             <div class="text-muted fw-bold mb-2"
                                                                 style="font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase;">
                                                                 ELEGIR MEDIDA
                                                             </div>
+                                                            {{-- flex-wrap allows fuel badge to drop below on narrow screens --}}
                                                             <div class="d-flex flex-wrap gap-2">
+                                                                <div class="d-flex flex-wrap gap-2">
                                                                 @php
                                                                     $isPiston = !empty($product->specs['pin']);
                                                                     $stdOversizes = $isPiston
@@ -1085,39 +1158,49 @@
                                                                     }
                                                                 @endphp
                                                                 @foreach($stdOversizes as $std)
-                                                                    @php
-                                                                        $hasStock = in_array($std, $activeOversizeNames);
-                                                                    @endphp
-                                                                    <label class="position-relative mb-0" 
-                                                                           style="width: 58px; height: 34px; {{ !$hasStock ? 'cursor: not-allowed; opacity: 0.6;' : 'cursor: pointer;' }}">
-                                                                        <input type="radio" x-model="selectedOversize" value="{{ $std }}" class="d-none" {{ !$hasStock ? 'disabled' : '' }}>
-                                                                        <div class="d-flex align-items-center justify-content-center w-100 h-100 rounded transition-all {{ $hasStock ? 'measure-btn-valid' : 'border' }}"
-                                                                             :class="{
-                                                                                 'bg-primary text-white border-primary': selectedOversize === '{{ $std }}',
-                                                                                 'bg-white text-dark': selectedOversize !== '{{ $std }}' && {{ $hasStock ? 'true' : 'false' }},
-                                                                                 'bg-light text-muted overflow-hidden': !{{ $hasStock ? 'true' : 'false' }}
-                                                                             }"
-                                                                             style="font-size: 0.85rem; font-weight: 500; {{ !$hasStock ? 'border-color: #cbd5e1;' : '' }}">
-                                                                            
-                                                                            {{-- Strikethrough for out of stock --}}
-                                                                            @if(!$hasStock)
-                                                                                <div class="position-absolute w-100 h-100" style="border-top: 1px solid #94a3b8; top: 50%; left: 0; transform: rotate(-25deg); transform-origin: center;"></div>
-                                                                            @endif
-
-                                                                            <span class="position-relative z-1">{{ $std }}</span>
-
-                                                                            {{-- Checkmark for selected state --}}
-                                                                            <div x-show="selectedOversize === '{{ $std }}'" 
-                                                                                 class="position-absolute bottom-0 end-0 bg-white text-primary rounded-circle d-flex align-items-center justify-content-center" 
-                                                                                 style="width: 14px; height: 14px; transform: translate(30%, 30%); box-shadow: 0 0 0 2px #0b0f19;">
-                                                                                <i class="fas fa-check" style="font-size: 8px;"></i>
-                                                                            </div>
+                                                                    @php $hasStock = in_array($std, $activeOversizeNames); @endphp
+                                                                    <div
+                                                                        class="measure-btn {{ !$hasStock ? 'measure-btn--disabled' : '' }}"
+                                                                        :class="{ 'measure-btn--selected': selectedOversize === '{{ $std }}' }"
+                                                                        @if($hasStock) @click="selectedOversize = '{{ $std }}'" @endif
+                                                                    >
+                                                                        @if(!$hasStock)
+                                                                            <div class="measure-btn__strike"></div>
+                                                                        @endif
+                                                                        <span>{{ $std }}</span>
+                                                                        <div class="measure-btn__check" x-show="selectedOversize === '{{ $std }}'">
+                                                                            <i class="fas fa-check"></i>
                                                                         </div>
-                                                                    </label>
+                                                                    </div>
                                                                 @endforeach
+                                                                </div>
+
+                                                                {{-- Fuel type: to the right on md+, full width below on mobile --}}
+                                                                @if($product->fuel_type || !empty($product->fuel_types))
+                                                                    @php $fuelConf = \App\Models\Product::fuelConfig(); @endphp
+                                                                    <div class="d-flex gap-1 ms-md-auto w-100 w-md-auto" style="--w-md: auto;">
+                                                                    @foreach($product->fuel_types_list as $ft)
+                                                                        @php $fc = $fuelConf[$ft] ?? null; @endphp
+                                                                        @if($fc)
+                                                                            <div class="rounded-3 px-3 py-2 text-center flex-grow-1 flex-md-grow-0"
+                                                                                style="background: {{ $fc['bg'] }}; border: 1px solid {{ $fc['border'] }}; min-width: 200px;">
+                                                                                <div class="fw-bold mb-1"
+                                                                                    style="font-size: 0.6rem; letter-spacing: 1px; color: {{ $fc['text'] }}; opacity: 0.8;">
+                                                                                    MOTOR</div>
+                                                                                <div class="fw-bold"
+                                                                                    style="font-size: 0.85rem; color: {{ $fc['text'] }};">
+                                                                                    {{ $fc['icon'] }} {{ $fc['label'] }}
+                                                                                </div>
+                                                                            </div>
+                                                                        @endif
+                                                                    @endforeach
+                                                                    </div>
+                                                                @endif
                                                             </div>
                                                         </div>
                                                     @endif
+
+                                                    {{-- Row 2: Specs (Pistón / Anillos diameter) --}}
                                                     @if(!empty($product->specs['pin']))
                                                         {{-- PISTÓN: bloque visual estructurado --}}
                                                         <div class="bg-light rounded-3 px-3 py-2 flex-fill"
@@ -1148,26 +1231,6 @@
                                                                 <span class="text-dark" style="font-size: 0.82rem;">
                                                                     {{ is_array($product->specs['raw']) ? implode(' ', array_slice($product->specs['raw'], 1)) : implode(' ', array_slice(explode(' ', $product->specs['raw']), 1)) }}</span>
                                                             </div>
-                                                        </div>
-                                                    @endif
-                                                    @if($product->fuel_type || !empty($product->fuel_types))
-                                                        <div class="d-flex flex-fill gap-1">
-                                                            @php $fuelConf = \App\Models\Product::fuelConfig(); @endphp
-                                                            @foreach($product->fuel_types_list as $ft)
-                                                                @php $fc = $fuelConf[$ft] ?? null; @endphp
-                                                                @if($fc)
-                                                                    <div class="rounded-3 px-2 py-2 text-center flex-fill"
-                                                                        style="background: {{ $fc['bg'] }}; border: 1px solid {{ $fc['border'] }};">
-                                                                        <div class="fw-bold mb-1"
-                                                                            style="font-size: 0.6rem; letter-spacing: 1px; color: {{ $fc['text'] }}; opacity: 0.8;">
-                                                                            MOTOR</div>
-                                                                        <div class="fw-bold"
-                                                                            style="font-size: 0.85rem; color: {{ $fc['text'] }};">
-                                                                            {{ $fc['icon'] }} {{ $fc['label'] }}
-                                                                        </div>
-                                                                    </div>
-                                                                @endif
-                                                            @endforeach
                                                         </div>
                                                     @endif
                                                 </div>
