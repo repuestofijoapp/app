@@ -458,15 +458,28 @@
                             </div>
                         @else
                             {{-- Slider de banners --}}
-                            <div id="repuestoBannerSlider" class="carousel slide h-100" data-bs-ride="carousel"
+                            <style>
+                                @media (max-width: 991.98px) {
+                                    .banner-slider-container,
+                                    .banner-inner-container,
+                                    .banner-item-container {
+                                        height: auto !important;
+                                        min-height: auto !important;
+                                    }
+                                    .banner-img-responsive {
+                                        height: auto !important;
+                                        object-fit: contain !important;
+                                    }
+                                }
+                            </style>
+                            <div id="repuestoBannerSlider" class="carousel slide h-100 banner-slider-container" data-bs-ride="carousel"
                                 data-bs-interval="5000">
 
-
                                 {{-- Slides --}}
-                                <div class="carousel-inner rounded shadow-sm" style="height:100%; min-height:220px;">
+                                <div class="carousel-inner rounded shadow-sm banner-inner-container" style="height:100%; min-height:220px;">
                                     @foreach($bannerSlides as $i => $slide)
-                                        <div class="carousel-item {{ $i === 0 ? 'active' : '' }} h-100">
-                                            <img src="{{ Storage::url($slide->image_path) }}" class="d-block w-100 h-100"
+                                        <div class="carousel-item {{ $i === 0 ? 'active' : '' }} h-100 banner-item-container">
+                                            <img src="{{ Storage::url($slide->image_path) }}" class="d-block w-100 h-100 banner-img-responsive"
                                                 style="object-fit:cover; object-position:center;"
                                                 alt="{{ $slide->title ?? 'Banner promocional' }}">
 
