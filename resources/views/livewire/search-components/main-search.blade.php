@@ -227,8 +227,8 @@
     </header>
 
     {{-- 3. INTERMEDIATE SECTION --}}
-    <div class="bg-section-custom" style="padding-top: 130px; padding-bottom: 40px;">
-        <div class="container pt-5 pt-md-0">
+    <div class="bg-section-custom" style="padding-bottom: 40px;">
+        <div class="container pt-0">
             {{-- ALERTS --}}
 
             {{-- SEARCH + BANNER --}}
@@ -1778,10 +1778,10 @@
                         </div>
                     @elseif(count($repairList) > 0)
                         <div
-                            class="d-flex align-items-center justify-content-center justify-content-md-start mb-3 mt-md-0 pt-2 pt-md-0">
+                            class="d-flex align-items-center justify-content-center justify-content-md-start mb-3 mt-md-0 pt-0 pt-md-0">
                             <h3 class="fw-bold text-primary-custom mb-0">MI REPARACIÓN</h3>
                         </div>
-                        <div class="table-responsive">
+                        <div class="d-none d-md-block table-responsive">
                             <table class="table table-hover align-middle border-light">
                                 <thead class="table-light text-muted small">
                                     <tr>
@@ -1853,38 +1853,110 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <div class="mt-4 border-top pt-4" x-data="{
-                                                            consultarConConfirmacion() {
-                                                                Swal.fire({
-                                                                    title: '<span style=\'font-size: 1.2rem; font-weight: 700; color: #132530;\'>Las cantidades y productos no se pueden modificar una vez confirmados</span>',
-                                                                    html: '<span style=\'font-size: 1rem; color: #6c757d;\'></span>',
-                                                                    icon: 'warning',
-                                                                    showCancelButton: true,
-                                                                    confirmButtonColor: '#BE3C3B',
-                                                                    cancelButtonColor: '#0d6efd',
-                                                                    confirmButtonText: 'Estoy seguro, quiero consultar',
-                                                                    cancelButtonText: 'Modificar consulta',
-                                                                    reverseButtons: true,
-                                                                }).then((result) => {
-                                                                    if (result.isConfirmed) {
-                                                                        $wire.openDeliveryModal();
-                                                                    }
-                                                                });
-                                                            }
-                                                        }">
-                                <button
-                                    class="btn btn-primary-custom w-100 py-3 fw-bold shadow d-flex align-items-center justify-content-center gap-2"
-                                    @click="consultarConConfirmacion()">
-                                    @if($this->isOrderFullyPrePriced())
-                                        <i class="fas fa-credit-card fs-5"></i>
-                                        <span>PROCEDER AL PAGO</span>
-                                    @else
-                                        <i class="fab fa-whatsapp fs-5"></i>
-                                        <span>CONSULTAR DISPONIBILIDAD</span>
-                                    @endif
-                                    <i class="fas fa-arrow-right small opacity-75"></i>
-                                </button>
-                            </div>
+                        </div>
+
+                        {{-- Mobile layout for Mi Reparación --}}
+                        <div class="d-block d-md-none">
+                            @foreach($repairList as $id => $item)
+                                <div class="card border border-light shadow-sm mb-3" style="border-radius: 8px; background: #fff;">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex">
+                                            <!-- Image -->
+                                            <div style="flex-shrink: 0;">
+                                                <img src="{{ isset($item['product']['image_path']) && $item['product']['image_path'] ? asset('storage/' . $item['product']['image_path']) : 'https://via.placeholder.com/100' }}"
+                                                    class="rounded border p-1"
+                                                    style="width: 80px; height: 80px; object-fit: contain; background: #fff;">
+                                            </div>
+                                            <!-- Title & Name -->
+                                            <div class="ms-3">
+                                                <div class="fw-bold text-primary" style="font-size: 1.05rem;">
+                                                    {{ $item['product']['supplier_code'] ?? $item['product']['oem_code'] }}
+                                                    @if(isset($item['product']['oversize']) && $item['product']['oversize'] && $item['product']['oversize'] !== 'STD')
+                                                        <span class="text-primary">{{ $item['product']['oversize'] }}</span>
+                                                    @elseif(isset($item['product']['oversize']) && $item['product']['oversize'] === 'STD')
+                                                        <span class="text-primary">STD</span>
+                                                    @endif
+                                                </div>
+                                                <div class="text-muted mt-1" style="font-size: 0.9rem; line-height: 1.3;">
+                                                    {{ $item['product']['name'] }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Badge Row -->
+                                        <div class="mt-3">
+                                            @php
+                                                $rawPrice = floatval($item['product']['price'] ?? 0);
+                                                $providerDirect = isset($item['product']['provider_id']) && $item['product']['provider_id']
+                                                    ? optional(\App\Models\Provider::find($item['product']['provider_id']))->requires_zbot === false
+                                                    : false;
+                                                $showPrice = $rawPrice > 0 && $providerDirect;
+                                                $clientPrice = $showPrice ? round($rawPrice * 1.18, 2) : null;
+                                            @endphp
+                                            @if($showPrice)
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1" style="font-size: 0.8rem;">
+                                                    S/ {{ number_format($clientPrice, 2) }} c/IGV
+                                                </span>
+                                            @else
+                                                <span class="badge bg-light text-muted border border-light-subtle px-3 py-1" style="font-size: 0.8rem; font-weight: normal;">
+                                                    Por confirmar
+                                                </span>
+                                            @endif
+                                        </div>
+
+                                        <!-- Controls Row -->
+                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <!-- Quantity -->
+                                            <div class="input-group input-group-sm d-inline-flex border rounded overflow-hidden" style="width: 110px; height: 35px;">
+                                                <button class="btn btn-light border-0 fw-bold" style="width: 35px;" wire:click="updateQuantity('{{ $id }}', {{ $item['qty'] - 1 }})">
+                                                    -
+                                                </button>
+                                                <input type="text" class="form-control text-center border-0 fw-medium bg-white" value="{{ $item['qty'] }}" readonly>
+                                                <button class="btn btn-light border-0 fw-bold" style="width: 35px;" wire:click="updateQuantity('{{ $id }}', {{ $item['qty'] + 1 }})">
+                                                    +
+                                                </button>
+                                            </div>
+                                            <!-- Trash -->
+                                            <button class="btn btn-link text-danger p-2" onclick="confirmRemoval('{{ $id }}', '{{ addslashes($item['product']['name']) }}')">
+                                                <i class="fas fa-trash fs-5"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="mt-4 border-top pt-4" x-data="{
+                                                        consultarConConfirmacion() {
+                                                            Swal.fire({
+                                                                title: '<span style=\'font-size: 1.2rem; font-weight: 700; color: #132530;\'>Las cantidades y productos no se pueden modificar una vez confirmados</span>',
+                                                                html: '<span style=\'font-size: 1rem; color: #6c757d;\'></span>',
+                                                                icon: 'warning',
+                                                                showCancelButton: true,
+                                                                confirmButtonColor: '#BE3C3B',
+                                                                cancelButtonColor: '#0d6efd',
+                                                                confirmButtonText: 'Estoy seguro, quiero consultar',
+                                                                cancelButtonText: 'Modificar consulta',
+                                                                reverseButtons: true,
+                                                            }).then((result) => {
+                                                                if (result.isConfirmed) {
+                                                                    $wire.openDeliveryModal();
+                                                                }
+                                                            });
+                                                        }
+                                                    }">
+                            <button
+                                class="btn btn-primary-custom w-100 py-3 fw-bold shadow d-flex align-items-center justify-content-center gap-2"
+                                @click="consultarConConfirmacion()" style="border-radius: 6px;">
+                                @if($this->isOrderFullyPrePriced())
+                                    <i class="fas fa-credit-card fs-5"></i>
+                                    <span>PROCEDER AL PAGO</span>
+                                @else
+                                    <i class="fab fa-whatsapp fs-5"></i>
+                                    <span>CONSULTAR DISPONIBILIDAD</span>
+                                @endif
+                                <i class="fas fa-arrow-right small opacity-75"></i>
+                            </button>
                         </div>
                     @else
                         <div class="text-center py-5">
@@ -2244,7 +2316,12 @@
         }
 
         .bg-section-custom {
-            padding-top: calc(62px + 1rem) !important;
+            padding-top: 65px !important;
+        }
+        @media (min-width: 768px) {
+            .bg-section-custom {
+                padding-top: calc(62px + 1rem) !important;
+            }
         }
 
         /* Custom Header Background */
