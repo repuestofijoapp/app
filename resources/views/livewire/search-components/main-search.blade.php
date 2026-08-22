@@ -1056,49 +1056,65 @@
                                                     @if(!$isFilter && $activeOversizes->count() > 0)
                                                         {{-- Unified Oversize UI: always show standard measures and a select
                                                         dropdown --}}
-                                                        <div
-                                                            class="d-flex flex-wrap align-items-start justify-content-between gap-3 bg-light rounded-3 px-3 py-2 flex-fill">
-                                                            <div>
-                                                                <div class="text-muted fw-bold mb-1"
-                                                                    style="font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase;">
-                                                                    MEDIDAS DISPONIBLES</div>
-                                                                <div class="d-flex flex-wrap gap-1">
-                                                                    @php
-                                                                        $isPiston = !empty($product->specs['pin']);
-                                                                        $stdOversizes = $isPiston
-                                                                            ? ['STD', '050', '075', '100', '150']
-                                                                            : ['STD', '025', '050', '075', '100', '125', '150'];
-
-                                                                        $activeOversizeNames = $activeOversizes->pluck('oversize')->toArray();
-                                                                        foreach ($activeOversizeNames as $aov) {
-                                                                            if (!in_array($aov, $stdOversizes)) {
-                                                                                $stdOversizes[] = $aov;
-                                                                            }
-                                                                        }
-                                                                    @endphp
-                                                                    @foreach($stdOversizes as $std)
-                                                                        @if(in_array($std, $activeOversizeNames))
-                                                                            <span class="badge rounded-pill"
-                                                                                style="background:#2563eb; color:#fff; font-size:0.7rem;">{{ $std }}</span>
-                                                                        @else
-                                                                            <span class="badge rounded-pill"
-                                                                                style="background:#e2e8f0; color:#94a3b8; font-size:0.7rem;">{{ $std }}</span>
-                                                                        @endif
-                                                                    @endforeach
-                                                                </div>
+                                                        <style>
+                                                            .measure-btn-valid {
+                                                                border: 1px solid #e2e8f0;
+                                                            }
+                                                            .measure-btn-valid:hover {
+                                                                border-color: #3b82f6 !important;
+                                                                color: #3b82f6 !important;
+                                                            }
+                                                        </style>
+                                                        <div class="w-100 flex-fill mb-2">
+                                                            <div class="text-muted fw-bold mb-2"
+                                                                style="font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase;">
+                                                                ELEGIR MEDIDA
                                                             </div>
-                                                            <div class="d-flex flex-column gap-0 align-items-start">
-                                                                <span class="text-muted fw-bold mb-1"
-                                                                    style="font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase;">ELEGIR
-                                                                    MEDIDA:</span>
-                                                                <select x-model="selectedOversize"
-                                                                    class="form-select form-select-sm fw-bold py-0"
-                                                                    style="max-width: 120px; border-radius: 8px; font-size: 0.82rem; height: 26px;">
-                                                                    <option value="" disabled selected>Elegir...</option>
-                                                                    @foreach($activeOversizes as $ov)
-                                                                        <option value="{{ $ov->oversize }}">{{ $ov->oversize }}</option>
-                                                                    @endforeach
-                                                                </select>
+                                                            <div class="d-flex flex-wrap gap-2">
+                                                                @php
+                                                                    $isPiston = !empty($product->specs['pin']);
+                                                                    $stdOversizes = $isPiston
+                                                                        ? ['STD', '050', '075', '100', '150']
+                                                                        : ['STD', '025', '050', '075', '100', '125', '150'];
+
+                                                                    $activeOversizeNames = $activeOversizes->pluck('oversize')->toArray();
+                                                                    foreach ($activeOversizeNames as $aov) {
+                                                                        if (!in_array($aov, $stdOversizes)) {
+                                                                            $stdOversizes[] = $aov;
+                                                                        }
+                                                                    }
+                                                                @endphp
+                                                                @foreach($stdOversizes as $std)
+                                                                    @php
+                                                                        $hasStock = in_array($std, $activeOversizeNames);
+                                                                    @endphp
+                                                                    <label class="position-relative mb-0" 
+                                                                           style="width: 58px; height: 34px; {{ !$hasStock ? 'cursor: not-allowed; opacity: 0.6;' : 'cursor: pointer;' }}">
+                                                                        <input type="radio" x-model="selectedOversize" value="{{ $std }}" class="d-none" {{ !$hasStock ? 'disabled' : '' }}>
+                                                                        <div class="d-flex align-items-center justify-content-center w-100 h-100 rounded transition-all {{ $hasStock ? 'measure-btn-valid' : 'border' }}"
+                                                                             :class="{
+                                                                                 'bg-primary text-white border-primary': selectedOversize === '{{ $std }}',
+                                                                                 'bg-white text-dark': selectedOversize !== '{{ $std }}' && {{ $hasStock ? 'true' : 'false' }},
+                                                                                 'bg-light text-muted overflow-hidden': !{{ $hasStock ? 'true' : 'false' }}
+                                                                             }"
+                                                                             style="font-size: 0.85rem; font-weight: 500; {{ !$hasStock ? 'border-color: #cbd5e1;' : '' }}">
+                                                                            
+                                                                            {{-- Strikethrough for out of stock --}}
+                                                                            @if(!$hasStock)
+                                                                                <div class="position-absolute w-100 h-100" style="border-top: 1px solid #94a3b8; top: 50%; left: 0; transform: rotate(-25deg); transform-origin: center;"></div>
+                                                                            @endif
+
+                                                                            <span class="position-relative z-1">{{ $std }}</span>
+
+                                                                            {{-- Checkmark for selected state --}}
+                                                                            <div x-show="selectedOversize === '{{ $std }}'" 
+                                                                                 class="position-absolute bottom-0 end-0 bg-white text-primary rounded-circle d-flex align-items-center justify-content-center" 
+                                                                                 style="width: 14px; height: 14px; transform: translate(30%, 30%); box-shadow: 0 0 0 2px #0b0f19;">
+                                                                                <i class="fas fa-check" style="font-size: 8px;"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                    </label>
+                                                                @endforeach
                                                             </div>
                                                         </div>
                                                     @endif
