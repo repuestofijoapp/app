@@ -591,7 +591,7 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Proveedor <span class="text-danger">*</span></label>
-                                    <select wire:model="provider_id" class="form-input">
+                                    <select wire:model="provider_id" class="form-input @error('provider_id') border-danger @enderror">
                                         <option value="">— Seleccionar —</option>
                                         @foreach($providers as $prov)
                                             <option value="{{ $prov->id }}">{{ $prov->business_name }}</option>
@@ -668,7 +668,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Código Proveedor <span class="text-danger">*</span></label>
-                            <input type="text" wire:model="supplier_code" class="form-input"
+                            <input type="text" wire:model="supplier_code" class="form-input @error('supplier_code') border-danger @enderror"
                                 placeholder="SWH-30433, CB-1134">
                             @error('supplier_code') <span class="text-danger text-xs">{{ $message }}</span> @enderror
                         </div>
@@ -700,9 +700,10 @@
                             <p class="form-hint">Referencias cruzadas separadas por coma</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Nombre descriptivo</label>
-                            <input type="text" wire:model="name" class="form-input"
+                            <label class="form-label">Nombre descriptivo <span class="text-danger">*</span></label>
+                            <input type="text" wire:model="name" class="form-input @error('name') border-danger @enderror"
                                 placeholder="Anillo Honda Prelude 87mm STD">
+                            @error('name') <span class="text-danger text-xs">{{ $message }}</span> @enderror
                         </div>
 
                         {{-- Compatibilidad con vehículos --}}

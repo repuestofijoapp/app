@@ -460,11 +460,12 @@ class ProductManagement extends Component
                 'supplier_code' => 'required|string|max:255',
                 'brand' => 'nullable|string|max:100',
                 'oem_code' => 'nullable|string|max:2000',
-                'name' => 'nullable|string|max:255',
+                'name' => 'required|string|max:255',
                 'image' => 'nullable|image|max:2048', // 2MB max
             ], [
                 'provider_id.required' => 'El proveedor es obligatorio.',
                 'supplier_code.required' => 'El código es obligatorio.',
+                'name.required' => 'El nombre del producto es obligatorio.',
                 'image.image' => 'El archivo debe ser una imagen.',
                 'image.max' => 'La imagen no debe pesar más de 2MB.',
             ]);
@@ -575,7 +576,7 @@ class ProductManagement extends Component
             'oversize' => $legacyOversize,
             'fuel_type'  => count($this->fuel_types) === 1 ? $this->fuel_types[0] : null,
             'fuel_types' => !empty($this->fuel_types) ? array_values($this->fuel_types) : null,
-            'name' => trim($this->name) ?: null,
+            'name' => trim($this->name),
             'compatible_engines' => $engines ?: null,
             'compatible_vehicles' => !empty($vehicles) ? implode(', ', $vehicles) : null,
             'compatible_model_ids' => !empty($this->form_model_ids) ? array_map('intval', $this->form_model_ids) : null,
