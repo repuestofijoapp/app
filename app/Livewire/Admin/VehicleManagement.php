@@ -21,6 +21,15 @@ class VehicleManagement extends Component
 
     // Active tab: 'makes' | 'models' | 'engines'
     public string $tab = 'makes';
+    
+    public int $perPage = 25;
+
+    public function updatingPerPage(): void
+    {
+        $this->resetPage('makesPage');
+        $this->resetPage('modelsPage');
+        $this->resetPage('enginesPage');
+    }
 
     // ─── Filters ───
     public string $searchMake  = '';
@@ -29,6 +38,12 @@ class VehicleManagement extends Component
     public string $filterMakeForModels = '';
     public string $filterMakeForEngines = '';
     public string $filterModelForEngines = '';
+
+    public function updatedFilterMakeForEngines(): void
+    {
+        $this->filterModelForEngines = '';
+        $this->resetPage('enginesPage');
+    }
 
     // ─── Modal state ───
     public bool   $showModal = false;
@@ -68,8 +83,10 @@ class VehicleManagement extends Component
     {
         $this->allMakes  = Make::orderBy('name')->get(['id', 'name'])->toArray();
         $this->allModels = CarModel::with('make')->orderBy('name')->get()->map(fn($m) => [
-            'id'    => $m->id,
-            'label' => ($m->make->name ?? '?') . ' · ' . $m->name,
+            'id'      => $m->id,
+            'make_id' => $m->make_id,
+            'name'    => $m->name,
+            'label'   => ($m->make->name ?? '?') . ' · ' . $m->name,
         ])->toArray();
     }
 
@@ -333,14 +350,14 @@ class VehicleManagement extends Component
         $makes = Make::when($this->searchMake, fn($q) => $q->where('name', 'LIKE', '%' . $this->searchMake . '%'))
             ->withCount(['carModels', 'carModels as engines_count' => fn($q) => $q])
             ->orderBy('name')
-            ->paginate(20, ['*'], 'makesPage');
+            ->paginate($this->perPage, ['*'], 'makesPage');
 
         $models = CarModel::with('make')
             ->when($this->searchModel, fn($q) => $q->where('name', 'LIKE', '%' . $this->searchModel . '%'))
             ->when($this->filterMakeForModels, fn($q) => $q->where('make_id', $this->filterMakeForModels))
             ->withCount('engines')
             ->orderBy('name')
-            ->paginate(20, ['*'], 'modelsPage');
+            ->paginate($this->perPage, ['*'], 'modelsPage');
 
         $engines = Engine::with(['carModel.make'])
             ->when($this->searchEngine, fn($q) => $q->where('engine_code', 'LIKE', '%' . $this->searchEngine . '%'))
@@ -349,7 +366,7 @@ class VehicleManagement extends Component
                 $q->whereHas('carModel', fn($q2) => $q2->whereHas('make', fn($q3) => $q3->where('id', $this->filterMakeForEngines)));
             })
             ->orderBy('engine_code')
-            ->paginate(20, ['*'], 'enginesPage');
+            ->paginate($this->perPage, ['*'], 'enginesPage');
 
         return view('livewire.admin.vehicle-management', compact('makes', 'models', 'engines'))
             ->layout('layouts.app');

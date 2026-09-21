@@ -4277,7 +4277,173 @@
         </script>
     @endif
 
+    {{-- ZETTABOT MODAL (inside root div) --}}
+    @if($showZbotModal)
+    <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(5px);z-index:10005;">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:900px;">
+            <div class="modal-content border-0 shadow-lg" style="border-radius:24px;overflow:hidden;background:#fff;">
+                <div class="modal-header border-0 pb-0 pe-4 pt-4">
+                    <h5 class="modal-title fw-bold" style="color:#132530;">Consultando Disponibilidad...</h5>
+                    <button type="button" class="btn-close" wire:click="closeZbotModal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="zbot-screen-container" wire:poll.3s="checkZbotResponses"
+                        x-data="zettaBotAnimation(@js($this->getZbotProviders()))" x-init="startSequence()"
+                        x-on:zbot-updated.window="updateFromLivewire($event.detail[0])">
+                        <div class="zbot-card shadow-none border-0">
+                            <div class="zbot-layout">
+                                <div class="zbot-panel-left p-4 border-end border-light">
+                                    <div class="d-flex align-items-center gap-3 mb-4">
+                                        <div class="zbot-icon-circle bg-danger text-white d-flex align-items-center justify-content-center shadow-sm"
+                                            style="width:48px;height:48px;border-radius:12px;font-size:24px;">🔺</div>
+                                        <div>
+                                            <h5 class="fw-bold mb-0 text-dark" x-text="headerStatus"></h5>
+                                            <p class="text-muted small mb-0">ZettaBot · Pedido #{{ $lastOrderId ?? '...' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <div class="text-muted x-small fw-bold text-uppercase mb-2">Detalles del Pedido</div>
+                                        <div class="zbot-product-list scrollbar-hide" style="max-height:250px;overflow-y:auto;">
+                                            @foreach($repairList as $item)
+                                                <div class="product-item-lite p-2 border-bottom border-light d-flex align-items-center justify-content-between">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="bg-primary rounded-circle" style="width:6px;height:6px;"></div>
+                                                        <span class="text-dark small">{{ $item['product']['name'] }}</span>
+                                                    </div>
+                                                    <span class="text-muted small">x{{ $item['qty'] }}</span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="d-none d-md-flex align-items-center justify-content-center gap-2 py-3 bg-light rounded-3 mb-3">
+                                        <div class="timer-dot-animate"></div>
+                                        <span class="text-muted small">Tiempo de respuesta:</span>
+                                        <span class="fw-bold text-danger" x-text="timerCount">9:00</span>
+                                    </div>
+                                </div>
+                                <div class="zbot-panel-right p-4 d-flex flex-column align-items-center justify-content-center bg-light bg-opacity-10">
+                                    <div class="zbot-avatar-container mb-4">
+                                        <div class="zbot-avatar-bg mx-auto">
+                                            <div class="zbot-avatar-inner">🤖</div>
+                                        </div>
+                                        <div class="mt-3 text-center">
+                                            <div class="fw-bold text-primary text-uppercase letter-spacing-2 small">ZettaBot</div>
+                                            <div class="text-muted small italic-pulse" x-text="zbotStatus"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-2 w-100 mb-4 justify-content-center">
+                                        <template x-for="(prov, id) in providers" :key="id">
+                                            <div class="col-4">
+                                                <div class="provider-card-v2 p-2 border border-light shadow-sm rounded-3 text-center h-100 d-flex flex-column align-items-center gap-1"
+                                                    :class="prov.state==='asking'?'border-danger shadow-danger-l':(prov.state==='confirmed'?'border-success shadow-success-l':(prov.state==='denied'?'opacity-50':''))"
+                                                    style="transition:all 0.5s ease;">
+                                                    <div class="position-relative">
+                                                        <span class="fs-4" x-text="prov.icon"></span>
+                                                        <div class="status-dot position-absolute top-0 end-0"
+                                                            :class="prov.state==='asking'?'bg-danger pulse-dot':(prov.state==='confirmed'?'bg-success':'bg-muted')"></div>
+                                                    </div>
+                                                    <div class="fw-bold x-small text-dark" x-text="prov.name"></div>
+                                                    <div class="badge x-small px-1"
+                                                        :class="prov.state==='confirmed'?'bg-success-soft text-success':(prov.state==='denied'?'bg-danger-soft text-danger':'bg-secondary bg-opacity-10 text-muted')"
+                                                        x-text="prov.result"></div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <div class="w-100 mb-4 px-md-4">
+                                        <div class="progress bg-secondary bg-opacity-10 overflow-hidden" style="height:6px;border-radius:10px;">
+                                            <div class="progress-bar bg-danger" role="progressbar"
+                                                :style="'width:'+progress+'%;transition:width 1s ease;'"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-2 x-small text-muted">
+                                            <span x-text="progressLabel"></span>
+                                            <span x-text="progress+'%'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 
-</div>
 
-</div>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('zettaBotAnimation', (initialProviders) => ({
+                providers: initialProviders || [],
+                progress: 0,
+                timerCount: '0:00',
+                startTime: null,
+                timerInterval: null,
+                zbotStatus: 'Iniciando ZettaBot...',
+                headerStatus: 'Consultando Disponibilidad',
+                progressLabel: 'Conectando con proveedores...',
+                
+                updateFromLivewire(payload) {
+                    if (payload && payload.providers) {
+                        this.providers = payload.providers;
+                    } else if (payload && Array.isArray(payload)) {
+                        this.providers = payload;
+                    } else if (payload && payload[0] && payload[0].providers) {
+                        this.providers = payload[0].providers;
+                    }
+                    this.calculateProgress();
+                },
+                
+                calculateProgress() {
+                    let total = Object.keys(this.providers).length;
+                    if (total === 0) {
+                        this.progress = 100;
+                        this.finishSequence();
+                        return;
+                    }
+                    
+                    let processed = Object.values(this.providers).filter(p => p.state === 'confirmed' || p.state === 'denied');
+                    this.progress = Math.round((processed.length / total) * 100);
+                    
+                    if (this.progress >= 100) {
+                        this.finishSequence();
+                    } else {
+                        if (processed.length > 0) {
+                            this.zbotStatus = processed.length + ' respuesta' + (processed.length > 1 ? 's' : '') + ' recibida' + (processed.length > 1 ? 's' : '') + '...';
+                            this.progressLabel = 'Analizando disponibilidad y precios...';
+                        }
+                    }
+                },
+                
+                startSequence() {
+                    this.progress = 0;
+                    this.startTime = new Date();
+                    this.timerInterval = setInterval(() => {
+                        let diff = Math.floor((new Date() - this.startTime) / 1000);
+                        let m = Math.floor(diff / 60);
+                        let s = diff % 60;
+                        this.timerCount = m + ':' + (s < 10 ? '0' : '') + s;
+                    }, 1000);
+                    
+                    this.zbotStatus = 'Contactando proveedores via WhatsApp...';
+                    let numProviders = this.providers ? Object.keys(this.providers).length : 0;
+                    this.progressLabel = 'Contactando ' + numProviders + ' proveedores...';
+                    
+                    this.calculateProgress();
+                },
+                
+                finishSequence() {
+                    clearInterval(this.timerInterval);
+                    this.progress = 100;
+                    this.zbotStatus = '¡Disponibilidad confirmada!';
+                    this.progressLabel = 'Consulta finalizada con éxito';
+                    this.headerStatus = 'Disponibilidad confirmada';
+                    
+                    setTimeout(() => {
+                        this.$wire.closeZbotModal();
+                    }, 2500);
+                }
+            }));
+        });
+    </script>
+</div>{{-- /main-container --}}

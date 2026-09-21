@@ -533,6 +533,7 @@ class MainSearch extends Component
     public $lastAddedProduct = null;
     public $showSuccessPopup = false;
     public $isSearching = false;
+    public $showZbotModal = false;
     public $zbotSearchStartTime = null;
     public $showLoginModal = false;
     public $loginBlockMessage = '';
@@ -747,6 +748,22 @@ class MainSearch extends Component
             $this->repairList = session('repair_list_session');
         }
 
+        // ★ CARRITO MULTIDISPOSITIVO: si el usuario está logueado, mezclar
+        // el carrito de sesión con el carrito guardado en la base de datos.
+        if (auth()->check()) {
+            $dbCart = auth()->user()->cart_data ?? [];
+            foreach ($dbCart as $key => $item) {
+                if (!isset($this->repairList[$key])) {
+                    // El item está en la DB pero no en esta sesión → añadir
+                    $this->repairList[$key] = $item;
+                }
+            }
+            // Persistir el estado unificado de vuelta a la DB y sesión
+            if (!empty($this->repairList)) {
+                $this->saveCartToDb();
+            }
+        }
+
         // Cargar estado de búsqueda persistido en la sesión para evitar pérdida en F5
         if (session()->has('persisted_search_state')) {
             $pState = session('persisted_search_state');
@@ -784,6 +801,18 @@ class MainSearch extends Component
             // Al restaurar desde snapshot, guardar en el estado persistido
             $this->savePersistedSearchState();
         }
+    }
+
+    /**
+     * Persiste el carrito actual del usuario en la base de datos
+     * para permitir acceso multidispositivo en cuentas verificadas.
+     */
+    private function saveCartToDb(): void
+    {
+        if (!auth()->check()) {
+            return;
+        }
+        auth()->user()->update(['cart_data' => $this->repairList ?: null]);
     }
 
     /**
@@ -1462,6 +1491,7 @@ class MainSearch extends Component
             $this->trackProductView($productId);
             $this->dispatch('notify', ['type' => 'success', 'message' => '¡Repuesto agregado!']);
             $this->savePersistedSearchState();
+            $this->saveCartToDb();
         }
         // If multiple oversizes: do nothing — user must pick from the blade dropdown
     }
@@ -1504,6 +1534,7 @@ class MainSearch extends Component
         $this->trackProductView($productId);
         $this->dispatch('notify', ['type' => 'success', 'message' => "Medida {$oversize} agregada a la reparación."]);
         $this->savePersistedSearchState();
+        $this->saveCartToDb();
     }
 
     public function closeAddedPopup()
@@ -1517,6 +1548,7 @@ class MainSearch extends Component
         unset($this->repairList[$productId]);
         $this->dispatch('notify', ['type' => 'info', 'message' => 'Repuesto eliminado']);
         $this->savePersistedSearchState();
+        $this->saveCartToDb();
     }
 
     public function updateQuantity($productId, $qty)
@@ -1525,6 +1557,7 @@ class MainSearch extends Component
             $qty = max(1, min(10, $qty));
             $this->repairList[$productId]['qty'] = $qty;
             $this->savePersistedSearchState();
+            $this->saveCartToDb();
         }
     }
 
@@ -1734,6 +1767,7 @@ class MainSearch extends Component
     public function processFinalOrder()
     {
         $this->isSearching = true;
+        $this->showZbotModal = true;
         $this->zbotSearchStartTime = now();
         $this->showLeadForm = false;
         $this->triedProviderIds = [];
@@ -1833,9 +1867,22 @@ class MainSearch extends Component
         $this->savePersistedSearchState();
     }
 
+    /**
+     * Called from JS when the Zettabot animation finishes (all providers confirmed).
+     * Closes the modal and leaves the repairList in the updated state so Mi Reparación
+     * can show the confirmed items with prices and the PAGAR button.
+     */
+    public function closeZbotModal(): void
+    {
+        $this->showZbotModal = false;
+        $this->isSearching = false;
+        $this->viewState = 'repair_summary'; // Show the confirmed items view
+    }
+
     public function cancelSearch()
     {
         $this->isSearching = false;
+        $this->showZbotModal = false;
 
         $pedidoId = session()->get('current_pedido_id') ?? $this->lastOrderId;
         $startTime = $this->zbotSearchStartTime ?? now()->subMinutes(15);
@@ -1952,6 +1999,49 @@ class MainSearch extends Component
         $this->dispatch('notify', ['type' => 'info', 'message' => 'Búsqueda cancelada correctamente.']);
     }
 
+
+    /**
+     * Computed property: Returns products related to the engines already in the cart.
+     * Used to show "Complementos Sugeridos para tu Motor" carousel.
+     */
+    public function getRelatedProductsProperty(): array
+    {
+        if (empty($this->repairList)) {
+            return [];
+        }
+
+        // Collect all engine IDs from products in the cart
+        $cartEngineIds = [];
+        $cartProductIds = [];
+        foreach ($this->repairList as $cartKey => $item) {
+            $pid = (int) explode('_', $cartKey)[0];
+            $cartProductIds[] = $pid;
+            $engineIds = $item['product']['compatible_engine_ids'] ?? [];
+            if (is_array($engineIds)) {
+                $cartEngineIds = array_merge($cartEngineIds, $engineIds);
+            }
+        }
+        $cartEngineIds = array_unique(array_filter($cartEngineIds));
+
+        if (empty($cartEngineIds)) {
+            return [];
+        }
+
+        // Find products sharing at least one engine ID, not already in the cart
+        $related = \App\Models\Product::with('oversizes')
+            ->where('is_active', true)
+            ->where(function ($q) use ($cartEngineIds) {
+                foreach ($cartEngineIds as $eid) {
+                    $q->orWhereJsonContains('compatible_engine_ids', (int) $eid);
+                }
+            })
+            ->whereNotIn('id', $cartProductIds)
+            ->inRandomOrder()
+            ->limit(12)
+            ->get();
+
+        return $related->toArray();
+    }
 
     public function render()
     {

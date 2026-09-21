@@ -7,7 +7,7 @@
                     <i class="fas fa-chevron-left"></i>
                 </span>
             @else
-                <button wire:click="previousPage" wire:loading.attr="disabled" class="btn-pagination">
+                <button wire:click="previousPage('{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" class="btn-pagination">
                     <i class="fas fa-chevron-left"></i>
                 </button>
             @endif
@@ -25,7 +25,7 @@
                         @if ($page == $paginator->currentPage())
                             <span class="btn-pagination-active">{{ $page }}</span>
                         @else
-                            <button wire:click="gotoPage({{ $page }})" class="btn-pagination">{{ $page }}</button>
+                            <button wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')" class="btn-pagination">{{ $page }}</button>
                         @endif
                     @endforeach
                 @endif
@@ -33,7 +33,7 @@
 
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
-                <button wire:click="nextPage" wire:loading.attr="disabled" class="btn-pagination">
+                <button wire:click="nextPage('{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" class="btn-pagination">
                     <i class="fas fa-chevron-right"></i>
                 </button>
             @else

@@ -263,6 +263,18 @@
         /* ─── Fix for broken pagination backdrop ─── */
         .vm-card { min-height: auto !important; overflow: visible !important; }
         nav[role="navigation"] { background: transparent !important; }
+
+        .per-page-select {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            color: #fff;
+            outline: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .per-page-select:focus { border-color: var(--accent-red); }
     </style>
 
     {{-- ─── Header ─── --}}
@@ -289,6 +301,17 @@
         <button class="vm-tab {{ $tab === 'engines' ? 'active' : '' }}" wire:click="switchTab('engines')">
             <i class="fas fa-cog me-1"></i> Motores
         </button>
+    </div>
+
+    {{-- ─── Paginator Control ─── --}}
+    <div class="d-flex justify-content-end align-items-center mb-3 gap-2">
+        <span class="text-white" style="font-size: .85rem;">Mostrar</span>
+        <select wire:model.live="perPage" class="per-page-select" style="padding: 0.4rem 0.8rem;">
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+        <span class="text-white" style="font-size: .85rem;">registros</span>
     </div>
 
     {{-- ══════════════════════════════════════════
@@ -458,11 +481,15 @@
                         <option value="{{ $mk['id'] }}">{{ $mk['name'] }}</option>
                     @endforeach
                 </select>
-                <select wire:model.live="filterModelForEngines" class="vm-select">
+                <select wire:model.live="filterModelForEngines" class="vm-select" @if(!$filterMakeForEngines) disabled @endif>
                     <option value="">— Todos los modelos —</option>
-                    @foreach($allModels as $md)
-                        <option value="{{ $md['id'] }}">{{ $md['label'] }}</option>
-                    @endforeach
+                    @if($filterMakeForEngines)
+                        @foreach($allModels as $md)
+                            @if((string)$md['make_id'] === (string)$filterMakeForEngines)
+                                <option value="{{ $md['id'] }}">{{ $md['name'] }}</option>
+                            @endif
+                        @endforeach
+                    @endif
                 </select>
                 <button wire:click="openCreateEngine" class="btn-add ms-auto">
                     <i class="fas fa-plus"></i> Nuevo Motor
