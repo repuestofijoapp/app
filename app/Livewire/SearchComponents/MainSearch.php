@@ -1091,10 +1091,12 @@ class MainSearch extends Component
         $makeName = strtoupper($engine->carModel->make->name ?? '');
 
         $this->selectedEngineObj = [
-            'model' => $engine->carModel->name,
-            'engine_code' => $engine->engine_code,
-            'brand' => $engine->carModel->make->name,
-            'label' => $makeName . ' ' . $modelName . ($engineCode ? ' (' . $engineCode . ')' : ''),
+            'model'        => $engine->carModel->name,
+            'engine_code'  => $engine->engine_code,
+            'brand'        => $engine->carModel->make->name,
+            'displacement' => $engine->displacement,
+            'fuel_type'    => $engine->fuel_type,
+            'label'        => $makeName . ' ' . $modelName . ($engineCode ? ' (' . $engineCode . ')' : ''),
         ];
 
         $this->searchContext = [

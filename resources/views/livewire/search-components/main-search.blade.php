@@ -768,11 +768,30 @@
 
                     .rf-sticky-banner.is-scrolled .rf-mobile-card {
                         border-radius: 0 !important;
-                        box-shadow: none !important;
                         margin-bottom: 0 !important;
                         border-left: none !important;
                         border-right: none !important;
                         border-top: none !important;
+                    }
+
+                    .rf-sticky-banner.is-scrolled {
+                        margin-bottom: 0 !important;
+                    }
+
+                    /* Mobile: account for taller header (logo + OEM search bar) */
+                    @media (max-width: 767px) {
+                        .rf-sticky-banner {
+                            top: 106px !important;
+                        }
+                        
+                        .rf-mobile-card {
+                            /* Expand beyond the standard Bootstrap container padding (usually 12px/15px) */
+                            margin-left: calc(-0.5 * var(--bs-gutter-x, 30px)) !important;
+                            margin-right: calc(-0.5 * var(--bs-gutter-x, 30px)) !important;
+                            border-radius: 0 !important;
+                            border-left: none !important;
+                            border-right: none !important;
+                        }
                     }
                 </style>
 
@@ -864,8 +883,13 @@
                                     @if($vehicle && $vehicle->engine_code)
                                         <span>Motor: <strong class="text-dark">{{ $vehicle->engine_code }}</strong></span>
                                     @elseif($selectedEngineObj && $selectedEngineObj['engine_code'])
-                                        <span>Motor: <strong
-                                                class="text-dark">{{ $selectedEngineObj['engine_code'] }}</strong></span>
+                                        <span>Motor: <strong class="text-dark">{{ $selectedEngineObj['engine_code'] }}</strong></span>
+                                        @if(!empty($selectedEngineObj['displacement']))
+                                            <span>CC: <strong class="text-dark">{{ $selectedEngineObj['displacement'] }}</strong></span>
+                                        @endif
+                                        @if(!empty($selectedEngineObj['fuel_type']))
+                                            <span>Combustible: <strong class="text-dark">{{ $selectedEngineObj['fuel_type'] }}</strong></span>
+                                        @endif
                                     @endif
                                     @if($vehicle && $vehicle->body_type && $searchType === 'plate')
                                         <span>Carrocería: <strong class="text-dark">{{ $vehicle->body_type }}</strong></span>
@@ -879,7 +903,8 @@
                             </div>
                         </div>
 
-                        {{-- DESKTOP BREADCRUMB --}}
+                        {{-- DESKTOP BREADCRUMB: only for plate searches --}}
+                        @if($searchType === 'plate')
                         <div class="rf-breadcrumb-row d-none d-md-flex breadcrumb-chevron-container mb-3">
                             @foreach($steps as $index => $step)
                                 @php
@@ -903,9 +928,10 @@
                                 </div>
                             @endforeach
                         </div>
+                        @endif
 
                         {{-- MOBILE COMBINED CARD (DETAILS + CHIPS) --}}
-                        <div class="rf-mobile-card d-md-none bg-white p-3 rounded shadow-sm border border-light mb-3"
+                        <div class="rf-mobile-card d-md-none bg-white py-2 px-3 rounded shadow-sm border border-light mb-3"
                             style="transition: border-radius 0.3s ease, box-shadow 0.3s ease, margin 0.3s ease;">
                             <div class="d-flex gap-2 align-items-center mb-1">
                                 <div style="width: 55px; height: 42px; border-radius: 6px; border: 1px solid #eee; background-color: #fff; display: flex; align-items: center; justify-content: center;"
@@ -914,28 +940,41 @@
                                         style="width: 95%; height: 95%; object-fit: contain;">
                                 </div>
                                 <div class="flex-grow-1">
-                                    <div class="text-dark fw-medium text-uppercase" style="font-size: 13px;">
+                                    <div class="text-dark fw-medium text-uppercase" style="font-size: 13px; line-height: 1.2;">
                                         {{ $brandName }} {{ $modelName }}
-                                        @if($vehicle && $vehicle->engine_code)
-                                            - {{ $vehicle->engine_code }}
-                                        @elseif($selectedEngineObj && $selectedEngineObj['engine_code'])
-                                            - {{ $selectedEngineObj['engine_code'] }}
-                                        @endif
                                     </div>
-                                    <div class="text-muted" style="font-size: 11px; margin-top: 1px;">
-                                        @if($vehicle && $searchType === 'plate')
-                                            Placa: {{ $vehicle->plate }}
-                                            @if($vehicle->body_type) | Carrocería: {{ $vehicle->body_type }} @endif
+                                    <div class="text-muted" style="font-size: 11px; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px; line-height: 1.1;">
+                                        @if($vehicle && $vehicle->engine_code)
+                                            <span>Motor: <strong class="text-dark">{{ $vehicle->engine_code }}</strong></span>
+                                            @if($vehicle->body_type && $searchType === 'plate')
+                                                <span>| Placa: <strong class="text-dark">{{ $vehicle->plate }}</strong></span>
+                                                <span>| Carrocería: <strong class="text-dark">{{ $vehicle->body_type }}</strong></span>
+                                            @endif
+                                        @elseif($selectedEngineObj && $selectedEngineObj['engine_code'])
+                                            <span>Motor: <strong class="text-dark">{{ $selectedEngineObj['engine_code'] }}</strong></span>
+                                            @if(!empty($selectedEngineObj['displacement']))
+                                                <span>| CC: <strong class="text-dark">{{ $selectedEngineObj['displacement'] }}</strong></span>
+                                            @endif
+                                            @if(!empty($selectedEngineObj['fuel_type']))
+                                                <span>| <strong class="text-dark">{{ $selectedEngineObj['fuel_type'] }}</strong></span>
+                                            @endif
+                                        @elseif($vehicle && $searchType === 'plate')
+                                            <span>Placa: <strong class="text-dark">{{ $vehicle->plate }}</strong></span>
+                                            @if($vehicle->body_type)
+                                                <span>| Carrocería: <strong class="text-dark">{{ $vehicle->body_type }}</strong></span>
+                                            @endif
                                         @endif
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="text-end fw-medium mb-3" style="font-size: 12px; color: #C0392B;">
+                            <div class="text-end fw-medium {{ $searchType === 'plate' ? 'mb-2' : 'mb-0' }}" style="font-size: 12px; color: #C0392B;">
                                 {{ isset($products) ? (method_exists($products, 'total') ? $products->total() : $products->count()) : 0 }}
                                 producto(s) encontrado(s)
                             </div>
 
+                            {{-- MOBILE CHIPS: only for plate searches --}}
+                            @if($searchType === 'plate')
                             <div class="mobile-chips-wrapper py-2 px-2 rounded"
                                 style="background-color: #F8F9FA; border: 1px solid #E9ECEF;">
                                 @foreach($steps as $index => $step)
@@ -954,6 +993,7 @@
                                     @endif
                                 @endforeach
                             </div>
+                            @endif
                         </div>
 
                     @endif
