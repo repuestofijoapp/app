@@ -680,6 +680,15 @@
                         <span class="sb-link-label">Repuestos</span>
                     </a>
 
+                    {{-- Diagnóstico de Catálogo --}}
+                    @if(auth()->user()->isAdmin())
+                    <a href="{{ route('admin.catalog-diagnostic', ['secret' => env('ADMIN_URL_SECRET', 'Repuesto-Sape-2026')]) }}"
+                        class="sb-link {{ request()->routeIs('admin.catalog-diagnostic') ? 'active' : '' }}" data-label="Diagnóstico">
+                        <i class="fas fa-stethoscope"></i>
+                        <span class="sb-link-label">Diagnóstico</span>
+                    </a>
+                    @endif
+
                     {{-- Operaciones Group (Desplegable) --}}
                     <div
                         x-data="{ open: {{ request()->routeIs('admin.en-vivo', 'admin.pedidos', 'admin.soporte') ? 'true' : 'false' }} }">

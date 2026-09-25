@@ -22,3 +22,25 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Invoices and scratch
+/public/invoices/*.pdf
+/scratch/
+temp_*.*
+*.sql
+blade_diff.txt
+mk_verificador/
+check_*.php
+inspect_*.php
+delete_*.php
+fix_*.php
+clean_engines.php
+compare_dumps.php
+count_ndc.php
+diag_root.php
+dump_cache.php
+analyze_engines.php
+add_script.php
+recreate_products.php
+analisis_toyota_motores.md
+

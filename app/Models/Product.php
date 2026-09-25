@@ -53,6 +53,11 @@ class Product extends Model
         return $this->hasMany(ProductOversize::class, 'product_id');
     }
 
+    public function compatibilities()
+    {
+        return $this->hasMany(ProductCompatibility::class, 'product_id');
+    }
+
     public function provider(): BelongsTo
     {
         return $this->belongsTo(Provider::class);

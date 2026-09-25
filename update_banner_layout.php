@@ -49,7 +49,7 @@ $newBanner = <<<'EOD'
                                         {{ $selectedCategory->name ?? 'Categorías' }}
                                     </h4>
                                     <div class="small text-muted mt-1" style="font-size: 0.75rem;">
-                                        
+                                        Seleccione una subcategoría
                                     </div>
                                 </div>
                             </div>

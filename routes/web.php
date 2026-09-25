@@ -70,6 +70,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/Ayoro-sape-{secret}/users', \App\Livewire\Admin\UserManagement::class)->name('admin.users');
         Route::get('/Ayoro-sape-{secret}/providers', \App\Livewire\Admin\ProviderManagement::class)->name('admin.providers');
         Route::get('/Ayoro-sape-{secret}/products', \App\Livewire\Admin\ProductManagement::class)->name('admin.products');
+        Route::get('/Ayoro-sape-{secret}/diagnostico', \App\Livewire\Admin\CatalogDiagnostic::class)->name('admin.catalog-diagnostic');
         Route::get('/Ayoro-sape-{secret}/zettabot', \App\Livewire\Admin\ZettaBotSettings::class)->name('admin.zettabot');
         Route::get('/Ayoro-sape-{secret}/pedidos', \App\Livewire\Admin\PedidoManagement::class)->name('admin.pedidos');
         Route::get('/Ayoro-sape-{secret}/en-vivo', \App\Livewire\Admin\EnVivo::class)->name('admin.en-vivo');

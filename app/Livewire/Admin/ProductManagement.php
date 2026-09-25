@@ -620,6 +620,43 @@ class ProductManagement extends Component
                         ProductOversize::where('product_id', $product->id)->where('oversize', $key)->delete();
                     }
                 }
+
+                // Sync product_compatibilities pivot table
+                if (\Illuminate\Support\Facades\Schema::hasTable('product_compatibilities')) {
+                    \App\Models\ProductCompatibility::where('product_id', $product->id)->delete();
+                    $newCompat = [];
+                    $engs = !empty($this->form_engine_ids) ? \App\Models\Engine::whereIn('id', $this->form_engine_ids)->with('carModel')->get() : collect();
+                    foreach ($engs as $eng) {
+                        $newCompat[] = [
+                            'product_id' => $product->id,
+                            'make_id' => $eng->carModel->make_id ?? null,
+                            'car_model_id' => $eng->car_model_id,
+                            'engine_id' => $eng->id,
+                            'source' => 'manual',
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                    $coveredModels = $engs->pluck('car_model_id')->unique()->toArray();
+                    $remainingModels = array_diff($this->form_model_ids ?: [], $coveredModels);
+                    if (!empty($remainingModels)) {
+                        $mods = \App\Models\CarModel::whereIn('id', $remainingModels)->get();
+                        foreach ($mods as $mod) {
+                            $newCompat[] = [
+                                'product_id' => $product->id,
+                                'make_id' => $mod->make_id,
+                                'car_model_id' => $mod->id,
+                                'engine_id' => null,
+                                'source' => 'manual',
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ];
+                        }
+                    }
+                    if (!empty($newCompat)) {
+                        \DB::table('product_compatibilities')->insertOrIgnore($newCompat);
+                    }
+                }
             });
 
             $this->dispatch('notify', ['type' => 'success', 'message' => $this->editingProduct ? 'Producto actualizado correctamente.' : 'Producto creado correctamente.']);

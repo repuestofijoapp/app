@@ -1028,27 +1028,60 @@ class MainSearch extends Component
         if (!$value)
             return;
 
+        // Get the selected model record to use both id and name in queries
+        $carModel = \App\Models\CarModel::find($value);
+        if (!$carModel)
+            return;
+
+        $modelName = strtoupper($carModel->name);
+
         // Get all engines for the selected model id
         $allEngines = Engine::where('car_model_id', $value)->get();
 
-        // Filter: only show engines that have at least one product linked,
-        // either by engine_code match OR by compatible_model_ids containing this model
-        $filtered = $allEngines->filter(function ($engine) use ($value) {
-            // Check 1: product with this engine code in compatible_engines
-            $byCode = \DB::table('products')
-                ->where('is_active', true)
-                ->where('compatible_engines', 'LIKE', '%"' . $engine->engine_code . '"%')
-                ->exists();
-            if ($byCode)
-                return true;
+        $usePivot = env('SEARCH_USE_PIVOT', true) && \Illuminate\Support\Facades\Schema::hasTable('product_compatibilities');
 
-            // Check 2: product associated to this model by compatible_model_ids
-            $byModelId = \DB::table('products')
-                ->where('is_active', true)
-                ->whereRaw('JSON_CONTAINS(compatible_model_ids, ?)', [(string) $value])
-                ->exists();
-            return $byModelId;
-        });
+        if ($usePivot) {
+            $engineIdsWithProducts = \DB::table('product_compatibilities')
+                ->join('products', 'products.id', '=', 'product_compatibilities.product_id')
+                ->where('product_compatibilities.car_model_id', $value)
+                ->where('products.is_active', true)
+                ->whereNotNull('product_compatibilities.engine_id')
+                ->pluck('product_compatibilities.engine_id')
+                ->unique();
+
+            $filtered = $allEngines->filter(fn($engine) => $engineIdsWithProducts->contains($engine->id));
+        } else {
+            // Filter: only show engines that have at least one active product
+            // compatible with BOTH this specific engine AND this specific model
+            $filtered = $allEngines->filter(function ($engine) use ($value, $modelName) {
+                // Check 1 (primary): exact JSON ID match — engine_id + model_id
+                $byIds = \DB::table('products')
+                    ->where('is_active', true)
+                    ->whereRaw('JSON_CONTAINS(compatible_engine_ids, ?)', [(string) $engine->id])
+                    ->whereRaw('JSON_CONTAINS(compatible_model_ids, ?)', [(string) $value])
+                    ->exists();
+                if ($byIds)
+                    return true;
+
+                // Check 2 (fallback): engine code text match + model_id JSON match
+                $byCodeAndModelId = \DB::table('products')
+                    ->where('is_active', true)
+                    ->where('compatible_engines', 'LIKE', '%"' . $engine->engine_code . '"%')
+                    ->whereRaw('JSON_CONTAINS(compatible_model_ids, ?)', [(string) $value])
+                    ->exists();
+                if ($byCodeAndModelId)
+                    return true;
+
+                // Check 3 (text fallback for legacy products): engine code + exact model name via REGEXP
+                $pattern = '(^|[,\[\"\'\\\\])[ \t\r\n]*' . preg_quote($modelName, '/') . '[ \t\r\n]*(,|[\]\"\'\\\\]|$)';
+                $byCodeAndModelName = \DB::table('products')
+                    ->where('is_active', true)
+                    ->where('compatible_engines', 'LIKE', '%"' . $engine->engine_code . '"%')
+                    ->whereRaw('compatible_vehicles REGEXP ?', [$pattern])
+                    ->exists();
+                return $byCodeAndModelName;
+            });
+        }
 
         $this->engines = $filtered->map(function ($v) {
             $power = $v->engine_power;
@@ -1097,12 +1130,16 @@ class MainSearch extends Component
             'displacement' => $engine->displacement,
             'fuel_type'    => $engine->fuel_type,
             'label'        => $makeName . ' ' . $modelName . ($engineCode ? ' (' . $engineCode . ')' : ''),
+            'model_id'     => $engine->carModel->id ?? null,
+            'engine_id'    => $engine->id,
         ];
 
         $this->searchContext = [
             'type' => 'manual',
             'engine_code' => $engineCode,
             'model_name' => $modelName,
+            'model_id' => $engine->carModel->id ?? null,
+            'engine_id' => $engine->id,
         ];
 
         $this->searchType = 'manual';
@@ -2120,32 +2157,87 @@ class MainSearch extends Component
                         $q->where('compatible_engines', 'LIKE', '%"' . $engineCode . '"%');
                     }
                     if ($model) {
-                        $q->orWhere('compatible_vehicles', 'LIKE', '%' . $model . '%');
+                        $pattern = '(^|[,\[\"\'\\\\])[ \t\r\n]*' . preg_quote($model, '/') . '[ \t\r\n]*(,|[\]\"\'\\\\]|$)';
+                        $q->orWhereRaw('compatible_vehicles REGEXP ?', [$pattern]);
                     }
                 });
             } elseif ($this->selectedEngineObj) {
+                $usePivot = env('SEARCH_USE_PIVOT', true) && \Illuminate\Support\Facades\Schema::hasTable('product_compatibilities');
+                $modelId = $this->selectedEngineObj['model_id'] ?? null;
+                $engineId = $this->selectedEngineObj['engine_id'] ?? null;
                 $model = strtoupper($this->selectedEngineObj['model']);
                 $engineCode = $this->selectedEngineObj['engine_code'] ? strtoupper($this->selectedEngineObj['engine_code']) : null;
-                $query->where(function ($q) use ($model, $engineCode) {
-                    if ($engineCode) {
-                        $q->where('compatible_engines', 'LIKE', '%"' . $engineCode . '"%');
-                    }
-                    if ($model) {
-                        $q->orWhere('compatible_vehicles', 'LIKE', '%' . $model . '%');
-                    }
-                });
+
+                if ($usePivot && $modelId) {
+                    $query->whereExists(function ($sub) use ($modelId, $engineId) {
+                        $sub->select(\DB::raw(1))
+                            ->from('product_compatibilities')
+                            ->whereColumn('product_compatibilities.product_id', 'products.id')
+                            ->where('product_compatibilities.car_model_id', $modelId);
+                        if ($engineId) {
+                            $sub->where('product_compatibilities.engine_id', $engineId);
+                        }
+                    });
+                } else {
+                    $query->where(function ($q) use ($modelId, $engineId, $model, $engineCode) {
+                        // Option 1: exact JSON ID match
+                        if ($engineId && $modelId) {
+                            $q->orWhere(function ($sub) use ($engineId, $modelId) {
+                                $sub->whereJsonContains('compatible_engine_ids', (int)$engineId)
+                                    ->whereJsonContains('compatible_model_ids', (int)$modelId);
+                            });
+                        }
+                        // Option 2: text-based with REGEXP exact model name boundary
+                        if ($engineCode && $model) {
+                            $pattern = '(^|[,\[\"\'\\\\])[ \t\r\n]*' . preg_quote($model, '/') . '[ \t\r\n]*(,|[\]\"\'\\\\]|$)';
+                            $q->orWhere(function ($sub) use ($engineCode, $pattern) {
+                                $sub->where('compatible_engines', 'LIKE', '%"' . $engineCode . '"%')
+                                    ->whereRaw('compatible_vehicles REGEXP ?', [$pattern]);
+                            });
+                        }
+                    });
+                }
             }
         } elseif ($this->searchContext['type'] === 'manual') {
-            $engineCode = $this->searchContext['engine_code'];
-            $modelName = $this->searchContext['model_name'];
+            $usePivot = env('SEARCH_USE_PIVOT', true) && \Illuminate\Support\Facades\Schema::hasTable('product_compatibilities');
+            $modelId = $this->searchContext['model_id'] ?? null;
+            $engineId = $this->searchContext['engine_id'] ?? null;
+            $engineCode = $this->searchContext['engine_code'] ?? null;
+            $modelName = $this->searchContext['model_name'] ?? null;
 
-            if ($engineCode && $modelName) {
-                $query->where('compatible_engines', 'LIKE', '%"' . $engineCode . '"%')
-                    ->where('compatible_vehicles', 'LIKE', '%' . $modelName . '%');
-            } elseif ($engineCode) {
-                $query->where('compatible_engines', 'LIKE', '%"' . $engineCode . '"%');
-            } elseif ($modelName) {
-                $query->where('compatible_vehicles', 'LIKE', '%' . $modelName . '%');
+            if ($usePivot && $modelId) {
+                $query->whereExists(function ($sub) use ($modelId, $engineId) {
+                    $sub->select(\DB::raw(1))
+                        ->from('product_compatibilities')
+                        ->whereColumn('product_compatibilities.product_id', 'products.id')
+                        ->where('product_compatibilities.car_model_id', $modelId);
+                    if ($engineId) {
+                        $sub->where('product_compatibilities.engine_id', $engineId);
+                    }
+                });
+            } else {
+                $query->where(function ($q) use ($modelId, $engineId, $engineCode, $modelName) {
+                    // Option 1: exact JSON ID match (for products with IDs populated)
+                    if ($engineId && $modelId) {
+                        $q->orWhere(function ($sub) use ($engineId, $modelId) {
+                            $sub->whereJsonContains('compatible_engine_ids', (int)$engineId)
+                                ->whereJsonContains('compatible_model_ids', (int)$modelId);
+                        });
+                    }
+                    // Option 2: engine code text + exact model name REGEXP (for legacy products)
+                    if ($engineCode && $modelName) {
+                        $pattern = '(^|[,\[\"\'\\\\])[ \t\r\n]*' . preg_quote($modelName, '/') . '[ \t\r\n]*(,|[\]\"\'\\\\]|$)';
+                        $q->orWhere(function ($sub) use ($engineCode, $pattern) {
+                            $sub->where('compatible_engines', 'LIKE', '%"' . $engineCode . '"%')
+                                ->whereRaw('compatible_vehicles REGEXP ?', [$pattern]);
+                        });
+                    } elseif ($engineCode) {
+                        $q->orWhere('compatible_engines', 'LIKE', '%"' . $engineCode . '"%');
+                    } elseif ($modelName) {
+                        $pattern = '(^|[,\[\"\'\\\\])[ \t\r\n]*' . preg_quote($modelName, '/') . '[ \t\r\n]*(,|[\]\"\'\\\\]|$)';
+                        $q->orWhereRaw('compatible_vehicles REGEXP ?', [$pattern]);
+                    }
+                });
             }
         } elseif ($this->searchContext['type'] === 'oem') {
             $term = $this->searchContext['term'];
