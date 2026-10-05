@@ -44,6 +44,128 @@
             </div>
         </div>
 
+        {{-- ─── Control de Marcas para Venta ──────────────────────────────── --}}
+        <div class="col-md-6">
+            <div class="card border-secondary border-opacity-25 shadow-sm rounded-4 h-100"
+                style="background-color: var(--surface);">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="fw-bold text-white mb-1 d-flex align-items-center gap-2"
+                                style="font-family: 'Syne', sans-serif;">
+                                <i class="fas fa-car" style="color: var(--accent-red);"></i> Control de Marcas para Venta
+                            </h5>
+                            <p class="text-white opacity-50 small mb-0">
+                                Pausa marcas completas mientras auditas su catálogo.
+                            </p>
+                        </div>
+                        @if(count($disabled_makes) > 0)
+                            <button wire:click="enableAllMakes" class="btn btn-sm btn-outline-success"
+                                style="font-size: 0.75rem; border-radius: 8px;">
+                                <i class="fas fa-check-double me-1"></i> Habilitar Todas
+                            </button>
+                        @endif
+                    </div>
+
+                    {{-- Badges de resumen --}}
+                    @php
+                        $totalWithProducts = count(array_filter($available_makes, fn($m) => $m['product_count'] > 0));
+                        $disabledCount = count($disabled_makes);
+                        $activeCount = max(0, $totalWithProducts - $disabledCount);
+                    @endphp
+                    <div class="d-flex gap-2 mb-3">
+                        <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 600; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem;">
+                            <i class="fas fa-check-circle me-1"></i> {{ $activeCount }} Habilitadas para Venta
+                        </span>
+                        <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); font-weight: 600; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem;">
+                            <i class="fas fa-pause-circle me-1"></i> {{ $disabledCount }} Pausadas
+                        </span>
+                    </div>
+
+                    {{-- Selector rápido de marca --}}
+                    <div class="mb-3">
+                        <label class="small fw-bold text-white mb-1 d-block" style="font-size: 0.75rem; letter-spacing: 0.5px;">SELECCIONAR MARCA PARA PAUSAR / ACTIVAR</label>
+                        <select wire:model.live="selected_make_to_toggle" wire:change="applyMakeFromSelect"
+                            class="form-select border-0 text-white"
+                            style="background: #1E293B; border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;">
+                            <option value="">— Seleccionar marca en el menú —</option>
+                            @foreach($available_makes as $am)
+                                @php $isDis = in_array($am['name'], $disabled_makes); @endphp
+                                <option value="{{ $am['name'] }}">
+                                    {{ $isDis ? '🔴 [PAUSADA] ' : '🟢 [ACTIVA] ' }} {{ $am['name'] }} ({{ $am['product_count'] }} repuestos)
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Buscador en tiempo real de marcas --}}
+                    <div class="mb-2">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text border-0" style="background: #1E293B; color: #94a3b8;">
+                                <i class="fas fa-filter"></i>
+                            </span>
+                            <input type="text" wire:model.live="make_search_term"
+                                class="form-control border-0 text-white"
+                                style="background: #1E293B;"
+                                placeholder="Filtrar marcas en el listado...">
+                            @if(!empty($make_search_term))
+                                <button class="btn btn-outline-secondary border-0" type="button" wire:click="$set('make_search_term', '')" style="background: #1E293B; color: #cbd5e1;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Lista interactiva de marcas con scroll --}}
+                    @php
+                        $list = $available_makes;
+                        if (!empty($make_search_term)) {
+                            $st = strtoupper(trim($make_search_term));
+                            $list = array_filter($list, fn($m) => str_contains($m['name'], $st));
+                        }
+                    @endphp
+
+                    <div style="max-height: 240px; overflow-y: auto; padding-right: 4px;">
+                        <div class="d-flex flex-column gap-2">
+                            @forelse($list as $m)
+                                @php $isDisabled = in_array($m['name'], $disabled_makes); @endphp
+                                <div class="d-flex align-items-center justify-content-between p-2 px-3 rounded-3"
+                                    style="background: {{ $isDisabled ? 'rgba(239, 68, 68, 0.08)' : 'rgba(255,255,255,0.03)' }}; border: 1px solid {{ $isDisabled ? 'rgba(239, 68, 68, 0.3)' : 'rgba(255,255,255,0.08)' }}; transition: all .2s;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas {{ $isDisabled ? 'fa-ban text-danger' : 'fa-check text-success' }}" style="font-size: 0.85rem;"></i>
+                                        <span class="fw-bold {{ $isDisabled ? 'text-white-50 text-decoration-line-through' : 'text-white' }}" style="font-size: 0.85rem;">
+                                            {{ $m['name'] }}
+                                        </span>
+                                        <span class="badge" style="background: #1E293B; color: #94a3b8; font-size: 0.7rem; font-weight: normal;">
+                                            {{ $m['product_count'] }} rep.
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <button wire:click="toggleMake('{{ $m['name'] }}')"
+                                            type="button"
+                                            class="btn btn-sm"
+                                            style="padding: 2px 10px; font-size: 0.72rem; font-weight: 700; border-radius: 20px; {{ $isDisabled ? 'background: rgba(239,68,68,0.25); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4);' : 'background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4);' }}">
+                                            @if($isDisabled)
+                                                <i class="fas fa-eye-slash me-1"></i> PAUSADA
+                                            @else
+                                                <i class="fas fa-check me-1"></i> ACTIVA
+                                            @endif
+                                        </button>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center py-3 text-white opacity-50 small">
+                                    No se encontraron marcas con "{{ $make_search_term }}"
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
         {{-- ─── Banner / Slider Promocional ────────────────────────────── --}}
         <div class="col-12">
             <div class="card border-secondary border-opacity-25 shadow-sm rounded-4"

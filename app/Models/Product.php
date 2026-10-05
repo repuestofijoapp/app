@@ -84,6 +84,33 @@ class Product extends Model
         return $query->where('is_active', true);
     }
 
+    /**
+     * Scope for public search and storefront: active products whose vehicle make
+     * is not disabled in system settings.
+     */
+    public function scopeForPublicSale($query)
+    {
+        $query->where('is_active', true);
+
+        $disabledMakes = SystemSetting::getDisabledMakes();
+        if (!empty($disabledMakes)) {
+            $query->where(function ($q) use ($disabledMakes) {
+                $q->whereNull('vehicle_make')
+                  ->orWhereNotIn('vehicle_make', $disabledMakes);
+            });
+
+            $disabledMakeIds = Make::whereIn('name', $disabledMakes)->pluck('id')->toArray();
+            if (!empty($disabledMakeIds)) {
+                $query->whereDoesntHave('compatibilities', function ($sub) use ($disabledMakeIds) {
+                    $sub->whereIn('make_id', $disabledMakeIds);
+                });
+            }
+        }
+
+        return $query;
+    }
+
+
     // Search by supplier code OR oem_code (used by the public search)
     public static function searchByCode(string $term)
     {
@@ -91,9 +118,10 @@ class Product extends Model
         return self::where(function ($q) use ($term) {
             $q->where('supplier_code', 'LIKE', '%' . $term . '%')
                 ->orWhere('oem_code', 'LIKE', '%' . $term . '%')
+                ->orWhere('brand', 'LIKE', '%' . $term . '%')
                 ->orWhere('name', 'LIKE', '%' . $term . '%')
                 ->orWhereJsonContains('additional_oem_codes', $term);
-        })->with(['provider', 'category'])->active()->get();
+        })->with(['provider', 'category'])->forPublicSale()->get();
     }
 
     // Search by vehicle compatibility (model name or engine code)
@@ -110,7 +138,7 @@ class Product extends Model
                         ->orWhereJsonContains('compatible_engines', strtoupper($engineCode));
                 });
             }
-        })->with(['provider', 'category'])->active()->get();
+        })->with(['provider', 'category'])->forPublicSale()->get();
     }
 
     // Get the category IDs that have compatible products for a given vehicle
@@ -124,8 +152,9 @@ class Product extends Model
             if ($model) {
                 $q->orWhere('compatible_vehicles', 'LIKE', '%' . strtoupper($model) . '%');
             }
-        })->active()->pluck('category_id')->unique()->filter()->values()->toArray();
+        })->forPublicSale()->pluck('category_id')->unique()->filter()->values()->toArray();
     }
+
 
     // Helper: get engines list as string
     public function getEnginesLabel(): string

@@ -8,6 +8,7 @@ use App\Models\SystemSetting;
 use App\Models\BannerSlide;
 use App\Models\FeaturedProduct;
 use App\Models\Product;
+use App\Models\Make;
 
 class SystemSettings extends Component
 {
@@ -15,6 +16,12 @@ class SystemSettings extends Component
 
     // ── Módulo búsqueda por placa ──────────────────────────────────────────
     public $enable_plate_search = true;
+
+    // ── Módulo marcas de vehículos para venta ─────────────────────────────
+    public array $disabled_makes = [];
+    public array $available_makes = [];
+    public string $make_search_term = '';
+    public string $selected_make_to_toggle = '';
 
     // ── Gestión de banners ────────────────────────────────────────────────
     public $slides = [];
@@ -38,8 +45,75 @@ class SystemSettings extends Component
         }
 
         $this->enable_plate_search = SystemSetting::getBool('enable_plate_search', true);
+        $this->disabled_makes      = SystemSetting::getDisabledMakes();
+        $this->loadAvailableMakes();
         $this->loadSlides();
         $this->loadFeaturedProducts();
+    }
+
+    public function loadAvailableMakes()
+    {
+        $counts = Product::select('vehicle_make', \DB::raw('count(*) as total'))
+            ->whereNotNull('vehicle_make')
+            ->groupBy('vehicle_make')
+            ->pluck('total', 'vehicle_make')
+            ->toArray();
+
+        $allMakes = Make::orderBy('name')->pluck('name')->toArray();
+        $allUnique = array_unique(array_merge($allMakes, array_keys($counts)));
+
+        $list = [];
+        foreach ($allUnique as $makeName) {
+            $upper = strtoupper(trim($makeName));
+            if (empty($upper)) continue;
+            $cnt = $counts[$upper] ?? 0;
+            $list[] = [
+                'name'          => $upper,
+                'product_count' => $cnt,
+            ];
+        }
+
+        // Sort: makes with products first (by count desc, then name asc)
+        usort($list, function ($a, $b) {
+            if ($a['product_count'] !== $b['product_count']) {
+                return $b['product_count'] <=> $a['product_count'];
+            }
+            return strcmp($a['name'], $b['name']);
+        });
+
+        $this->available_makes = $list;
+    }
+
+    public function toggleMake(string $makeName)
+    {
+        $upper = strtoupper(trim($makeName));
+        if (empty($upper)) return;
+
+        if (in_array($upper, $this->disabled_makes, true)) {
+            $this->disabled_makes = array_values(array_filter($this->disabled_makes, fn($m) => $m !== $upper));
+            $message = "Marca «{$upper}» habilitada para la venta.";
+        } else {
+            $this->disabled_makes[] = $upper;
+            $message = "Marca «{$upper}» pausada/deshabilitada para la venta.";
+        }
+
+        SystemSetting::setDisabledMakes($this->disabled_makes);
+        $this->dispatch('notify', ['type' => 'success', 'message' => $message]);
+    }
+
+    public function applyMakeFromSelect()
+    {
+        if (!empty($this->selected_make_to_toggle)) {
+            $this->toggleMake($this->selected_make_to_toggle);
+            $this->selected_make_to_toggle = '';
+        }
+    }
+
+    public function enableAllMakes()
+    {
+        $this->disabled_makes = [];
+        SystemSetting::setDisabledMakes([]);
+        $this->dispatch('notify', ['type' => 'success', 'message' => 'Todas las marcas han sido habilitadas para venta.']);
     }
 
     private function loadSlides()
@@ -58,6 +132,7 @@ class SystemSettings extends Component
     // ── Banners ────────────────────────────────────────────────────────────
     public function addSlide()
     {
+
         $this->validate([
             'newSlideImage' => 'required|image|max:4096',
         ], [

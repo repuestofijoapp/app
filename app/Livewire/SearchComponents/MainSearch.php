@@ -933,10 +933,19 @@ class MainSearch extends Component
                 ->toArray();
         });
 
+        // Filter out disabled makes from SystemSettings
+        $disabledMakes = \App\Models\SystemSetting::getDisabledMakes();
+        if (!empty($disabledMakes)) {
+            $cached = array_values(array_filter($cached, fn($name) => !in_array(strtoupper($name), $disabledMakes, true)));
+        }
+
         $this->brandsWithProducts = $cached;
 
         // Priority list = ALL recognized brands that exist in DB (coloured blue/red in view)
         $allBrandsInDb = Cache::remember('all_makes_names', 3600, fn() => Make::pluck('name')->toArray());
+        if (!empty($disabledMakes)) {
+            $allBrandsInDb = array_values(array_filter($allBrandsInDb, fn($name) => !in_array(strtoupper($name), $disabledMakes, true)));
+        }
         $this->priorityBrands = array_values(array_intersect($this->recognizedBrands, $allBrandsInDb));
 
         // Alphabetical section: only brands WITH products that are NOT already in the priority list
@@ -948,6 +957,11 @@ class MainSearch extends Component
 
     public function selectBrand(string $brand)
     {
+        if (\App\Models\SystemSetting::isMakeDisabled($brand)) {
+            $this->dispatch('notify', ['type' => 'warning', 'message' => 'Esta marca no está disponible actualmente.']);
+            return;
+        }
+
         $this->selectedBrand = $brand;
         $this->selectedModel = '';
         $this->selectedEngine = '';
@@ -977,7 +991,15 @@ class MainSearch extends Component
 
     public function updatedSelectedBrand($value)
     {
+        if (\App\Models\SystemSetting::isMakeDisabled($value)) {
+            $this->selectedBrand = '';
+            $this->models = [];
+            $this->dispatch('notify', ['type' => 'warning', 'message' => 'Esta marca no está disponible actualmente.']);
+            return;
+        }
+
         $make = Make::where('name', $value)->first();
+
         if (!$make) {
             $this->models = [];
             return;
@@ -1209,7 +1231,8 @@ class MainSearch extends Component
                     ->orWhere('brand', 'LIKE', '%' . $term . '%') // Added brand search as requested
                     ->orWhere('name', 'LIKE', '%' . $term . '%')
                     ->orWhereJsonContains('additional_oem_codes', $term);
-            })->with(['provider', 'category'])->active();
+            })->with(['provider', 'category'])->forPublicSale();
+
 
             if ($query->count() > 0) {
                 $this->oemResult = $query->first();
@@ -2139,7 +2162,8 @@ class MainSearch extends Component
 
     protected function getFilteredProductsQuery()
     {
-        $query = Product::active()->with(['provider', 'oversizes']);
+        $query = Product::forPublicSale()->with(['provider', 'oversizes']);
+
 
         if (empty($this->searchContext) || !isset($this->searchContext['type'])) {
             return $query->whereRaw('1=0'); // Return zero results if no search context
