@@ -654,9 +654,29 @@ class MainSearch extends Component
     {
         if ($this->viewState === 'repair_summary') {
             $this->viewState = ($this->vehicle || $this->selectedEngineObj) ? 'vehicle_found' : 'initial';
-        } else {
-            $this->viewState = 'repair_summary';
+            return;
         }
+
+        // 1. Si no está logueado, requerir inicio de sesión
+        if (!auth()->check()) {
+            $this->showLoginModal = true;
+            $this->dispatch('notify', [
+                'type' => 'info',
+                'message' => 'Identifícate para ver y gestionar tu lista de reparación.'
+            ]);
+            return;
+        }
+
+        // 2. Si el carrito está vacío, no abrir la pantalla vacía
+        if (empty($this->repairList)) {
+            $this->dispatch('notify', [
+                'type' => 'warning',
+                'message' => 'Tu lista de reparación está vacía. Añade repuestos para continuar.'
+            ]);
+            return;
+        }
+
+        $this->viewState = 'repair_summary';
     }
 
     public function clearVerification()
@@ -1619,6 +1639,10 @@ class MainSearch extends Component
         $this->dispatch('notify', ['type' => 'info', 'message' => 'Repuesto eliminado']);
         $this->savePersistedSearchState();
         $this->saveCartToDb();
+
+        if (empty($this->repairList) && $this->viewState === 'repair_summary') {
+            $this->viewState = ($this->vehicle || $this->selectedEngineObj) ? 'vehicle_found' : 'initial';
+        }
     }
 
     public function updateQuantity($productId, $qty)

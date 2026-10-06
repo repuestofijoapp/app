@@ -2032,8 +2032,11 @@
                         </div>
                     @else
                         <div class="text-center py-5">
-                            <i class="fas fa-shopping-cart fa-3x text-light mb-3"></i>
-                            <p class="text-muted">Tu lista de reparación está vacía.</p>
+                            <i class="fas fa-shopping-cart fa-3x text-secondary opacity-50 mb-3"></i>
+                            <p class="text-muted fs-6 mb-3">Tu lista de reparación está vacía.</p>
+                            <button class="btn btn-outline-danger px-4 py-2 rounded-pill fw-bold" wire:click="resetToHome">
+                                <i class="fas fa-search me-2"></i> Buscar repuestos
+                            </button>
                         </div>
                     @endif
                 </div>
