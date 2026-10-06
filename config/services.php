@@ -51,9 +51,13 @@ return [
     ],
 
     'google' => [
-        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect' => env('GOOGLE_REDIRECT_URL'),
+        'redirect'      => env('GOOGLE_REDIRECT_URL', rtrim(env('APP_URL', 'https://app.repuestofijo.com'), '/') . '/auth/google/callback'),
+    ],
+
+    'jsonpe' => [
+        'token' => env('JSONPE_TOKEN'),
     ],
 
 ];

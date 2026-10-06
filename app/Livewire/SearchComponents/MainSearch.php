@@ -801,6 +801,14 @@ class MainSearch extends Component
             // Al restaurar desde snapshot, guardar en el estado persistido
             $this->savePersistedSearchState();
         }
+
+        // Búsqueda directa si el usuario viene de hacer clic en "Descubrir ahora" o desde el buscador del header
+        if (request()->filled('featured')) {
+            $this->searchFeaturedProduct(request('featured'));
+        } elseif (request()->filled('oem')) {
+            $this->oemSearch = trim(request('oem'));
+            $this->performSearch('oem');
+        }
     }
 
     /**

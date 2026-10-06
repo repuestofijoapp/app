@@ -74,10 +74,10 @@
                             <li>Gestionar tu registro y acceso a la plataforma.</li>
                             <li>Procesar y coordinar tus pedidos de repuestos.</li>
                             <li>Coordinar la entrega mediante motorizado a tu dirección.</li>
-                            <li>Enviarte notificaciones sobre el estado de tus pedidos.</li>
+                            <!-- <li>Enviarte notificaciones sobre el estado de tus pedidos.</li> -->
                             <li>Mejorar la experiencia de uso de la plataforma.</li>
                             <li>Avisarte cuando un producto que buscaste y no encontraste esté disponible.</li>
-                            <li>Gestionar el sistema de créditos and beneficios por fidelidad.</li>
+                            <!-- <li>Gestionar el sistema de créditos and beneficios por fidelidad.</li> -->
                             <li>Detectar y prevenir usos fraudulentos del sistema.</li>
                             <li>Cumplir con obligaciones legales and fiscales en Perú.</li>
                         </ul>
@@ -460,26 +460,30 @@
                             {{-- Slider de banners --}}
                             <style>
                                 @media (max-width: 991.98px) {
+
                                     .banner-slider-container,
                                     .banner-inner-container,
                                     .banner-item-container {
                                         height: auto !important;
                                         min-height: auto !important;
                                     }
+
                                     .banner-img-responsive {
                                         height: auto !important;
                                         object-fit: contain !important;
                                     }
                                 }
                             </style>
-                            <div id="repuestoBannerSlider" class="carousel slide h-100 banner-slider-container" data-bs-ride="carousel"
-                                data-bs-interval="5000">
+                            <div id="repuestoBannerSlider" class="carousel slide h-100 banner-slider-container"
+                                data-bs-ride="carousel" data-bs-interval="5000">
 
                                 {{-- Slides --}}
-                                <div class="carousel-inner rounded shadow-sm banner-inner-container" style="height:100%; min-height:220px;">
+                                <div class="carousel-inner rounded shadow-sm banner-inner-container"
+                                    style="height:100%; min-height:220px;">
                                     @foreach($bannerSlides as $i => $slide)
                                         <div class="carousel-item {{ $i === 0 ? 'active' : '' }} h-100 banner-item-container">
-                                            <img src="{{ Storage::url($slide->image_path) }}" class="d-block w-100 h-100 banner-img-responsive"
+                                            <img src="{{ Storage::url($slide->image_path) }}"
+                                                class="d-block w-100 h-100 banner-img-responsive"
                                                 style="object-fit:cover; object-position:center;"
                                                 alt="{{ $slide->title ?? 'Banner promocional' }}">
 
@@ -783,7 +787,7 @@
                         .rf-sticky-banner {
                             top: 106px !important;
                         }
-                        
+
                         .rf-mobile-card {
                             /* Expand beyond the standard Bootstrap container padding (usually 12px/15px) */
                             margin-left: calc(-0.5 * var(--bs-gutter-x, 30px)) !important;
@@ -796,11 +800,12 @@
                 </style>
 
                 <div x-data="{ isScrolled: false }" x-init="
-                                                                            const checkScroll = () => { isScrolled = window.scrollY > 20; };
-                                                                            window.addEventListener('scroll', checkScroll, { passive: true });
-                                                                            checkScroll();
-                                                                        " :class="{ 'is-scrolled': isScrolled }"
-                    class="rf-sticky-banner position-sticky z-3 mb-4" style="top: 70px; transition: top 0.3s ease;">
+                                                                                                    const checkScroll = () => { isScrolled = window.scrollY > 20; };
+                                                                                                    window.addEventListener('scroll', checkScroll, { passive: true });
+                                                                                                    checkScroll();
+                                                                                                "
+                    :class="{ 'is-scrolled': isScrolled }" class="rf-sticky-banner position-sticky z-3 mb-4"
+                    style="top: 70px; transition: top 0.3s ease;">
 
                     @php
                         $carImage = null;
@@ -883,12 +888,14 @@
                                     @if($vehicle && $vehicle->engine_code)
                                         <span>Motor: <strong class="text-dark">{{ $vehicle->engine_code }}</strong></span>
                                     @elseif($selectedEngineObj && $selectedEngineObj['engine_code'])
-                                        <span>Motor: <strong class="text-dark">{{ $selectedEngineObj['engine_code'] }}</strong></span>
+                                        <span>Motor: <strong
+                                                class="text-dark">{{ $selectedEngineObj['engine_code'] }}</strong></span>
                                         @if(!empty($selectedEngineObj['displacement']))
                                             <span>CC: <strong class="text-dark">{{ $selectedEngineObj['displacement'] }}</strong></span>
                                         @endif
                                         @if(!empty($selectedEngineObj['fuel_type']))
-                                            <span>Combustible: <strong class="text-dark">{{ $selectedEngineObj['fuel_type'] }}</strong></span>
+                                            <span>Combustible: <strong
+                                                    class="text-dark">{{ $selectedEngineObj['fuel_type'] }}</strong></span>
                                         @endif
                                     @endif
                                     @if($vehicle && $vehicle->body_type && $searchType === 'plate')
@@ -905,29 +912,29 @@
 
                         {{-- DESKTOP BREADCRUMB: only for plate searches --}}
                         @if($searchType === 'plate')
-                        <div class="rf-breadcrumb-row d-none d-md-flex breadcrumb-chevron-container mb-3">
-                            @foreach($steps as $index => $step)
-                                @php
-                                    $isFirst = $index === 0;
-                                    $isLast = $index === ($totalSteps - 1);
-                                    $isSingle = $totalSteps === 1;
-                                    if ($isSingle) {
-                                        $shapeClass = 'chevron-step-first';
-                                    } else {
-                                        $shapeClass = $isFirst ? 'chevron-step-first' : ($isLast ? 'chevron-step-last' : 'chevron-step-middle');
-                                    }
+                            <div class="rf-breadcrumb-row d-none d-md-flex breadcrumb-chevron-container mb-3">
+                                @foreach($steps as $index => $step)
+                                    @php
+                                        $isFirst = $index === 0;
+                                        $isLast = $index === ($totalSteps - 1);
+                                        $isSingle = $totalSteps === 1;
+                                        if ($isSingle) {
+                                            $shapeClass = 'chevron-step-first';
+                                        } else {
+                                            $shapeClass = $isFirst ? 'chevron-step-first' : ($isLast ? 'chevron-step-last' : 'chevron-step-middle');
+                                        }
 
-                                    $isSubcategory = $isLast && $viewState === 'products_list';
-                                    $stateClass = $isSubcategory ? 'chevron-step-red' : 'chevron-step-navy';
-                                    $zIndex = 10 - $index;
-                                @endphp
-                                <div class="chevron-step {{ $shapeClass }} {{ $stateClass }}" style="z-index: {{ $zIndex }};"
-                                    @if($step['action']) wire:click="{{ $step['action'] }}" @endif>
-                                    <i class="{{ $step['icon'] }}"></i>
-                                    <span class="chevron-text">{{ $step['label'] }}</span>
-                                </div>
-                            @endforeach
-                        </div>
+                                        $isSubcategory = $isLast && $viewState === 'products_list';
+                                        $stateClass = $isSubcategory ? 'chevron-step-red' : 'chevron-step-navy';
+                                        $zIndex = 10 - $index;
+                                    @endphp
+                                    <div class="chevron-step {{ $shapeClass }} {{ $stateClass }}" style="z-index: {{ $zIndex }};"
+                                        @if($step['action']) wire:click="{{ $step['action'] }}" @endif>
+                                        <i class="{{ $step['icon'] }}"></i>
+                                        <span class="chevron-text">{{ $step['label'] }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         @endif
 
                         {{-- MOBILE COMBINED CARD (DETAILS + CHIPS) --}}
@@ -943,7 +950,8 @@
                                     <div class="text-dark fw-medium text-uppercase" style="font-size: 13px; line-height: 1.2;">
                                         {{ $brandName }} {{ $modelName }}
                                     </div>
-                                    <div class="text-muted" style="font-size: 11px; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px; line-height: 1.1;">
+                                    <div class="text-muted"
+                                        style="font-size: 11px; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px; line-height: 1.1;">
                                         @if($vehicle && $vehicle->engine_code)
                                             <span>Motor: <strong class="text-dark">{{ $vehicle->engine_code }}</strong></span>
                                             @if($vehicle->body_type && $searchType === 'plate')
@@ -951,9 +959,11 @@
                                                 <span>| Carrocería: <strong class="text-dark">{{ $vehicle->body_type }}</strong></span>
                                             @endif
                                         @elseif($selectedEngineObj && $selectedEngineObj['engine_code'])
-                                            <span>Motor: <strong class="text-dark">{{ $selectedEngineObj['engine_code'] }}</strong></span>
+                                            <span>Motor: <strong
+                                                    class="text-dark">{{ $selectedEngineObj['engine_code'] }}</strong></span>
                                             @if(!empty($selectedEngineObj['displacement']))
-                                                <span>| CC: <strong class="text-dark">{{ $selectedEngineObj['displacement'] }}</strong></span>
+                                                <span>| CC: <strong
+                                                        class="text-dark">{{ $selectedEngineObj['displacement'] }}</strong></span>
                                             @endif
                                             @if(!empty($selectedEngineObj['fuel_type']))
                                                 <span>| <strong class="text-dark">{{ $selectedEngineObj['fuel_type'] }}</strong></span>
@@ -968,31 +978,32 @@
                                 </div>
                             </div>
 
-                            <div class="text-end fw-medium {{ $searchType === 'plate' ? 'mb-2' : 'mb-0' }}" style="font-size: 12px; color: #C0392B;">
+                            <div class="text-end fw-medium {{ $searchType === 'plate' ? 'mb-2' : 'mb-0' }}"
+                                style="font-size: 12px; color: #C0392B;">
                                 {{ isset($products) ? (method_exists($products, 'total') ? $products->total() : $products->count()) : 0 }}
                                 producto(s) encontrado(s)
                             </div>
 
                             {{-- MOBILE CHIPS: only for plate searches --}}
                             @if($searchType === 'plate')
-                            <div class="mobile-chips-wrapper py-2 px-2 rounded"
-                                style="background-color: #F8F9FA; border: 1px solid #E9ECEF;">
-                                @foreach($steps as $index => $step)
-                                    @php
-                                        $isLast = $index === ($totalSteps - 1);
-                                        $isSubcategory = $isLast && $viewState === 'products_list';
-                                        $stateClass = $isSubcategory ? 'mobile-chip-red' : 'mobile-chip-navy';
-                                    @endphp
-                                    <div class="mobile-chip {{ $stateClass }}" @if($step['action'])
-                                    wire:click="{{ $step['action'] }}" @endif>
-                                        <i class="{{ $step['icon'] }}"></i>
-                                        <span>{{ $step['label'] }}</span>
-                                    </div>
-                                    @if(!$isLast)
-                                        <i class="fas fa-chevron-right chip-separator mx-1" style="font-size: 10px;"></i>
-                                    @endif
-                                @endforeach
-                            </div>
+                                <div class="mobile-chips-wrapper py-2 px-2 rounded"
+                                    style="background-color: #F8F9FA; border: 1px solid #E9ECEF;">
+                                    @foreach($steps as $index => $step)
+                                        @php
+                                            $isLast = $index === ($totalSteps - 1);
+                                            $isSubcategory = $isLast && $viewState === 'products_list';
+                                            $stateClass = $isSubcategory ? 'mobile-chip-red' : 'mobile-chip-navy';
+                                        @endphp
+                                        <div class="mobile-chip {{ $stateClass }}" @if($step['action'])
+                                        wire:click="{{ $step['action'] }}" @endif>
+                                            <i class="{{ $step['icon'] }}"></i>
+                                            <span>{{ $step['label'] }}</span>
+                                        </div>
+                                        @if(!$isLast)
+                                            <i class="fas fa-chevron-right chip-separator mx-1" style="font-size: 10px;"></i>
+                                        @endif
+                                    @endforeach
+                                </div>
                             @endif
                         </div>
 
@@ -1126,21 +1137,25 @@
                                                                 transition: border-color 0.15s, background 0.15s, color 0.15s;
                                                                 user-select: none;
                                                             }
+
                                                             .measure-btn:hover:not(.measure-btn--disabled) {
                                                                 border-color: #3b82f6;
                                                                 color: #3b82f6;
                                                             }
+
                                                             .measure-btn--disabled {
                                                                 opacity: 0.5;
                                                                 cursor: not-allowed;
                                                                 color: #9ca3af;
                                                                 background: #f3f4f6;
                                                             }
+
                                                             .measure-btn--selected {
                                                                 background: #3b82f6 !important;
                                                                 color: #fff !important;
                                                                 border-color: #3b82f6 !important;
                                                             }
+
                                                             .measure-btn__strike {
                                                                 position: absolute;
                                                                 width: 130%;
@@ -1151,44 +1166,51 @@
                                                                 transform: rotate(-22deg);
                                                                 pointer-events: none;
                                                             }
+
                                                             .measure-btn__check {
                                                                 position: absolute;
                                                                 bottom: 4px;
                                                                 right: 5px;
                                                                 width: 15px;
                                                                 height: 15px;
-                                                                background: rgba(255,255,255,0.25);
-                                                                border: 1.5px solid rgba(255,255,255,0.7);
+                                                                background: rgba(255, 255, 255, 0.25);
+                                                                border: 1.5px solid rgba(255, 255, 255, 0.7);
                                                                 border-radius: 50%;
                                                                 display: flex;
                                                                 align-items: center;
                                                                 justify-content: center;
                                                             }
+
                                                             .measure-btn__check i {
                                                                 font-size: 7px;
                                                                 color: #fff;
                                                             }
+
                                                             @media (max-width: 767px) {
                                                                 .measure-btn {
                                                                     width: 68px;
                                                                     height: 46px;
                                                                     font-size: 0.95rem;
                                                                 }
+
                                                                 .w-md-auto {
                                                                     width: 100% !important;
                                                                 }
                                                             }
+
                                                             @media (min-width: 768px) {
                                                                 .w-md-auto {
                                                                     width: auto !important;
                                                                 }
+
                                                                 .ms-md-auto {
                                                                     margin-left: auto !important;
                                                                 }
                                                             }
                                                         </style>
-                                                        
-                                                        {{-- Row 1: Oversize buttons + fuel type (right on desktop, below on mobile) --}}
+
+                                                        {{-- Row 1: Oversize buttons + fuel type (right on desktop, below on mobile)
+                                                        --}}
                                                         <div class="w-100">
                                                             <div class="text-muted fw-bold mb-2"
                                                                 style="font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase;">
@@ -1197,56 +1219,57 @@
                                                             {{-- flex-wrap allows fuel badge to drop below on narrow screens --}}
                                                             <div class="d-flex flex-wrap gap-2">
                                                                 <div class="d-flex flex-wrap gap-2">
-                                                                @php
-                                                                    $isPiston = !empty($product->specs['pin']);
-                                                                    $stdOversizes = $isPiston
-                                                                        ? ['STD', '050', '075', '100', '150']
-                                                                        : ['STD', '025', '050', '075', '100', '125', '150'];
+                                                                    @php
+                                                                        $isPiston = !empty($product->specs['pin']);
+                                                                        $stdOversizes = $isPiston
+                                                                            ? ['STD', '050', '075', '100', '150']
+                                                                            : ['STD', '025', '050', '075', '100', '125', '150'];
 
-                                                                    $activeOversizeNames = $activeOversizes->pluck('oversize')->toArray();
-                                                                    foreach ($activeOversizeNames as $aov) {
-                                                                        if (!in_array($aov, $stdOversizes)) {
-                                                                            $stdOversizes[] = $aov;
+                                                                        $activeOversizeNames = $activeOversizes->pluck('oversize')->toArray();
+                                                                        foreach ($activeOversizeNames as $aov) {
+                                                                            if (!in_array($aov, $stdOversizes)) {
+                                                                                $stdOversizes[] = $aov;
+                                                                            }
                                                                         }
-                                                                    }
-                                                                @endphp
-                                                                @foreach($stdOversizes as $std)
-                                                                    @php $hasStock = in_array($std, $activeOversizeNames); @endphp
-                                                                    <div
-                                                                        class="measure-btn {{ !$hasStock ? 'measure-btn--disabled' : '' }}"
-                                                                        :class="{ 'measure-btn--selected': selectedOversize === '{{ $std }}' }"
-                                                                        @if($hasStock) @click="selectedOversize = '{{ $std }}'" @endif
-                                                                    >
-                                                                        @if(!$hasStock)
-                                                                            <div class="measure-btn__strike"></div>
-                                                                        @endif
-                                                                        <span>{{ $std }}</span>
-                                                                        <div class="measure-btn__check" x-show="selectedOversize === '{{ $std }}'">
-                                                                            <i class="fas fa-check"></i>
+                                                                    @endphp
+                                                                    @foreach($stdOversizes as $std)
+                                                                        @php $hasStock = in_array($std, $activeOversizeNames); @endphp
+                                                                        <div class="measure-btn {{ !$hasStock ? 'measure-btn--disabled' : '' }}"
+                                                                            :class="{ 'measure-btn--selected': selectedOversize === '{{ $std }}' }"
+                                                                            @if($hasStock) @click="selectedOversize = '{{ $std }}'"
+                                                                            @endif>
+                                                                            @if(!$hasStock)
+                                                                                <div class="measure-btn__strike"></div>
+                                                                            @endif
+                                                                            <span>{{ $std }}</span>
+                                                                            <div class="measure-btn__check"
+                                                                                x-show="selectedOversize === '{{ $std }}'">
+                                                                                <i class="fas fa-check"></i>
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                @endforeach
+                                                                    @endforeach
                                                                 </div>
 
                                                                 {{-- Fuel type: to the right on md+, full width below on mobile --}}
                                                                 @if($product->fuel_type || !empty($product->fuel_types))
                                                                     @php $fuelConf = \App\Models\Product::fuelConfig(); @endphp
-                                                                    <div class="d-flex gap-1 ms-md-auto w-100 w-md-auto" style="--w-md: auto;">
-                                                                    @foreach($product->fuel_types_list as $ft)
-                                                                        @php $fc = $fuelConf[$ft] ?? null; @endphp
-                                                                        @if($fc)
-                                                                            <div class="rounded-3 px-3 py-2 text-center flex-grow-1 flex-md-grow-0"
-                                                                                style="background: {{ $fc['bg'] }}; border: 1px solid {{ $fc['border'] }}; min-width: 200px;">
-                                                                                <div class="fw-bold mb-1"
-                                                                                    style="font-size: 0.6rem; letter-spacing: 1px; color: {{ $fc['text'] }}; opacity: 0.8;">
-                                                                                    MOTOR</div>
-                                                                                <div class="fw-bold"
-                                                                                    style="font-size: 0.85rem; color: {{ $fc['text'] }};">
-                                                                                    {{ $fc['icon'] }} {{ $fc['label'] }}
+                                                                    <div class="d-flex gap-1 ms-md-auto w-100 w-md-auto"
+                                                                        style="--w-md: auto;">
+                                                                        @foreach($product->fuel_types_list as $ft)
+                                                                            @php $fc = $fuelConf[$ft] ?? null; @endphp
+                                                                            @if($fc)
+                                                                                <div class="rounded-3 px-3 py-2 text-center flex-grow-1 flex-md-grow-0"
+                                                                                    style="background: {{ $fc['bg'] }}; border: 1px solid {{ $fc['border'] }}; min-width: 200px;">
+                                                                                    <div class="fw-bold mb-1"
+                                                                                        style="font-size: 0.6rem; letter-spacing: 1px; color: {{ $fc['text'] }}; opacity: 0.8;">
+                                                                                        MOTOR</div>
+                                                                                    <div class="fw-bold"
+                                                                                        style="font-size: 0.85rem; color: {{ $fc['text'] }};">
+                                                                                        {{ $fc['icon'] }} {{ $fc['label'] }}
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        @endif
-                                                                    @endforeach
+                                                                            @endif
+                                                                        @endforeach
                                                                     </div>
                                                                 @endif
                                                             </div>
@@ -1391,7 +1414,8 @@
                                                                     @endif
                                                                 </div>
                                                                 <div class="text-muted" style="font-size:0.78rem;">
-                                                                    {{ $item['product']['name'] }}</div>
+                                                                    {{ $item['product']['name'] }}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <span class="text-muted small">x{{ $item['qty'] }}</span>
@@ -1934,11 +1958,14 @@
                                                 $clientPrice = $showPrice ? round($rawPrice * 1.18, 2) : null;
                                             @endphp
                                             @if($showPrice)
-                                                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1" style="font-size: 0.8rem;">
+                                                <span
+                                                    class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1"
+                                                    style="font-size: 0.8rem;">
                                                     S/ {{ number_format($clientPrice, 2) }} c/IGV
                                                 </span>
                                             @else
-                                                <span class="badge bg-light text-muted border border-light-subtle px-3 py-1" style="font-size: 0.8rem; font-weight: normal;">
+                                                <span class="badge bg-light text-muted border border-light-subtle px-3 py-1"
+                                                    style="font-size: 0.8rem; font-weight: normal;">
                                                     Por confirmar
                                                 </span>
                                             @endif
@@ -1947,17 +1974,22 @@
                                         <!-- Controls Row -->
                                         <div class="d-flex justify-content-between align-items-center mt-3">
                                             <!-- Quantity -->
-                                            <div class="input-group input-group-sm d-inline-flex border rounded overflow-hidden" style="width: 110px; height: 35px;">
-                                                <button class="btn btn-light border-0 fw-bold" style="width: 35px;" wire:click="updateQuantity('{{ $id }}', {{ $item['qty'] - 1 }})">
+                                            <div class="input-group input-group-sm d-inline-flex border rounded overflow-hidden"
+                                                style="width: 110px; height: 35px;">
+                                                <button class="btn btn-light border-0 fw-bold" style="width: 35px;"
+                                                    wire:click="updateQuantity('{{ $id }}', {{ $item['qty'] - 1 }})">
                                                     -
                                                 </button>
-                                                <input type="text" class="form-control text-center border-0 fw-medium bg-white" value="{{ $item['qty'] }}" readonly>
-                                                <button class="btn btn-light border-0 fw-bold" style="width: 35px;" wire:click="updateQuantity('{{ $id }}', {{ $item['qty'] + 1 }})">
+                                                <input type="text" class="form-control text-center border-0 fw-medium bg-white"
+                                                    value="{{ $item['qty'] }}" readonly>
+                                                <button class="btn btn-light border-0 fw-bold" style="width: 35px;"
+                                                    wire:click="updateQuantity('{{ $id }}', {{ $item['qty'] + 1 }})">
                                                     +
                                                 </button>
                                             </div>
                                             <!-- Trash -->
-                                            <button class="btn btn-link text-danger p-2" onclick="confirmRemoval('{{ $id }}', '{{ addslashes($item['product']['name']) }}')">
+                                            <button class="btn btn-link text-danger p-2"
+                                                onclick="confirmRemoval('{{ $id }}', '{{ addslashes($item['product']['name']) }}')">
                                                 <i class="fas fa-trash fs-5"></i>
                                             </button>
                                         </div>
@@ -1967,24 +1999,24 @@
                         </div>
 
                         <div class="mt-4 border-top pt-4" x-data="{
-                                                        consultarConConfirmacion() {
-                                                            Swal.fire({
-                                                                title: '<span style=\'font-size: 1.2rem; font-weight: 700; color: #132530;\'>Las cantidades y productos no se pueden modificar una vez confirmados</span>',
-                                                                html: '<span style=\'font-size: 1rem; color: #6c757d;\'></span>',
-                                                                icon: 'warning',
-                                                                showCancelButton: true,
-                                                                confirmButtonColor: '#BE3C3B',
-                                                                cancelButtonColor: '#0d6efd',
-                                                                confirmButtonText: 'Estoy seguro, quiero consultar',
-                                                                cancelButtonText: 'Modificar consulta',
-                                                                reverseButtons: true,
-                                                            }).then((result) => {
-                                                                if (result.isConfirmed) {
-                                                                    $wire.openDeliveryModal();
-                                                                }
-                                                            });
-                                                        }
-                                                    }">
+                                                                                                        consultarConConfirmacion() {
+                                                                                                            Swal.fire({
+                                                                                                                title: '<span style=\'font-size: 1.2rem; font-weight: 700; color: #132530;\'>Las cantidades y productos no se pueden modificar una vez confirmados</span>',
+                                                                                                                html: '<span style=\'font-size: 1rem; color: #6c757d;\'></span>',
+                                                                                                                icon: 'warning',
+                                                                                                                showCancelButton: true,
+                                                                                                                confirmButtonColor: '#BE3C3B',
+                                                                                                                cancelButtonColor: '#0d6efd',
+                                                                                                                confirmButtonText: 'Estoy seguro, quiero consultar',
+                                                                                                                cancelButtonText: 'Modificar consulta',
+                                                                                                                reverseButtons: true,
+                                                                                                            }).then((result) => {
+                                                                                                                if (result.isConfirmed) {
+                                                                                                                    $wire.openDeliveryModal();
+                                                                                                                }
+                                                                                                            });
+                                                                                                        }
+                                                                                                    }">
                             <button
                                 class="btn btn-primary-custom w-100 py-3 fw-bold shadow d-flex align-items-center justify-content-center gap-2"
                                 @click="consultarConConfirmacion()" style="border-radius: 6px;">
@@ -2358,6 +2390,7 @@
         .bg-section-custom {
             padding-top: 65px !important;
         }
+
         @media (min-width: 768px) {
             .bg-section-custom {
                 padding-top: calc(62px + 1rem) !important;
@@ -2382,7 +2415,7 @@
         /* Spacing for mobile fixed bottom bar */
         @media (max-width: 767.98px) {
             .main-container {
-                padding-bottom: 80px;
+                padding-bottom: 0 !important;
             }
 
             .logo-main {
@@ -2704,8 +2737,8 @@
                                             <button wire:click="loadSavedAddress({{ $idx }})"
                                                 class="btn text-start p-2 rounded-3 position-relative"
                                                 style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
-                                                                                                                                                                                                                                                                                                                                                                                                                               max-width: 100%; transition: all .2s;
-                                                                                                                                                                                                                                                                                                                                                                                                                               {{ ($deliveryType === ($addr['type'] ?? '') &&
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       max-width: 100%; transition: all .2s;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       {{ ($deliveryType === ($addr['type'] ?? '') &&
                                     ($deliveryAddress === ($addr['address'] ?? '') || $deliveryAgency === ($addr['agency'] ?? '')))
                                     ? 'border-color:#BE3C3B!important; background:rgba(190,60,59,0.12)!important;' : '' }}"
                                                 onmouseover="this.style.background='rgba(255,255,255,0.1)'"
@@ -3267,13 +3300,12 @@
 
                         <div class="mt-4 pt-3 border-top border-white border-opacity-10">
                             <p class="x-small text-white text-opacity-40 mb-0">
-                                Al continuar, aceptas nuestra
-                                <a href="javascript:void(0)" wire:click="openPrivacyModal" class="fw-bold hover-underline"
-                                    style="color: #BE3C3B;">
-                                    <span wire:loading.remove wire:target="openPrivacyModal">Política de Privacidad</span>
-                                    <span wire:loading wire:target="openPrivacyModal"><i
-                                            class="fas fa-circle-notch fa-spin"></i> Cargando...</span>
-                                </a>.
+                                Al continuar, aceptas nuestros
+                                <a href="javascript:void(0)" onclick="rfOpenPopup('popup-terminos', event)" class="fw-bold text-decoration-underline"
+                                    style="color: #BE3C3B;">Términos y Condiciones</a>
+                                y nuestra
+                                <a href="javascript:void(0)" onclick="rfOpenPopup('popup-privacidad', event)" class="fw-bold text-decoration-underline"
+                                    style="color: #BE3C3B;">Política de Privacidad</a>.
                             </p>
                         </div>
                     </div>
@@ -4319,85 +4351,97 @@
 
     {{-- ZETTABOT MODAL (inside root div) --}}
     @if($showZbotModal)
-    <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(5px);z-index:10005;">
-        <div class="modal-dialog modal-dialog-centered" style="max-width:900px;">
-            <div class="modal-content border-0 shadow-lg" style="border-radius:24px;overflow:hidden;background:#fff;">
-                <div class="modal-header border-0 pb-0 pe-4 pt-4">
-                    <h5 class="modal-title fw-bold" style="color:#132530;">Consultando Disponibilidad...</h5>
-                    <button type="button" class="btn-close" wire:click="closeZbotModal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-0">
-                    <div class="zbot-screen-container" wire:poll.3s="checkZbotResponses"
-                        x-data="zettaBotAnimation(@js($this->getZbotProviders()))" x-init="startSequence()"
-                        x-on:zbot-updated.window="updateFromLivewire($event.detail[0])">
-                        <div class="zbot-card shadow-none border-0">
-                            <div class="zbot-layout">
-                                <div class="zbot-panel-left p-4 border-end border-light">
-                                    <div class="d-flex align-items-center gap-3 mb-4">
-                                        <div class="zbot-icon-circle bg-danger text-white d-flex align-items-center justify-content-center shadow-sm"
-                                            style="width:48px;height:48px;border-radius:12px;font-size:24px;">🔺</div>
-                                        <div>
-                                            <h5 class="fw-bold mb-0 text-dark" x-text="headerStatus"></h5>
-                                            <p class="text-muted small mb-0">ZettaBot · Pedido #{{ $lastOrderId ?? '...' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="mb-4">
-                                        <div class="text-muted x-small fw-bold text-uppercase mb-2">Detalles del Pedido</div>
-                                        <div class="zbot-product-list scrollbar-hide" style="max-height:250px;overflow-y:auto;">
-                                            @foreach($repairList as $item)
-                                                <div class="product-item-lite p-2 border-bottom border-light d-flex align-items-center justify-content-between">
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <div class="bg-primary rounded-circle" style="width:6px;height:6px;"></div>
-                                                        <span class="text-dark small">{{ $item['product']['name'] }}</span>
-                                                    </div>
-                                                    <span class="text-muted small">x{{ $item['qty'] }}</span>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                    <div class="d-none d-md-flex align-items-center justify-content-center gap-2 py-3 bg-light rounded-3 mb-3">
-                                        <div class="timer-dot-animate"></div>
-                                        <span class="text-muted small">Tiempo de respuesta:</span>
-                                        <span class="fw-bold text-danger" x-text="timerCount">9:00</span>
-                                    </div>
-                                </div>
-                                <div class="zbot-panel-right p-4 d-flex flex-column align-items-center justify-content-center bg-light bg-opacity-10">
-                                    <div class="zbot-avatar-container mb-4">
-                                        <div class="zbot-avatar-bg mx-auto">
-                                            <div class="zbot-avatar-inner">🤖</div>
-                                        </div>
-                                        <div class="mt-3 text-center">
-                                            <div class="fw-bold text-primary text-uppercase letter-spacing-2 small">ZettaBot</div>
-                                            <div class="text-muted small italic-pulse" x-text="zbotStatus"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row g-2 w-100 mb-4 justify-content-center">
-                                        <template x-for="(prov, id) in providers" :key="id">
-                                            <div class="col-4">
-                                                <div class="provider-card-v2 p-2 border border-light shadow-sm rounded-3 text-center h-100 d-flex flex-column align-items-center gap-1"
-                                                    :class="prov.state==='asking'?'border-danger shadow-danger-l':(prov.state==='confirmed'?'border-success shadow-success-l':(prov.state==='denied'?'opacity-50':''))"
-                                                    style="transition:all 0.5s ease;">
-                                                    <div class="position-relative">
-                                                        <span class="fs-4" x-text="prov.icon"></span>
-                                                        <div class="status-dot position-absolute top-0 end-0"
-                                                            :class="prov.state==='asking'?'bg-danger pulse-dot':(prov.state==='confirmed'?'bg-success':'bg-muted')"></div>
-                                                    </div>
-                                                    <div class="fw-bold x-small text-dark" x-text="prov.name"></div>
-                                                    <div class="badge x-small px-1"
-                                                        :class="prov.state==='confirmed'?'bg-success-soft text-success':(prov.state==='denied'?'bg-danger-soft text-danger':'bg-secondary bg-opacity-10 text-muted')"
-                                                        x-text="prov.result"></div>
-                                                </div>
+        <div class="modal fade show d-block" tabindex="-1"
+            style="background:rgba(0,0,0,0.7);backdrop-filter:blur(5px);z-index:10005;">
+            <div class="modal-dialog modal-dialog-centered" style="max-width:900px;">
+                <div class="modal-content border-0 shadow-lg" style="border-radius:24px;overflow:hidden;background:#fff;">
+                    <div class="modal-header border-0 pb-0 pe-4 pt-4">
+                        <h5 class="modal-title fw-bold" style="color:#132530;">Consultando Disponibilidad...</h5>
+                        <button type="button" class="btn-close" wire:click="closeZbotModal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-0">
+                        <div class="zbot-screen-container" wire:poll.3s="checkZbotResponses"
+                            x-data="zettaBotAnimation(@js($this->getZbotProviders()))" x-init="startSequence()"
+                            x-on:zbot-updated.window="updateFromLivewire($event.detail[0])">
+                            <div class="zbot-card shadow-none border-0">
+                                <div class="zbot-layout">
+                                    <div class="zbot-panel-left p-4 border-end border-light">
+                                        <div class="d-flex align-items-center gap-3 mb-4">
+                                            <div class="zbot-icon-circle bg-danger text-white d-flex align-items-center justify-content-center shadow-sm"
+                                                style="width:48px;height:48px;border-radius:12px;font-size:24px;">🔺</div>
+                                            <div>
+                                                <h5 class="fw-bold mb-0 text-dark" x-text="headerStatus"></h5>
+                                                <p class="text-muted small mb-0">ZettaBot · Pedido
+                                                    #{{ $lastOrderId ?? '...' }}</p>
                                             </div>
-                                        </template>
-                                    </div>
-                                    <div class="w-100 mb-4 px-md-4">
-                                        <div class="progress bg-secondary bg-opacity-10 overflow-hidden" style="height:6px;border-radius:10px;">
-                                            <div class="progress-bar bg-danger" role="progressbar"
-                                                :style="'width:'+progress+'%;transition:width 1s ease;'"></div>
                                         </div>
-                                        <div class="d-flex justify-content-between mt-2 x-small text-muted">
-                                            <span x-text="progressLabel"></span>
-                                            <span x-text="progress+'%'"></span>
+                                        <div class="mb-4">
+                                            <div class="text-muted x-small fw-bold text-uppercase mb-2">Detalles del Pedido
+                                            </div>
+                                            <div class="zbot-product-list scrollbar-hide"
+                                                style="max-height:250px;overflow-y:auto;">
+                                                @foreach($repairList as $item)
+                                                    <div
+                                                        class="product-item-lite p-2 border-bottom border-light d-flex align-items-center justify-content-between">
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <div class="bg-primary rounded-circle"
+                                                                style="width:6px;height:6px;"></div>
+                                                            <span class="text-dark small">{{ $item['product']['name'] }}</span>
+                                                        </div>
+                                                        <span class="text-muted small">x{{ $item['qty'] }}</span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="d-none d-md-flex align-items-center justify-content-center gap-2 py-3 bg-light rounded-3 mb-3">
+                                            <div class="timer-dot-animate"></div>
+                                            <span class="text-muted small">Tiempo de respuesta:</span>
+                                            <span class="fw-bold text-danger" x-text="timerCount">9:00</span>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="zbot-panel-right p-4 d-flex flex-column align-items-center justify-content-center bg-light bg-opacity-10">
+                                        <div class="zbot-avatar-container mb-4">
+                                            <div class="zbot-avatar-bg mx-auto">
+                                                <div class="zbot-avatar-inner">🤖</div>
+                                            </div>
+                                            <div class="mt-3 text-center">
+                                                <div class="fw-bold text-primary text-uppercase letter-spacing-2 small">
+                                                    ZettaBot</div>
+                                                <div class="text-muted small italic-pulse" x-text="zbotStatus"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-2 w-100 mb-4 justify-content-center">
+                                            <template x-for="(prov, id) in providers" :key="id">
+                                                <div class="col-4">
+                                                    <div class="provider-card-v2 p-2 border border-light shadow-sm rounded-3 text-center h-100 d-flex flex-column align-items-center gap-1"
+                                                        :class="prov.state==='asking'?'border-danger shadow-danger-l':(prov.state==='confirmed'?'border-success shadow-success-l':(prov.state==='denied'?'opacity-50':''))"
+                                                        style="transition:all 0.5s ease;">
+                                                        <div class="position-relative">
+                                                            <span class="fs-4" x-text="prov.icon"></span>
+                                                            <div class="status-dot position-absolute top-0 end-0"
+                                                                :class="prov.state==='asking'?'bg-danger pulse-dot':(prov.state==='confirmed'?'bg-success':'bg-muted')">
+                                                            </div>
+                                                        </div>
+                                                        <div class="fw-bold x-small text-dark" x-text="prov.name"></div>
+                                                        <div class="badge x-small px-1"
+                                                            :class="prov.state==='confirmed'?'bg-success-soft text-success':(prov.state==='denied'?'bg-danger-soft text-danger':'bg-secondary bg-opacity-10 text-muted')"
+                                                            x-text="prov.result"></div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <div class="w-100 mb-4 px-md-4">
+                                            <div class="progress bg-secondary bg-opacity-10 overflow-hidden"
+                                                style="height:6px;border-radius:10px;">
+                                                <div class="progress-bar bg-danger" role="progressbar"
+                                                    :style="'width:'+progress+'%;transition:width 1s ease;'"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mt-2 x-small text-muted">
+                                                <span x-text="progressLabel"></span>
+                                                <span x-text="progress+'%'"></span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -4407,7 +4451,6 @@
                 </div>
             </div>
         </div>
-    </div>
     @endif
 
 
@@ -4422,7 +4465,7 @@
                 zbotStatus: 'Iniciando ZettaBot...',
                 headerStatus: 'Consultando Disponibilidad',
                 progressLabel: 'Conectando con proveedores...',
-                
+
                 updateFromLivewire(payload) {
                     if (payload && payload.providers) {
                         this.providers = payload.providers;
@@ -4433,7 +4476,7 @@
                     }
                     this.calculateProgress();
                 },
-                
+
                 calculateProgress() {
                     let total = Object.keys(this.providers).length;
                     if (total === 0) {
@@ -4441,10 +4484,10 @@
                         this.finishSequence();
                         return;
                     }
-                    
+
                     let processed = Object.values(this.providers).filter(p => p.state === 'confirmed' || p.state === 'denied');
                     this.progress = Math.round((processed.length / total) * 100);
-                    
+
                     if (this.progress >= 100) {
                         this.finishSequence();
                     } else {
@@ -4454,7 +4497,7 @@
                         }
                     }
                 },
-                
+
                 startSequence() {
                     this.progress = 0;
                     this.startTime = new Date();
@@ -4464,21 +4507,21 @@
                         let s = diff % 60;
                         this.timerCount = m + ':' + (s < 10 ? '0' : '') + s;
                     }, 1000);
-                    
+
                     this.zbotStatus = 'Contactando proveedores via WhatsApp...';
                     let numProviders = this.providers ? Object.keys(this.providers).length : 0;
                     this.progressLabel = 'Contactando ' + numProviders + ' proveedores...';
-                    
+
                     this.calculateProgress();
                 },
-                
+
                 finishSequence() {
                     clearInterval(this.timerInterval);
                     this.progress = 100;
                     this.zbotStatus = '¡Disponibilidad confirmada!';
                     this.progressLabel = 'Consulta finalizada con éxito';
                     this.headerStatus = 'Disponibilidad confirmada';
-                    
+
                     setTimeout(() => {
                         this.$wire.closeZbotModal();
                     }, 2500);
@@ -4486,4 +4529,513 @@
             }));
         });
     </script>
+
+    {{-- ═══════════════════════════════════════════════════════════
+    FOOTER GLOBAL — REPUESTOFIJO (v2 — diseño con popups)
+    ════════════════════════════════════════════════════════════ --}}
+    <style>
+        /* ── Footer ── */
+        .rff {
+            background: #0d1e28;
+            border-top: 1px solid rgba(255, 255, 255, .07);
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .rff-main {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 36px 32px 28px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* Col izquierda */
+        .rff-brand img {
+            max-height: 38px;
+            display: block;
+            margin-bottom: 14px;
+        }
+
+        .rff-tagline {
+            font-size: .82rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .45);
+        }
+
+        .rff-tagline span {
+            color: #BE3C3B;
+        }
+
+        /* Col central */
+        .rff-center {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .rff-btn-reclamaciones {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #BE3C3B;
+            color: #fff;
+            font-size: .8rem;
+            font-weight: 700;
+            letter-spacing: .3px;
+            padding: 7px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background .2s;
+            text-decoration: none;
+            margin-bottom: 4px;
+        }
+
+        .rff-btn-reclamaciones:hover {
+            background: #a82b2b;
+        }
+
+        .rff-btn-reclamaciones i {
+            font-size: .78rem;
+        }
+
+        .rff-legal-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: rgba(255, 255, 255, .5);
+            font-size: .82rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            text-decoration: none;
+            transition: color .2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .rff-legal-link i {
+            color: #BE3C3B;
+            font-size: .72rem;
+        }
+
+        .rff-legal-link:hover {
+            color: rgba(255, 255, 255, .9);
+        }
+
+        /* Col derecha */
+        .rff-right {
+            text-align: right;
+        }
+
+        .rff-schedule-title {
+            font-size: .78rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, .8);
+            margin-bottom: 6px;
+        }
+
+        .rff-schedule-text {
+            font-size: .75rem;
+            color: rgba(255, 255, 255, .38);
+            line-height: 1.65;
+            margin-bottom: 14px;
+        }
+
+        .rff-social {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .rff-social a {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, .15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, .45);
+            font-size: .8rem;
+            text-decoration: none;
+            transition: all .2s;
+        }
+
+        .rff-social a:hover {
+            border-color: #BE3C3B;
+            color: #BE3C3B;
+        }
+
+        /* Bottom bar */
+        .rff-bottom {
+            border-top: 1px solid rgba(255, 255, 255, .06);
+            padding: 14px 32px;
+            max-width: 1240px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rff-copy {
+            font-size: .73rem;
+            color: rgba(255, 255, 255, .25);
+        }
+
+        .rff-copy span {
+            color: rgba(255, 255, 255, .38);
+        }
+
+        /* ── Modal Popup ── */
+        .rf-popup-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(0, 0, 0, .65);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s;
+        }
+
+        .rf-popup-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .rf-popup-box {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            width: 100%;
+            max-width: 860px;
+            height: 85vh;
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, .4);
+            transform: translateY(18px) scale(.97);
+            transition: transform .28s cubic-bezier(.22, 1, .36, 1);
+            position: relative;
+        }
+
+        .rf-popup-overlay.active .rf-popup-box {
+            transform: translateY(0) scale(1);
+        }
+
+        .rf-popup-bar {
+            background: #0d1e28;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 3;
+        }
+
+        .rf-popup-bar-title {
+            color: #fff;
+            font-size: .9rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rf-popup-bar-title i {
+            color: #BE3C3B;
+        }
+
+        .rf-popup-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, .1);
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: .95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .2s;
+        }
+
+        .rf-popup-close:hover {
+            background: rgba(190, 60, 59, .5);
+        }
+
+        .rf-popup-loader {
+            position: absolute;
+            inset: 56px 0 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #fff;
+            color: #64748B;
+            font-size: .88rem;
+            z-index: 2;
+            transition: opacity .2s;
+        }
+
+        .rf-popup-loader.loaded {
+            display: none !important;
+        }
+
+        .rf-spinner {
+            width: 34px;
+            height: 34px;
+            border: 3px solid #E2E8F0;
+            border-top-color: #BE3C3B;
+            border-radius: 50%;
+            animation: rfSpin .8s linear infinite;
+        }
+
+        @keyframes rfSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .rf-popup-iframe {
+            flex: 1;
+            border: none;
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+            background: #fff;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 860px) {
+            .rff-main {
+                grid-template-columns: 1fr;
+                gap: 28px;
+            }
+
+            .rff-right {
+                text-align: left;
+            }
+
+            .rff-social {
+                justify-content: flex-start;
+            }
+
+            .rff {
+                padding-bottom: 80px !important;
+            }
+
+            /* barra roja móvil */
+        }
+
+        @media (max-width: 520px) {
+            .rff-main {
+                padding: 28px 20px 22px;
+            }
+
+            .rff-bottom {
+                padding: 12px 20px;
+            }
+        }
+    </style>
+
+    {{-- ── FOOTER HTML ── --}}
+    <footer class="rff">
+        <div class="rff-main">
+            {{-- Col 1: Marca --}}
+            <div class="rff-brand">
+                <a href="{{ route('home') }}">
+                    <img src="{{ asset('images/logo.png') }}" alt="RepuestoFijo">
+                </a>
+                <div class="rff-tagline">PIDE. LLEGA. <span>REPARA.</span></div>
+            </div>
+
+            {{-- Col 2: Links legales --}}
+            <div class="rff-center">
+                <button type="button" class="rff-legal-link" onclick="rfOpenPopup('popup-reclamaciones', event)">
+                    <i class="fas fa-book"></i> Libro de Reclamaciones
+                </button>
+                <button type="button" class="rff-legal-link" onclick="rfOpenPopup('popup-privacidad', event)">
+                    <i class="fas fa-shield-alt"></i> Política de Privacidad
+                </button>
+                <button type="button" class="rff-legal-link" onclick="rfOpenPopup('popup-terminos', event)">
+                    <i class="fas fa-file-alt"></i> Términos y Condiciones
+                </button>
+            </div>
+
+            {{-- Col 3: Horario --}}
+            <div class="rff-right">
+                <div class="rff-schedule-title">Horario del servicio de atención al cliente</div>
+                <div class="rff-schedule-text">
+                    De lunes a viernes de 9:00 a 18:00 h<br>
+                    Sábados 9:00 · 14:00 h
+                </div>
+                <div class="rff-social">
+                    <a href="https://linkedin.com/company/repuestofijo" target="_blank" rel="noopener" title="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="rff-bottom">
+            <span class="rff-copy">
+                © {{ date('Y') }} RepuestoFijo &nbsp;·&nbsp; Lima, Perú &nbsp;·&nbsp; Powered by <span>ZettaThink</span>
+            </span>
+        </div>
+    </footer>
+
+    {{-- ═══════════════════════════════════════════════
+    POPUPS LEGALES
+    ═══════════════════════════════════════════════ --}}
+
+    {{-- Popup: Política de Privacidad --}}
+    <div class="rf-popup-overlay" id="popup-privacidad" onclick="rfCloseOnBg(event, 'popup-privacidad')">
+        <div class="rf-popup-box">
+            <div class="rf-popup-bar">
+                <div class="rf-popup-bar-title">
+                    <i class="fas fa-shield-alt"></i> Política de Privacidad
+                </div>
+                <button type="button" class="rf-popup-close" onclick="rfClosePopup('popup-privacidad', event)"
+                    title="Cerrar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="rf-popup-loader" id="loader-privacidad">
+                <div class="rf-spinner"></div>
+                <span>Cargando documento...</span>
+            </div>
+            <iframe class="rf-popup-iframe" id="iframe-privacidad" title="Política de Privacidad"
+                onload="rfHideLoader('loader-privacidad')"></iframe>
+        </div>
+    </div>
+
+    {{-- Popup: Términos y Condiciones --}}
+    <div class="rf-popup-overlay" id="popup-terminos" onclick="rfCloseOnBg(event, 'popup-terminos')">
+        <div class="rf-popup-box">
+            <div class="rf-popup-bar">
+                <div class="rf-popup-bar-title">
+                    <i class="fas fa-file-alt"></i> Términos y Condiciones
+                </div>
+                <button type="button" class="rf-popup-close" onclick="rfClosePopup('popup-terminos', event)"
+                    title="Cerrar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="rf-popup-loader" id="loader-terminos">
+                <div class="rf-spinner"></div>
+                <span>Cargando documento...</span>
+            </div>
+            <iframe class="rf-popup-iframe" id="iframe-terminos" title="Términos y Condiciones"
+                onload="rfHideLoader('loader-terminos')"></iframe>
+        </div>
+    </div>
+
+    {{-- Popup: Libro de Reclamaciones --}}
+    <div class="rf-popup-overlay" id="popup-reclamaciones" onclick="rfCloseOnBg(event, 'popup-reclamaciones')">
+        <div class="rf-popup-box">
+            <div class="rf-popup-bar">
+                <div class="rf-popup-bar-title">
+                    <i class="fas fa-book"></i> Libro de Reclamaciones
+                </div>
+                <button type="button" class="rf-popup-close" onclick="rfClosePopup('popup-reclamaciones', event)"
+                    title="Cerrar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="rf-popup-loader" id="loader-reclamaciones">
+                <div class="rf-spinner"></div>
+                <span>Cargando documento...</span>
+            </div>
+            <iframe class="rf-popup-iframe" id="iframe-reclamaciones" title="Libro de Reclamaciones"
+                onload="rfHideLoader('loader-reclamaciones')"></iframe>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            // Rutas relativas al origen actual (para funcionar en localhost, ip, ngrok o dominio sin bloqueos CORS ni advertencias de ngrok)
+            var rfPopupMap = {
+                'popup-privacidad': { iframe: 'iframe-privacidad', loader: 'loader-privacidad', url: '/privacidad' },
+                'popup-terminos': { iframe: 'iframe-terminos', loader: 'loader-terminos', url: '/terminos' },
+                'popup-reclamaciones': { iframe: 'iframe-reclamaciones', loader: 'loader-reclamaciones', url: '/libro-de-reclamaciones' },
+            };
+
+            window.rfHideLoader = function (loaderId) {
+                var loader = document.getElementById(loaderId);
+                if (loader) loader.classList.add('loaded');
+            };
+
+            window.rfOpenPopup = function (id, event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                var overlay = document.getElementById(id);
+                if (!overlay) return;
+
+                // Cargar iframe bajo demanda solo la primera vez
+                var cfg = rfPopupMap[id];
+                if (cfg) {
+                    var iframe = document.getElementById(cfg.iframe);
+                    if (iframe && !iframe.getAttribute('src')) {
+                        iframe.setAttribute('src', cfg.url);
+                    }
+                }
+
+                overlay.classList.add('active');
+            };
+
+            window.rfClosePopup = function (id, event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                var overlay = document.getElementById(id);
+                if (!overlay) return;
+                overlay.classList.remove('active');
+            };
+
+            window.rfCloseOnBg = function (e, id) {
+                if (e.target === document.getElementById(id)) {
+                    rfClosePopup(id, e);
+                }
+            };
+
+            // Prevenir scroll de la página de fondo al interactuar directamente con el backdrop
+            ['popup-privacidad', 'popup-terminos', 'popup-reclamaciones'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('wheel', function (e) {
+                        if (e.target === el) e.preventDefault();
+                    }, { passive: false });
+                    el.addEventListener('touchmove', function (e) {
+                        if (e.target === el) e.preventDefault();
+                    }, { passive: false });
+                }
+            });
+
+            // Cerrar con tecla Escape
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    ['popup-privacidad', 'popup-terminos', 'popup-reclamaciones'].forEach(function (id) {
+                        rfClosePopup(id);
+                    });
+                }
+            });
+        })();
+    </script>
+
 </div>{{-- /main-container --}}

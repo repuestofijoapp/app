@@ -100,3 +100,48 @@ Route::post('/webhooks/green-api', [GreenApiWebhookController::class, 'handle'])
 use App\Http\Controllers\Provider\ConfirmStockController;
 Route::get('/proveedor/confirmar/{token}', [ConfirmStockController::class, 'show'])->name('provider.confirm.show');
 Route::post('/proveedor/confirmar/{token}', [ConfirmStockController::class, 'submit'])->name('provider.confirm.submit');
+
+// ── PÁGINAS LEGALES (Públicas) ──────────────────────────────────────────────
+Route::get('/privacidad', fn() => view('legal.privacidad'))->name('legal.privacidad');
+Route::get('/terminos', fn() => view('legal.terminos'))->name('legal.terminos');
+Route::get('/libro-de-reclamaciones', fn() => view('legal.reclamaciones'))->name('legal.reclamaciones');
+
+// Endpoint POST: guardar reclamación
+Route::post('/libro-de-reclamaciones', function (\Illuminate\Http\Request $request) {
+    $validated = $request->validate([
+        'nombre'            => 'required|string|max:200',
+        'email'             => 'required|email|max:200',
+        'telefono'          => 'required|string|max:20',
+        'tipo_reclamacion'  => 'required|string|max:100',
+        'descripcion'       => 'required|string|min:30',
+        'solucion_esperada' => 'required|string|max:100',
+    ]);
+
+    $code = 'RF-' . strtoupper(substr(md5(microtime(true) . $validated['email']), 0, 8));
+
+    \DB::table('reclamaciones')->insert([
+        'code'              => $code,
+        'nombre'            => $validated['nombre'],
+        'email'             => $validated['email'],
+        'telefono'          => $validated['telefono'],
+        'tipo_doc'          => $request->input('tipo_doc'),
+        'num_doc'           => $request->input('num_doc'),
+        'num_pedido'        => $request->input('num_pedido'),
+        'fecha_pedido'      => $request->input('fecha_pedido') ?: null,
+        'tipo_reclamacion'  => $validated['tipo_reclamacion'],
+        'descripcion'       => $validated['descripcion'],
+        'solucion_esperada' => $validated['solucion_esperada'],
+        'user_id'           => auth()->id(),
+        'ip_address'        => $request->ip(),
+        'estado'            => 'pendiente',
+        'created_at'        => now(),
+        'updated_at'        => now(),
+    ]);
+
+    return response()->json(['code' => $code, 'status' => 'ok']);
+})->name('reclamaciones.store');
+
+// Fallback route para capturar páginas no encontradas manteniendo la sesión y el usuario autenticado
+Route::fallback(function () {
+    return response()->view('errors.404', [], 404);
+});
