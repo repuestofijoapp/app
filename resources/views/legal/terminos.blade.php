@@ -317,6 +317,21 @@
                 padding: 28px 16px 60px;
             }
         }
+
+        /* ── Estilos dentro de un popup/iframe ── */
+        body.in-iframe {
+            background: #fff;
+        }
+
+        body.in-iframe .site-header,
+        body.in-iframe .legal-footer {
+            display: none !important;
+        }
+
+        body.in-iframe .legal-wrap {
+            padding: 18px 16px 40px !important;
+            max-width: 100% !important;
+        }
     </style>
 </head>
 

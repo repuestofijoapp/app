@@ -4836,8 +4836,26 @@
             .rff {
                 padding-bottom: 80px !important;
             }
+        }
 
-            /* barra roja móvil */
+        @media (max-width: 640px) {
+            .rf-popup-overlay {
+                padding: 10px !important;
+            }
+
+            .rf-popup-box {
+                height: 92vh !important;
+                max-height: 92vh !important;
+                border-radius: 14px !important;
+            }
+
+            .rf-popup-bar {
+                padding: 12px 14px !important;
+            }
+
+            .rf-popup-bar-title {
+                font-size: .85rem !important;
+            }
         }
 
         @media (max-width: 520px) {

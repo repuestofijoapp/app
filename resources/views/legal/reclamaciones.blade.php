@@ -494,21 +494,100 @@
             margin-top: 10px;
         }
 
+        /* ── Estilos cuando se carga dentro del popup (iframe) ── */
+        body.in-iframe {
+            background: #fff;
+        }
+
+        body.in-iframe .site-header,
+        body.in-iframe .legal-footer {
+            display: none !important;
+        }
+
+        body.in-iframe .page-wrap {
+            padding: 16px 14px 32px !important;
+            max-width: 100% !important;
+        }
+
+        body.in-iframe .form-card {
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+        }
+
+        /* ── Responsive Móvil ── */
         @media(max-width:640px) {
+            .page-wrap {
+                padding: 14px 12px 36px;
+            }
+
             .info-strip {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                margin-bottom: 18px;
+            }
+
+            .info-card {
+                padding: 10px 6px;
+                border-radius: 8px;
+            }
+
+            .info-card i {
+                font-size: 1.15rem;
+                margin-bottom: 4px;
+            }
+
+            .info-card strong {
+                font-size: .76rem;
+                margin-bottom: 2px;
+            }
+
+            .info-card span {
+                font-size: .68rem;
+                line-height: 1.25;
+            }
+
+            .form-card {
+                padding: 16px 12px;
+                border-radius: 12px;
+            }
+
+            .form-card h2 {
+                font-size: 1.18rem;
+                margin-bottom: 4px;
+            }
+
+            .form-card .form-sub {
+                font-size: .82rem;
+                margin-bottom: 16px;
             }
 
             .form-row {
                 grid-template-columns: 1fr;
+                gap: 12px;
+                margin-bottom: 0;
             }
 
-            .form-card {
-                padding: 24px 18px;
+            .form-group {
+                margin-bottom: 12px;
             }
 
-            .page-wrap {
-                padding: 28px 16px 60px;
+            .form-group label {
+                font-size: .8rem;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 16px; /* previene zoom forzado en móviles iOS/Android */
+                padding: 10px 12px;
+            }
+
+            .proveedor-grid {
+                grid-template-columns: 1fr !important;
+                gap: 4px !important;
             }
         }
     </style>
@@ -551,7 +630,7 @@
                 <div style="font-weight: 700; color: var(--dark); margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
                     <i class="fas fa-building" style="color: var(--red);"></i> Identificación del Proveedor
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 16px;">
+                <div class="proveedor-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 16px;">
                     <div><strong>Razón Social:</strong> Repuesto Fijo</div>
                     <div><strong>RUC:</strong> 10421922557</div>
                     <div style="grid-column: 1 / -1;"><strong>Dirección:</strong> Calle Filadelfia 2453, San Martín de Porres, Lima</div>
