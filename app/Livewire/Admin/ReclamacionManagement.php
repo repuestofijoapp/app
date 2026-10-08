@@ -79,6 +79,14 @@ class ReclamacionManagement extends Component
 
     public function refreshStats(): void
     {
+        if (!\Illuminate\Support\Facades\Schema::hasTable('reclamaciones')) {
+            $this->totalPendientes  = 0;
+            $this->totalEnRevision  = 0;
+            $this->totalRespondidas = 0;
+            $this->totalCerradas    = 0;
+            return;
+        }
+
         $this->totalPendientes  = DB::table('reclamaciones')->where('estado', 'pendiente')->count();
         $this->totalEnRevision  = DB::table('reclamaciones')->where('estado', 'en_revision')->count();
         $this->totalRespondidas = DB::table('reclamaciones')->where('estado', 'respondida')->count();
@@ -89,14 +97,15 @@ class ReclamacionManagement extends Component
     public function updatingEstadoFilter(): void { $this->resetPage(); }
     public function updatingTipoFilter(): void   { $this->resetPage(); }
 
-    public function openModal(int $id): void
+    public function openModal($id): void
     {
+        $id = (int) $id;
         $row = DB::table('reclamaciones')->where('id', $id)->first();
         if (!$row) return;
 
         $this->selected    = (array) $row;
         $this->respuesta   = $this->selected['respuesta'] ?? '';
-        $this->nuevoEstado = $this->selected['estado'];
+        $this->nuevoEstado = $this->selected['estado'] ?? 'pendiente';
         $this->showModal   = true;
     }
 
@@ -180,19 +189,23 @@ class ReclamacionManagement extends Component
     {
         $this->refreshStats();
 
-        $rows = DB::table('reclamaciones')
-            ->when($this->search, function ($q) {
-                $q->where(function ($inner) {
-                    $inner->where('nombre',     'like', "%{$this->search}%")
-                          ->orWhere('email',    'like', "%{$this->search}%")
-                          ->orWhere('code',     'like', "%{$this->search}%")
-                          ->orWhere('num_pedido', 'like', "%{$this->search}%");
-                });
-            })
-            ->when($this->estadoFilter, fn($q) => $q->where('estado', $this->estadoFilter))
-            ->when($this->tipoFilter,   fn($q) => $q->where('tipo_reclamacion', $this->tipoFilter))
-            ->latest()
-            ->paginate($this->perPage);
+        if (\Illuminate\Support\Facades\Schema::hasTable('reclamaciones')) {
+            $rows = DB::table('reclamaciones')
+                ->when($this->search, function ($q) {
+                    $q->where(function ($inner) {
+                        $inner->where('nombre',     'like', "%{$this->search}%")
+                              ->orWhere('email',    'like', "%{$this->search}%")
+                              ->orWhere('code',     'like', "%{$this->search}%")
+                              ->orWhere('num_pedido', 'like', "%{$this->search}%");
+                    });
+                })
+                ->when($this->estadoFilter, fn($q) => $q->where('estado', $this->estadoFilter))
+                ->when($this->tipoFilter,   fn($q) => $q->where('tipo_reclamacion', $this->tipoFilter))
+                ->latest()
+                ->paginate($this->perPage);
+        } else {
+            $rows = new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage);
+        }
 
         return view('livewire.admin.reclamacion-management', [
             'rows'             => $rows,
@@ -200,6 +213,6 @@ class ReclamacionManagement extends Component
             'totalEnRevision'  => $this->totalEnRevision,
             'totalRespondidas' => $this->totalRespondidas,
             'totalCerradas'    => $this->totalCerradas,
-        ]);
+        ])->layout('layouts.app');
     }
 }

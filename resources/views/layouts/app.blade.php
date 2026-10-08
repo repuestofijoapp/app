@@ -731,7 +731,14 @@
                                 data-label="Reclamaciones">
                                 <i class="fas fa-book-open" style="font-size: 0.8rem;"></i>
                                 <span class="sb-link-label">Reclamaciones</span>
-                                @php $pendientes = \DB::table('reclamaciones')->where('estado','pendiente')->count(); @endphp
+                                @php
+                                    $pendientes = 0;
+                                    try {
+                                        if (\Illuminate\Support\Facades\Schema::hasTable('reclamaciones')) {
+                                            $pendientes = \DB::table('reclamaciones')->where('estado','pendiente')->count();
+                                        }
+                                    } catch (\Throwable $e) {}
+                                @endphp
                                 @if($pendientes > 0)
                                     <span class="collapse-hide ms-auto badge rounded-pill"
                                         style="background:#ff3b5c;color:#fff;font-size:.65rem;min-width:18px;padding:2px 6px;">{{ $pendientes }}</span>

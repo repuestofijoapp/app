@@ -61,8 +61,8 @@
         }
         /* modal */
         .modal-overlay-rec {
-            position: fixed; inset: 0; z-index: 1060;
-            background: rgba(0,0,0,.7);
+            position: fixed; inset: 0; z-index: 3500 !important;
+            background: rgba(0,0,0,.75);
             display: flex; align-items: center; justify-content: center;
             padding: 1rem;
         }
@@ -185,7 +185,7 @@
         {{-- ── TABLA ───────────────────────────────────────────── --}}
         <div class="card border-0" style="background:rgba(255,255,255,0.03); border-radius:14px; overflow:hidden;">
             @forelse($rows as $rec)
-                <div class="rec-row px-4 py-3 d-flex flex-wrap align-items-center gap-3">
+                <div class="rec-row px-4 py-3 d-flex flex-wrap align-items-center gap-3" wire:key="rec-row-{{ $rec->id }}">
 
                     {{-- Estado dot --}}
                     <div class="flex-shrink-0">
@@ -251,7 +251,7 @@
 
                     {{-- Acción --}}
                     <div class="flex-shrink-0">
-                        <button wire:click="openModal({{ $rec->id }})"
+                        <button type="button" wire:click="openModal({{ $rec->id }})" wire:key="rec-btn-{{ $rec->id }}"
                             class="btn btn-sm px-3 rounded-pill fw-medium"
                             style="background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.12);font-size:.8rem;">
                             <i class="fas fa-eye me-1"></i> Ver / Gestionar
@@ -273,7 +273,7 @@
 
     {{-- ── MODAL DETALLE / GESTIÓN ────────────────────────────── --}}
     @if($showModal && $selected)
-        <div class="modal-overlay-rec" wire:click.self="closeModal">
+        <div class="modal-overlay-rec" style="position:fixed;inset:0;z-index:3500 !important;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;padding:1rem;" wire:click.self="closeModal">
             <div class="modal-box-rec" style="max-width:680px;">
 
                 {{-- Header --}}
