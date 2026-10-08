@@ -216,6 +216,28 @@
             overflow: hidden;
         }
 
+        /* ─ Geolocalización y hora en vivo del usuario ─ */
+        .sb-user-geotime {
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.68rem;
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            padding: 3px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+        }
+
+        .sidebar.is-collapsed .sb-user-geotime {
+            display: none !important;
+        }
+
         /* ─ Scrollable nav area ─ */
         .sb-nav {
             flex: 1;
@@ -657,6 +679,20 @@
                                 <span class="sb-link-label" style="font-family: 'Syne', sans-serif; font-weight: 600;">Mi
                                     Perfil</span>
                             </a>
+
+                            {{-- Ubicación y Hora en vivo del Gestor/Admin --}}
+                            <div class="sb-user-geotime collapse-hide" id="sbUserGeoTime" title="Zona horaria y hora local de trabajo">
+                                <span class="d-inline-flex align-items-center gap-1">
+                                    <i class="fas fa-map-marker-alt" style="color: #ff3b5c; font-size: 0.62rem;"></i>
+                                    <span id="sbGeoCity" style="color: #cbd5e1; font-weight: 600;">Detectando...</span>
+                                </span>
+                                <span style="opacity: 0.3; margin: 0 3px;">·</span>
+                                <span class="d-inline-flex align-items-center gap-1">
+                                    <i class="far fa-clock" style="color: #00d68f; font-size: 0.62rem;"></i>
+                                    <span id="sbGeoClock" style="color: #00d68f; font-family: monospace; font-weight: 700;">--:--</span>
+                                </span>
+                                <span id="sbPeruClockBadge" style="display: none; color: #fca5a5; font-size: 0.62rem; margin-left: 3px;"></span>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -959,6 +995,102 @@
                     mainContent && mainContent.classList.remove('is-expanded');
                 }
             });
+        })();
+    </script>
+
+    {{-- ── Geolocalización y Reloj en vivo para Gestores y Administradores ── --}}
+    <script>
+        (function() {
+            const cityEl = document.getElementById('sbGeoCity');
+            const clockEl = document.getElementById('sbGeoClock');
+            const peruBadgeEl = document.getElementById('sbPeruClockBadge');
+
+            if (!cityEl || !clockEl) return;
+
+            // 1. Obtener zona horaria del navegador del gestor/admin
+            let userTz = 'America/Lima';
+            try {
+                userTz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Lima';
+            } catch (e) {
+                userTz = 'America/Lima';
+            }
+
+            function tzToCityName(tz) {
+                if (!tz) return 'Perú';
+                const parts = tz.split('/');
+                const rawCity = parts[parts.length - 1].replace(/_/g, ' ');
+                const map = {
+                    'Lima': 'Lima, PE',
+                    'Madrid': 'Madrid, ES',
+                    'Barcelona': 'Barcelona, ES',
+                    'Bogota': 'Bogotá, CO',
+                    'Santiago': 'Santiago, CL',
+                    'Buenos Aires': 'Buenos Aires, AR',
+                    'Mexico City': 'CDMX, MX',
+                    'New York': 'New York, US',
+                    'Miami': 'Miami, US'
+                };
+                return map[rawCity] || rawCity;
+            }
+
+            // Asignación inicial inmediata
+            const cachedCity = sessionStorage.getItem('rf_manager_city');
+            if (cachedCity) {
+                cityEl.textContent = cachedCity;
+            } else {
+                cityEl.textContent = tzToCityName(userTz);
+                fetch('https://ipwho.is/?fields=city,country_code,timezone')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.city) {
+                            const label = `${data.city}, ${data.country_code || ''}`.trim();
+                            sessionStorage.setItem('rf_manager_city', label);
+                            cityEl.textContent = label;
+                        }
+                    })
+                    .catch(() => {});
+            }
+
+            // 2. Reloj en tiempo real
+            function updateClocks() {
+                const now = new Date();
+                try {
+                    const localTimeStr = new Intl.DateTimeFormat('es-PE', {
+                        timeZone: userTz,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    }).format(now);
+                    clockEl.textContent = localTimeStr;
+                } catch(e) {
+                    clockEl.textContent = now.toTimeString().substring(0, 8);
+                }
+
+                if (peruBadgeEl) {
+                    const isPeru = userTz === 'America/Lima';
+                    if (!isPeru) {
+                        try {
+                            const peruTimeStr = new Intl.DateTimeFormat('es-PE', {
+                                timeZone: 'America/Lima',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                            }).format(now);
+                            peruBadgeEl.textContent = `(🇵🇪 ${peruTimeStr})`;
+                            peruBadgeEl.style.display = 'inline';
+                            peruBadgeEl.title = 'Hora de Perú (clientes y pedidos)';
+                        } catch(e) {
+                            peruBadgeEl.style.display = 'none';
+                        }
+                    } else {
+                        peruBadgeEl.style.display = 'none';
+                    }
+                }
+            }
+
+            updateClocks();
+            setInterval(updateClocks, 1000);
         })();
     </script>
     @livewireScripts
