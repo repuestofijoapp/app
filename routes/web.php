@@ -80,6 +80,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/Ayoro-sape-{secret}/security-alerts', \App\Livewire\Admin\SecurityAlerts::class)->name('admin.security-alerts');
         Route::get('/Ayoro-sape-{secret}/configuracion', \App\Livewire\Admin\SystemSettings::class)->name('admin.system-settings');
         Route::get('/Ayoro-sape-{secret}/logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->name('admin.logs');
+        Route::get('/Ayoro-sape-{secret}/reclamaciones', \App\Livewire\Admin\ReclamacionManagement::class)->name('admin.reclamaciones');
     });
 });
 
@@ -106,8 +107,8 @@ Route::get('/privacidad', fn() => view('legal.privacidad'))->name('legal.privaci
 Route::get('/terminos', fn() => view('legal.terminos'))->name('legal.terminos');
 Route::get('/libro-de-reclamaciones', fn() => view('legal.reclamaciones'))->name('legal.reclamaciones');
 
-// Endpoint POST: guardar reclamación
-Route::post('/libro-de-reclamaciones', function (\Illuminate\Http\Request $request) {
+// Endpoint POST: guardar reclamación (max 10 intentos por minuto por IP)
+Route::middleware(['throttle:10,1'])->post('/libro-de-reclamaciones', function (\Illuminate\Http\Request $request) {
     $validated = $request->validate([
         'nombre'            => 'required|string|max:200',
         'email'             => 'required|email|max:200',
@@ -137,6 +138,65 @@ Route::post('/libro-de-reclamaciones', function (\Illuminate\Http\Request $reque
         'created_at'        => now(),
         'updated_at'        => now(),
     ]);
+
+    // Notificaciones por correo
+    try {
+        $fromEmail = config('mail.from.address', 'incidencias@repuestofijo.com');
+        $fromName  = config('mail.from.name', 'Repuesto Fijo');
+        $adminMail = env('MAIL_INCIDENCIAS_ADDRESS', 'incidencias@repuestofijo.com');
+
+        // 1. Notificar al equipo de Repuesto Fijo
+        \Mail::send([], [], function ($m) use ($validated, $code, $request, $fromEmail, $fromName, $adminMail) {
+            $m->to($adminMail, 'Repuesto Fijo Incidencias')
+              ->from($fromEmail, $fromName)
+              ->subject("[RECLAMACIÓN] Nueva reclamación recibida: {$code}")
+              ->html(
+                  "<div style='font-family:Arial,sans-serif;max-width:600px;line-height:1.6;'>"
+                . "<h2 style='color:#ff3b5c;margin-bottom:12px;'>Nueva reclamación recibida: {$code}</h2>"
+                . "<p><strong>Reclamante:</strong> " . e($validated['nombre']) . "</p>"
+                . "<p><strong>Email:</strong> " . e($validated['email']) . "</p>"
+                . "<p><strong>Teléfono:</strong> " . e($validated['telefono']) . "</p>"
+                . "<p><strong>Documento:</strong> " . e(strtoupper($request->input('tipo_doc', '—'))) . ": " . e($request->input('num_doc', '—')) . "</p>"
+                . "<p><strong>Pedido:</strong> " . e($request->input('num_pedido', '—')) . "</p>"
+                . "<p><strong>Tipo:</strong> " . e($validated['tipo_reclamacion']) . "</p>"
+                . "<p><strong>Solución solicitada:</strong> " . e($validated['solucion_esperada']) . "</p>"
+                . "<p><strong>Descripción:</strong><br>" . nl2br(e($validated['descripcion'])) . "</p>"
+                . "<p><strong>IP:</strong> " . $request->ip() . "</p>"
+                . "<hr style='border:none;border-top:1px solid #eee;margin:20px 0;'>"
+                . "<p><a href='" . url('/Ayoro-sape-' . env('ADMIN_URL_SECRET', 'Repuesto-Sape-2026') . '/reclamaciones') . "' style='display:inline-block;background:#ff3b5c;color:#fff;padding:8px 16px;text-decoration:none;border-radius:6px;font-weight:bold;'>Ver en el panel de control</a></p>"
+                . "</div>"
+              );
+        });
+
+        // 2. Enviar constancia de recepción automática al cliente
+        \Mail::send([], [], function ($m) use ($validated, $code, $fromEmail, $fromName) {
+            $m->to($validated['email'], $validated['nombre'])
+              ->from($fromEmail, $fromName)
+              ->subject("Constancia de recepción de reclamación [{$code}] – Repuesto Fijo")
+              ->html(
+                  "<div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;line-height:1.6;color:#333;'>"
+                . "<div style='border-bottom:3px solid #ff3b5c;padding-bottom:12px;margin-bottom:20px;'>"
+                . "<h2 style='color:#132530;margin:0;'>Repuesto Fijo</h2>"
+                . "<p style='color:#666;font-size:13px;margin:4px 0 0;'>Libro de Reclamaciones Digital</p>"
+                . "</div>"
+                . "<p>Hola <strong>" . e($validated['nombre']) . "</strong>,</p>"
+                . "<p>Te confirmamos que hemos recibido tu reclamación satisfactoriamente. A continuación te proporcionamos la constancia de registro:</p>"
+                . "<div style='background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:20px 0;'>"
+                . "<p style='margin:0 0 8px;'><strong>Código de seguimiento:</strong> <span style='font-family:monospace;font-size:16px;color:#ff3b5c;font-weight:bold;'>" . $code . "</span></p>"
+                . "<p style='margin:0 0 8px;'><strong>Fecha de recepción:</strong> " . now()->format('d/m/Y H:i') . "</p>"
+                . "<p style='margin:0 0 8px;'><strong>Tipo:</strong> " . e(ucfirst(str_replace('_', ' ', $validated['tipo_reclamacion']))) . "</p>"
+                . "<p style='margin:0;'><strong>Solución esperada:</strong> " . e(ucfirst(str_replace('_', ' ', $validated['solucion_esperada']))) . "</p>"
+                . "</div>"
+                . "<p>Nuestro equipo revisará tu caso y te brindará una respuesta formal a este mismo correo en un plazo máximo de <strong>15 días hábiles</strong>, conforme a la normativa vigente.</p>"
+                . "<p style='font-size:13px;color:#666;'>Si necesitas aportar información adicional, puedes responder directamente a este correo indicando tu código de seguimiento <strong>{$code}</strong>.</p>"
+                . "<hr style='border:none;border-top:1px solid #eee;margin:24px 0;'>"
+                . "<p style='font-size:12px;color:#999;margin:0;'>Atentamente,<br><strong>Equipo de Atención al Cliente — Repuesto Fijo</strong></p>"
+                . "</div>"
+              );
+        });
+    } catch (\Throwable $e) {
+        \Log::error('reclamaciones.store mail error: ' . $e->getMessage());
+    }
 
     return response()->json(['code' => $code, 'status' => 'ok']);
 })->name('reclamaciones.store');

@@ -691,7 +691,7 @@
 
                     {{-- Operaciones Group (Desplegable) --}}
                     <div
-                        x-data="{ open: {{ request()->routeIs('admin.en-vivo', 'admin.pedidos', 'admin.soporte') ? 'true' : 'false' }} }">
+                        x-data="{ open: {{ request()->routeIs('admin.en-vivo', 'admin.pedidos', 'admin.soporte', 'admin.reclamaciones') ? 'true' : 'false' }} }">
                         <button @click="open = !open" class="sb-link sb-dropdown-toggle" :class="open ? 'is-active' : ''"
                             style="width: 100%; border: none; background: transparent; cursor: pointer; justify-content: flex-start; text-align: left;">
                             <i class="fas fa-tasks"></i>
@@ -724,6 +724,18 @@
                                 data-label="Soporte">
                                 <i class="fas fa-headset" style="font-size: 0.8rem;"></i>
                                 <span class="sb-link-label">Soporte</span>
+                            </a>
+
+                            <a href="{{ route('admin.reclamaciones', ['secret' => env('ADMIN_URL_SECRET', 'Repuesto-Sape-2026')]) }}"
+                                class="sb-link {{ request()->routeIs('admin.reclamaciones') ? 'active' : '' }}"
+                                data-label="Reclamaciones">
+                                <i class="fas fa-book-open" style="font-size: 0.8rem;"></i>
+                                <span class="sb-link-label">Reclamaciones</span>
+                                @php $pendientes = \DB::table('reclamaciones')->where('estado','pendiente')->count(); @endphp
+                                @if($pendientes > 0)
+                                    <span class="collapse-hide ms-auto badge rounded-pill"
+                                        style="background:#ff3b5c;color:#fff;font-size:.65rem;min-width:18px;padding:2px 6px;">{{ $pendientes }}</span>
+                                @endif
                             </a>
                         </div>
                     </div>

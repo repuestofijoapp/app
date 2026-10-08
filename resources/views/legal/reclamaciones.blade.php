@@ -585,10 +585,6 @@
                 padding: 10px 12px;
             }
 
-            .proveedor-grid {
-                grid-template-columns: 1fr !important;
-                gap: 4px !important;
-            }
         }
     </style>
 </head>
@@ -624,18 +620,6 @@
             <h2>Registrar reclamación o queja</h2>
             <p class="form-sub">Completa el formulario con la mayor cantidad de detalles posible. Todos los campos
                 marcados con <span style="color:var(--red)">*</span> son obligatorios.</p>
-
-            {{-- IDENTIFICACIÓN DEL PROVEEDOR (EXIGIDO POR INDECOPI) --}}
-            <div style="background: var(--soft); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin-bottom: 24px; font-size: 0.88rem; color: #334155;">
-                <div style="font-weight: 700; color: var(--dark); margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-building" style="color: var(--red);"></i> Identificación del Proveedor
-                </div>
-                <div class="proveedor-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 16px;">
-                    <div><strong>Razón Social:</strong> Repuesto Fijo</div>
-                    <div><strong>RUC:</strong> 10421922557</div>
-                    <div style="grid-column: 1 / -1;"><strong>Dirección:</strong> Calle Filadelfia 2453, San Martín de Porres, Lima</div>
-                </div>
-            </div>
 
             <form id="reclamacion-form" onsubmit="submitReclamacion(event)">
                 @csrf
@@ -815,11 +799,21 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 body: JSON.stringify(data)
             })
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) {
+                        return res.json().then(errData => {
+                            throw new Error(errData.message || (errData.errors ? Object.values(errData.errors).flat().join('\n') : 'Error al procesar la solicitud'));
+                        }).catch(e => {
+                            throw new Error(e.message || 'Error en el servidor (' + res.status + ')');
+                        });
+                    }
+                    return res.json();
+                })
                 .then(result => {
                     // Mostrar estado de éxito
                     document.getElementById('reclamacion-form').style.display = 'none';
@@ -829,13 +823,11 @@
                         document.getElementById('ref-code').textContent = result.code;
                     }
                 })
-                .catch(() => {
-                    // Mostrar éxito igual (fallback si no hay backend aún)
-                    document.getElementById('reclamacion-form').style.display = 'none';
-                    const success = document.getElementById('success-state');
-                    success.style.display = 'block';
-                    const ts = Date.now().toString(36).toUpperCase();
-                    document.getElementById('ref-code').textContent = 'RF-' + ts;
+                .catch(err => {
+                    console.error('Error enviando reclamación:', err);
+                    alert('No se pudo enviar la reclamación: ' + (err.message || 'Por favor verifica los datos e inténtalo nuevamente.'));
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Enviar reclamación</span>';
                 });
         }
         if (window.self !== window.top) { document.body.classList.add('in-iframe'); }

@@ -30,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'webhooks/green-api',
             'webhooks/culqi',  // Culqi envía webhooks sin CSRF token
             'proveedor/confirmar/*', // Confirmación de stock sin CSRF
+            'libro-de-reclamaciones', // Formulario público de reclamaciones (soporta iframe y sesiones públicas)
         ]);
 
         $middleware->alias([
