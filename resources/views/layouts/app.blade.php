@@ -219,19 +219,26 @@
         /* ─ Geolocalización y hora en vivo del usuario ─ */
         .sb-user-geotime {
             margin-top: 8px;
-            display: inline-flex;
-            align-items: center;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
             font-size: 0.68rem;
             color: #94a3b8;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.09);
-            padding: 3px 8px;
-            border-radius: 6px;
-            white-space: nowrap;
+            padding: 5px 8px;
+            border-radius: 7px;
             max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            box-sizing: border-box;
             line-height: 1.3;
+        }
+
+        .sb-geotime-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            white-space: nowrap;
         }
 
         .sidebar.is-collapsed .sb-user-geotime {
@@ -682,16 +689,31 @@
 
                             {{-- Ubicación y Hora en vivo del Gestor/Admin --}}
                             <div class="sb-user-geotime collapse-hide" id="sbUserGeoTime" title="Zona horaria y hora local de trabajo">
-                                <span class="d-inline-flex align-items-center gap-1">
-                                    <i class="fas fa-map-marker-alt" style="color: #ff3b5c; font-size: 0.62rem;"></i>
-                                    <span id="sbGeoCity" style="color: #cbd5e1; font-weight: 600;">Detectando...</span>
-                                </span>
-                                <span style="opacity: 0.3; margin: 0 3px;">·</span>
-                                <span class="d-inline-flex align-items-center gap-1">
-                                    <i class="far fa-clock" style="color: #00d68f; font-size: 0.62rem;"></i>
-                                    <span id="sbGeoClock" style="color: #00d68f; font-family: monospace; font-weight: 700;">--:--</span>
-                                </span>
-                                <span id="sbPeruClockBadge" style="display: none; color: #fca5a5; font-size: 0.62rem; margin-left: 3px;"></span>
+                                {{-- Fila 1: Ubicación local del gestor (ej. España) --}}
+                                <div class="sb-geotime-row" id="sbRowLocal" title="Tu hora local de trabajo">
+                                    <span class="d-inline-flex align-items-center gap-1" style="min-width: 0; overflow: hidden; text-overflow: ellipsis;">
+                                        <i class="fas fa-map-marker-alt" style="color: #ff3b5c; font-size: 0.62rem; flex-shrink: 0;"></i>
+                                        <span id="sbGeoCity" style="color: #cbd5e1; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Detectando...</span>
+                                    </span>
+                                    <span style="opacity: 0.25; margin: 0 1px;">·</span>
+                                    <span class="d-inline-flex align-items-center gap-1" style="flex-shrink: 0;">
+                                        <i class="far fa-clock" style="color: #00d68f; font-size: 0.62rem;"></i>
+                                        <span id="sbGeoClock" style="color: #00d68f; font-family: monospace; font-weight: 700;">--:--:--</span>
+                                    </span>
+                                </div>
+
+                                {{-- Fila 2: Hora oficial de Perú (clientes y pedidos) --}}
+                                <div class="sb-geotime-row" id="sbRowPeru" style="display: none; border-top: 1px dashed rgba(255, 255, 255, 0.08); padding-top: 3px; margin-top: 2px;" title="Hora oficial de Perú (clientes y pedidos)">
+                                    <span class="d-inline-flex align-items-center gap-1" style="min-width: 0;">
+                                        <i class="fas fa-map-marker-alt" style="color: #ef4444; font-size: 0.62rem; flex-shrink: 0;"></i>
+                                        <span style="color: #cbd5e1; font-weight: 600;">Perú</span>
+                                    </span>
+                                    <span style="opacity: 0.25; margin: 0 1px;">·</span>
+                                    <span class="d-inline-flex align-items-center gap-1" style="flex-shrink: 0;">
+                                        <i class="far fa-clock" style="color: #00d68f; font-size: 0.62rem;"></i>
+                                        <span id="sbPeruClock" style="color: #00d68f; font-family: monospace; font-weight: 700;">--:--:--</span>
+                                    </span>
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -1003,7 +1025,8 @@
         (function() {
             const cityEl = document.getElementById('sbGeoCity');
             const clockEl = document.getElementById('sbGeoClock');
-            const peruBadgeEl = document.getElementById('sbPeruClockBadge');
+            const peruRowEl = document.getElementById('sbRowPeru');
+            const peruClockEl = document.getElementById('sbPeruClock');
 
             if (!cityEl || !clockEl) return;
 
@@ -1067,7 +1090,7 @@
                     clockEl.textContent = now.toTimeString().substring(0, 8);
                 }
 
-                if (peruBadgeEl) {
+                if (peruRowEl && peruClockEl) {
                     const isPeru = userTz === 'America/Lima';
                     if (!isPeru) {
                         try {
@@ -1075,16 +1098,16 @@
                                 timeZone: 'America/Lima',
                                 hour: '2-digit',
                                 minute: '2-digit',
+                                second: '2-digit',
                                 hour12: false
                             }).format(now);
-                            peruBadgeEl.textContent = `(🇵🇪 ${peruTimeStr})`;
-                            peruBadgeEl.style.display = 'inline';
-                            peruBadgeEl.title = 'Hora de Perú (clientes y pedidos)';
+                            peruClockEl.textContent = peruTimeStr;
+                            peruRowEl.style.display = 'flex';
                         } catch(e) {
-                            peruBadgeEl.style.display = 'none';
+                            peruRowEl.style.display = 'none';
                         }
                     } else {
-                        peruBadgeEl.style.display = 'none';
+                        peruRowEl.style.display = 'none';
                     }
                 }
             }
