@@ -57,7 +57,8 @@ return [
     ],
 
     'jsonpe' => [
-        'token' => env('JSONPE_TOKEN'),
+        'token'    => env('JSONPE_TOKEN'),
+        'base_url' => env('JSONPE_BASE_URL', 'https://api.json.pe'),
     ],
 
 ];

@@ -7,12 +7,13 @@ use Illuminate\Support\Facades\Log;
 
 class RucService
 {
-    protected $baseUrl = 'https://api.json.pe';
+    protected $baseUrl;
     protected $token;
 
     public function __construct()
     {
-        $this->token = config('services.jsonpe.token', '523f23b811319544f26966798bd36135e598344201cf0170a5ee018d7695');
+        $this->baseUrl = config('services.jsonpe.base_url', 'https://api.json.pe');
+        $this->token   = trim(config('services.jsonpe.token') ?: env('JSONPE_TOKEN', ''));
     }
 
     /**
