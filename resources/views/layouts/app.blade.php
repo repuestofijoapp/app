@@ -156,8 +156,8 @@
         /* ─ User card (below brand) ─ */
         .sb-user {
             display: flex;
-            align-items: center;
-            gap: .75rem;
+            flex-direction: column;
+            gap: .65rem;
             padding: .85rem 1.25rem;
             border-bottom: 1px solid var(--border);
             flex-shrink: 0;
@@ -165,9 +165,21 @@
             transition: padding var(--transition);
         }
 
+        .sb-user-top {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            width: 100%;
+        }
+
         .sidebar.is-collapsed .sb-user {
             justify-content: center;
+            align-items: center;
             padding: .85rem;
+        }
+
+        .sidebar.is-collapsed .sb-user-top {
+            justify-content: center;
         }
 
         .sb-avatar {
@@ -175,8 +187,11 @@
             height: 38px;
             border-radius: 50%;
             background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             flex-shrink: 0;
             border: 2px solid var(--border);
+            background-color: var(--surface2);
         }
 
         .sb-user-info {
@@ -214,11 +229,12 @@
             max-width: 0;
             pointer-events: none;
             overflow: hidden;
+            display: none !important;
         }
 
         /* ─ Geolocalización y hora en vivo del usuario ─ */
         .sb-user-geotime {
-            margin-top: 8px;
+            margin-top: 2px;
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -228,7 +244,7 @@
             border: 1px solid rgba(255, 255, 255, 0.09);
             padding: 5px 8px;
             border-radius: 7px;
-            max-width: 100%;
+            width: 100%;
             box-sizing: border-box;
             line-height: 1.3;
         }
@@ -670,53 +686,67 @@
 
                 {{-- User card --}}
                 <div class="sb-user">
-                    <div class="sb-avatar"
-                        style="background-image:url('{{ auth()->user()->profile_photo_path ? Storage::url(auth()->user()->profile_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name ?? 'Admin') . '&color=7F9CF5&background=1A2235&bold=true&size=80' }}');">
+                    <div class="sb-user-top">
+                        @php
+                            $userPhoto = auth()->user()->profile_photo_path;
+                            $avatarUrl = 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name ?? 'Admin') . '&color=7F9CF5&background=1A2235&bold=true&size=80';
+                            if ($userPhoto) {
+                                if (file_exists(public_path('storage/' . $userPhoto))) {
+                                    $avatarUrl = Storage::url($userPhoto);
+                                } elseif (app()->environment('local')) {
+                                    $avatarUrl = 'https://app.repuestofijo.com/storage/' . $userPhoto;
+                                } else {
+                                    $avatarUrl = Storage::url($userPhoto);
+                                }
+                            }
+                        @endphp
+                        <div class="sb-avatar" style="background-image:url('{{ $avatarUrl }}');"></div>
+                        <div class="sb-user-info">
+                            <div class="sb-user-name">{{ auth()->user()->name ?? 'Administrador' }}</div>
+                            <div class="sb-user-role">{{ auth()->user()->email ?? 'admin@prueba.com' }}</div>
+                            @if(auth()->check() && auth()->user()->canAccessDashboard())
+                                <a href="{{ route('admin.profile', ['secret' => env('ADMIN_URL_SECRET', 'Repuesto-Sape-2026')]) }}"
+                                    class="sb-link {{ request()->routeIs('admin.profile') ? 'active' : '' }}"
+                                    style="padding: 0; margin-top: 4px; font-size: .875rem; border: none; background: none; gap: .5rem; @if(!request()->routeIs('admin.profile')) color: var(--muted); @endif"
+                                    data-label="Mi Perfil">
+                                    <i class="fas fa-user-circle"
+                                        style="font-size: 1rem; width: auto; @if(request()->routeIs('admin.profile')) color: var(--accent-red); @endif"></i>
+                                    <span class="sb-link-label" style="font-family: 'Syne', sans-serif; font-weight: 600;">Mi Perfil</span>
+                                </a>
+                            @endif
+                        </div>
                     </div>
-                    <div class="sb-user-info">
-                        <div class="sb-user-name">{{ auth()->user()->name ?? 'Administrador' }}</div>
-                        <div class="sb-user-role">{{ auth()->user()->email ?? 'admin@prueba.com' }}</div>
-                        @if(auth()->check() && auth()->user()->canAccessDashboard())
-                            <a href="{{ route('admin.profile', ['secret' => env('ADMIN_URL_SECRET', 'Repuesto-Sape-2026')]) }}"
-                                class="sb-link {{ request()->routeIs('admin.profile') ? 'active' : '' }}"
-                                style="padding: 0; margin-top: 8px; font-size: .875rem; border: none; background: none; gap: .5rem; @if(!request()->routeIs('admin.profile')) color: var(--muted); @endif"
-                                data-label="Mi Perfil">
-                                <i class="fas fa-user-circle"
-                                    style="font-size: 1rem; width: auto; @if(request()->routeIs('admin.profile')) color: var(--accent-red); @endif"></i>
-                                <span class="sb-link-label" style="font-family: 'Syne', sans-serif; font-weight: 600;">Mi
-                                    Perfil</span>
-                            </a>
 
-                            {{-- Ubicación y Hora en vivo del Gestor/Admin --}}
-                            <div class="sb-user-geotime collapse-hide" id="sbUserGeoTime" title="Zona horaria y hora local de trabajo">
-                                {{-- Fila 1: Ubicación local del gestor (ej. España) --}}
-                                <div class="sb-geotime-row" id="sbRowLocal" title="Tu hora local de trabajo">
-                                    <span class="d-inline-flex align-items-center gap-1" style="min-width: 0; overflow: hidden; text-overflow: ellipsis;">
-                                        <i class="fas fa-map-marker-alt" style="color: #ff3b5c; font-size: 0.62rem; flex-shrink: 0;"></i>
-                                        <span id="sbGeoCity" style="color: #cbd5e1; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Detectando...</span>
-                                    </span>
-                                    <span style="opacity: 0.25; margin: 0 1px;">·</span>
-                                    <span class="d-inline-flex align-items-center gap-1" style="flex-shrink: 0;">
-                                        <i class="far fa-clock" style="color: #00d68f; font-size: 0.62rem;"></i>
-                                        <span id="sbGeoClock" style="color: #00d68f; font-family: monospace; font-weight: 700;">--:--:--</span>
-                                    </span>
-                                </div>
-
-                                {{-- Fila 2: Hora oficial de Perú (clientes y pedidos) --}}
-                                <div class="sb-geotime-row" id="sbRowPeru" style="display: none; border-top: 1px dashed rgba(255, 255, 255, 0.08); padding-top: 3px; margin-top: 2px;" title="Hora oficial de Perú (clientes y pedidos)">
-                                    <span class="d-inline-flex align-items-center gap-1" style="min-width: 0;">
-                                        <i class="fas fa-map-marker-alt" style="color: #ef4444; font-size: 0.62rem; flex-shrink: 0;"></i>
-                                        <span style="color: #cbd5e1; font-weight: 600;">Perú</span>
-                                    </span>
-                                    <span style="opacity: 0.25; margin: 0 1px;">·</span>
-                                    <span class="d-inline-flex align-items-center gap-1" style="flex-shrink: 0;">
-                                        <i class="far fa-clock" style="color: #00d68f; font-size: 0.62rem;"></i>
-                                        <span id="sbPeruClock" style="color: #00d68f; font-family: monospace; font-weight: 700;">--:--:--</span>
-                                    </span>
-                                </div>
+                    @if(auth()->check() && auth()->user()->canAccessDashboard())
+                        {{-- Ubicación y Hora en vivo del Gestor/Admin (debajo, abarcando todo el ancho) --}}
+                        <div class="sb-user-geotime collapse-hide" id="sbUserGeoTime" title="Zona horaria y hora local de trabajo">
+                            {{-- Fila 1: Ubicación local del gestor (ej. España) --}}
+                            <div class="sb-geotime-row" id="sbRowLocal" title="Tu hora local de trabajo">
+                                <span class="d-inline-flex align-items-center gap-1" style="min-width: 0; overflow: hidden; text-overflow: ellipsis;">
+                                    <i class="fas fa-map-marker-alt" style="color: #ff3b5c; font-size: 0.62rem; flex-shrink: 0;"></i>
+                                    <span id="sbGeoCity" style="color: #cbd5e1; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Detectando...</span>
+                                </span>
+                                <span style="opacity: 0.25; margin: 0 1px;">·</span>
+                                <span class="d-inline-flex align-items-center gap-1" style="flex-shrink: 0;">
+                                    <i class="far fa-clock" style="color: #00d68f; font-size: 0.62rem;"></i>
+                                    <span id="sbGeoClock" style="color: #00d68f; font-family: monospace; font-weight: 700;">--:--:--</span>
+                                </span>
                             </div>
-                        @endif
-                    </div>
+
+                            {{-- Fila 2: Hora oficial de Perú (clientes y pedidos) --}}
+                            <div class="sb-geotime-row" id="sbRowPeru" style="display: none; border-top: 1px dashed rgba(255, 255, 255, 0.08); padding-top: 3px; margin-top: 2px;" title="Hora oficial de Perú (clientes y pedidos)">
+                                <span class="d-inline-flex align-items-center gap-1" style="min-width: 0;">
+                                    <i class="fas fa-map-marker-alt" style="color: #ef4444; font-size: 0.62rem; flex-shrink: 0;"></i>
+                                    <span style="color: #cbd5e1; font-weight: 600;">Perú</span>
+                                </span>
+                                <span style="opacity: 0.25; margin: 0 1px;">·</span>
+                                <span class="d-inline-flex align-items-center gap-1" style="flex-shrink: 0;">
+                                    <i class="far fa-clock" style="color: #00d68f; font-size: 0.62rem;"></i>
+                                    <span id="sbPeruClock" style="color: #00d68f; font-family: monospace; font-weight: 700;">--:--:--</span>
+                                </span>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Navigation --}}
