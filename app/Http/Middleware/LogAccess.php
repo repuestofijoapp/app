@@ -15,15 +15,23 @@ class LogAccess
      */
     public function handle(Request $request, Closure $next): Response
     {
-        \Illuminate\Support\Facades\DB::table('access_logs')->insert([
-            'ip'         => $request->ip(),
-            'route'      => $request->path(),
-            'method'     => $request->method(),
-            'user_agent' => $request->userAgent(),
-            'user_id'    => auth()->id(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        try {
+            $action = \App\Services\AccessLogHelper::resolveFromRequest($request);
+
+            \Illuminate\Support\Facades\DB::table('access_logs')->insert([
+                'ip'          => $request->ip(),
+                'route'       => $request->path(),
+                'action_name' => $action['action_name'] ?? null,
+                'category'    => $action['category'] ?? null,
+                'method'      => $request->method(),
+                'user_agent'  => $request->userAgent(),
+                'user_id'     => auth()->id(),
+                'created_at'  => now(),
+                'updated_at'  => now(),
+            ]);
+        } catch (\Throwable $e) {
+            // Silencioso para no interrumpir el flujo si la tabla está en migración o falla el log
+        }
 
         return $next($request);
     }
