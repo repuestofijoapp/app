@@ -65,9 +65,19 @@ class MainSearch extends Component
                 $result = '✓ Confirmado';
             } else {
                 // Find current active query
-                $startTime = $this->zbotSearchStartTime ?? now()->subMinutes(10);
+                $startTime = is_string($this->zbotSearchStartTime)
+                    ? \Carbon\Carbon::parse($this->zbotSearchStartTime)
+                    : ($this->zbotSearchStartTime instanceof \Carbon\Carbon ? $this->zbotSearchStartTime : now()->subHours(24));
+
                 $q = ZbotQuery::where('provider_id', $p->id)
-                    ->where('created_at', '>=', $startTime)
+                    ->where(function ($sub) use ($startTime) {
+                        if (!empty($this->lastOrderId)) {
+                            $sub->where('pedido_id', $this->lastOrderId)
+                                ->orWhere('created_at', '>=', $startTime);
+                        } else {
+                            $sub->where('created_at', '>=', $startTime);
+                        }
+                    })
                     ->latest()
                     ->first();
 
@@ -272,7 +282,9 @@ class MainSearch extends Component
     public function getConfirmedItems()
     {
         $confirmed = [];
-        $startTime = $this->zbotSearchStartTime ?? now()->subMinutes(15);
+        $startTime = is_string($this->zbotSearchStartTime)
+            ? \Carbon\Carbon::parse($this->zbotSearchStartTime)
+            : ($this->zbotSearchStartTime instanceof \Carbon\Carbon ? $this->zbotSearchStartTime : now()->subHours(24));
 
         // Group manually to preserve original string/integer keys ($repairListId)
         $grouped = [];
@@ -287,11 +299,19 @@ class MainSearch extends Component
             $provider = \App\Models\Provider::find($providerId);
             $requiresZbot = $provider ? $provider->requires_zbot : true;
 
-            $q = ZbotQuery::with('provider')->where('provider_id', $providerId)
-                ->where('status', 'confirmed')
-                ->where('created_at', '>=', $startTime)
-                ->latest()
-                ->first();
+            $qQuery = ZbotQuery::with('provider')->where('provider_id', $providerId)
+                ->where('status', 'confirmed');
+
+            if (!empty($this->lastOrderId)) {
+                $qQuery->where(function ($sub) use ($startTime) {
+                    $sub->where('pedido_id', $this->lastOrderId)
+                        ->orWhere('created_at', '>=', $startTime);
+                });
+            } else {
+                $qQuery->where('created_at', '>=', $startTime);
+            }
+
+            $q = $qQuery->latest()->first();
 
             foreach ($items as $repairListId => $item) {
                 $product = $item['product'];
@@ -318,7 +338,7 @@ class MainSearch extends Component
                         'qty' => $finalQty,
                         'price' => $unitPriceWithTax,
                         'subtotal' => $unitPriceWithTax * $finalQty,
-                        'provider_name' => $provider->business_name ?? $provider->name ?? 'Proveedor',
+                        'provider_name' => $provider?->business_name ?? $provider?->name ?? 'Proveedor',
                     ];
                 } elseif ($q) {
                     if (!empty($q->items_confirmed_json) && is_array($q->items_confirmed_json)) {
@@ -342,7 +362,7 @@ class MainSearch extends Component
                                     'qty' => $finalQty,
                                     'price' => $unitPriceWithMarkup,
                                     'subtotal' => $unitPriceWithMarkup * $finalQty,
-                                    'provider_name' => $q->provider->business_name ?? $q->provider->name ?? 'Proveedor',
+                                    'provider_name' => $q->provider?->business_name ?? $q->provider?->name ?? 'Proveedor',
                                 ];
                                 break;
                             }
@@ -369,7 +389,7 @@ class MainSearch extends Component
                                     'qty' => $finalQty2,
                                     'price' => $unitPriceWithMarkup,
                                     'subtotal' => $unitPriceWithMarkup * $finalQty2,
-                                    'provider_name' => $q->provider->business_name ?? $q->provider->name ?? 'Proveedor',
+                                    'provider_name' => $q->provider?->business_name ?? $q->provider?->name ?? 'Proveedor',
                                 ];
                                 break;
                             }
@@ -940,41 +960,62 @@ class MainSearch extends Component
             return;
         }
 
-        $pendingPedido = Pedido::where('customer_id', auth()->id())
-            ->whereIn('status', ['por_confirmar', 'waiting'])
-            ->where('created_at', '>=', now()->subHours(24))
-            ->latest()
-            ->first();
+        try {
+            $pendingPedido = Pedido::where('customer_id', auth()->id())
+                ->whereIn('status', ['por_confirmar', 'pendiente'])
+                ->where('created_at', '>=', now()->subHours(24))
+                ->latest()
+                ->first();
 
-        if ($pendingPedido) {
-            $this->lastOrderId = $pendingPedido->id;
-            session()->put('current_pedido_id', $pendingPedido->id);
-            if (!$this->zbotSearchStartTime) {
-                $this->zbotSearchStartTime = $pendingPedido->created_at;
+            if ($pendingPedido) {
+                $this->lastOrderId = $pendingPedido->id;
+                session()->put('current_pedido_id', $pendingPedido->id);
+                if (!$this->zbotSearchStartTime) {
+                    $this->zbotSearchStartTime = $pendingPedido->created_at?->toIso8601String() ?? now()->subHours(24)->toIso8601String();
+                }
+
+                // Si la lista de reparación está vacía en este dispositivo, reconstruir desde items_json de las consultas
+                if (empty($this->repairList)) {
+                    $zQueries = ZbotQuery::where('pedido_id', $pendingPedido->id)->get();
+                    foreach ($zQueries as $zq) {
+                        if (!empty($zq->items_json) && is_array($zq->items_json)) {
+                            foreach ($zq->items_json as $item) {
+                                $pid = $item['product']['id'] ?? null;
+                                if ($pid && !isset($this->repairList[$pid])) {
+                                    $this->repairList[$pid] = $item;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Verificar si hay respuestas confirmadas de ZettaBot o si ya estaba confirmado
+                $hasConfirmedQueries = ZbotQuery::where('pedido_id', $pendingPedido->id)
+                    ->where('status', 'confirmed')
+                    ->exists();
+
+                if ($hasConfirmedQueries || $this->zbotConfirmed) {
+                    $this->zbotConfirmed = true;
+                    $this->viewState = 'repair_summary';
+                    if (!empty($pendingPedido->costo_envio)) {
+                        $this->estimatedDeliveryCost = $pendingPedido->costo_envio;
+                    }
+                    if (!empty($pendingPedido->tipo_envio)) {
+                        $this->deliveryType = strtolower($pendingPedido->tipo_envio) === 'lima' ? 'lima' : 'provincia';
+                    }
+                    if (!empty($pendingPedido->direccion)) {
+                        $this->deliveryAddress = $pendingPedido->direccion;
+                        $this->recipientAddress = $pendingPedido->direccion;
+                    }
+                    if (!empty($pendingPedido->distrito)) {
+                        $this->deliveryDistrict = $pendingPedido->distrito;
+                    }
+                    $this->saveCartToDb();
+                    $this->savePersistedSearchState();
+                }
             }
-
-            // Verificar si hay respuestas confirmadas de ZettaBot o si ya estaba confirmado
-            $hasConfirmedQueries = ZbotQuery::where('pedido_id', $pendingPedido->id)
-                ->where('status', 'confirmed')
-                ->exists();
-
-            if ($hasConfirmedQueries || $this->zbotConfirmed) {
-                $this->zbotConfirmed = true;
-                if (!empty($pendingPedido->costo_envio)) {
-                    $this->estimatedDeliveryCost = $pendingPedido->costo_envio;
-                }
-                if (!empty($pendingPedido->tipo_envio)) {
-                    $this->deliveryType = strtolower($pendingPedido->tipo_envio) === 'lima' ? 'lima' : 'provincia';
-                }
-                if (!empty($pendingPedido->direccion)) {
-                    $this->deliveryAddress = $pendingPedido->direccion;
-                    $this->recipientAddress = $pendingPedido->direccion;
-                }
-                if (!empty($pendingPedido->distrito)) {
-                    $this->deliveryDistrict = $pendingPedido->distrito;
-                }
-                $this->savePersistedSearchState();
-            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('checkAndRestorePendingOrder error: ' . $e->getMessage());
         }
     }
 
@@ -1030,7 +1071,7 @@ class MainSearch extends Component
             'selectedBrand' => $this->selectedBrand,
             'selectedModel' => $this->selectedModel,
             'selectedEngine' => $this->selectedEngine,
-            'selectedEngineObj' => $this->selectedEngineObj,
+            'selectedEngineObj' => $this->selectedEngineObj ? (is_object($this->selectedEngineObj) ? $this->selectedEngineObj->id : $this->selectedEngineObj) : null,
             'models' => $this->models,
             'engines' => $this->engines,
             'viewState' => $this->viewState,
@@ -1041,7 +1082,7 @@ class MainSearch extends Component
             'selectedSubcategory' => $this->selectedSubcategory?->id ?? null,
             'searchContext' => $this->searchContext,
             'isSearching' => $this->isSearching,
-            'zbotSearchStartTime' => $this->zbotSearchStartTime,
+            'zbotSearchStartTime' => is_string($this->zbotSearchStartTime) ? $this->zbotSearchStartTime : ($this->zbotSearchStartTime?->toIso8601String() ?? null),
             'zbotConfirmed' => $this->zbotConfirmed,
             'confirmedOverrides' => $this->confirmedOverrides,
             'lastOrderId' => $this->lastOrderId,
@@ -2037,6 +2078,7 @@ class MainSearch extends Component
 
         $this->lastOrderId = $pedido->id;
         session()->put('current_pedido_id', $pedido->id);
+        $this->saveCartToDb();
 
         // Group by provider and SEND WhatsApp messages
         $grouped = collect($this->repairList)->groupBy('product.provider_id');

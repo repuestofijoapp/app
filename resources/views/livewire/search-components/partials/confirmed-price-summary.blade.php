@@ -260,7 +260,11 @@
     </div>
 
     {{-- === CTA BUTTON === --}}
-    @php $allExcluded = $totalCalculated <= 0; @endphp
+    @php
+        $allExcluded = $totalCalculated <= 0;
+        $userEmail = auth()->user()?->email ?? 'cliente@repuestofijo.com';
+        $currentOrderId = $this->lastOrderId ?? ($lastOrderId ?? session('current_pedido_id', ''));
+    @endphp
     @if($allExcluded)
         <div class="rounded-3 p-3 mb-3 text-center"
             style="background:#fef9c3; border:1.5px solid #fbbf24;">
@@ -271,9 +275,13 @@
     <button type="button"
         class="btn w-100 fw-bold rounded-3 shadow-sm position-relative overflow-hidden"
         style="padding: 14px 24px; font-size:15px; background: {{ $allExcluded ? 'linear-gradient(135deg,#9ca3af,#6b7280)' : 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)' }}; color:white; border:none; transition: all .2s ease; {{ $allExcluded ? 'cursor:not-allowed;opacity:.7;' : '' }}"
-        onclick="{{ $allExcluded ? '' : "initiateCulqiPayment({$finalTotal}, '".(auth()->user()->email ?? 'cliente@repuestofijo.com')."', '{$lastOrderId}')" }}" {{ $allExcluded ? 'disabled' : '' }}
-        onmouseover="{{ $allExcluded ? '' : "this.style.opacity='0.92';this.style.transform='translateY(-1px)';" }}"
-        onmouseout="{{ $allExcluded ? '' : "this.style.opacity='1';this.style.transform='translateY(0)';" }}">
+        @if(!$allExcluded)
+            onclick="initiateCulqiPayment({{ (float)$finalTotal }}, '{{ $userEmail }}', '{{ $currentOrderId }}')"
+            onmouseover="this.style.opacity='0.92';this.style.transform='translateY(-1px)';"
+            onmouseout="this.style.opacity='1';this.style.transform='translateY(0)';"
+        @else
+            disabled
+        @endif>
         <i class="fas fa-lock me-2" style="font-size:13px;"></i>
         @if($allExcluded)
             Carrito vacío
