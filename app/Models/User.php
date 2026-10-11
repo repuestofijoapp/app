@@ -32,6 +32,7 @@ class User extends Authenticatable
         'receipt_type',
         'blocked_at',
         'blocked_by',
+        'cart_data',
     ];
 
     protected $hidden = [
@@ -48,6 +49,7 @@ class User extends Authenticatable
         'role' => UserRole::class,
         'onboarding_completed_at' => 'datetime',
         'blocked_at' => 'datetime',
+        'cart_data' => 'array',
     ];
 
     // Relationships

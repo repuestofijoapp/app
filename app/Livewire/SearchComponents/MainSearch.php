@@ -763,23 +763,34 @@ class MainSearch extends Component
             $this->phone = session('user_phone');
         }
 
-        // Restablecer/cargar la lista de reparación (carrito) persistida si existe
+        // Restablecer/cargar la lista de reparación (carrito) persistida si existe en sesión
         if (session()->has('repair_list_session')) {
-            $this->repairList = session('repair_list_session');
+            $this->repairList = session('repair_list_session') ?: [];
         }
 
-        // ★ CARRITO MULTIDISPOSITIVO: si el usuario está logueado, mezclar
-        // el carrito de sesión con el carrito guardado en la base de datos.
+        // ★ CARRITO MULTIDISPOSITIVO: si el usuario está logueado, sincronizar con la base de datos
         if (auth()->check()) {
             $dbCart = auth()->user()->cart_data ?? [];
-            foreach ($dbCart as $key => $item) {
-                if (!isset($this->repairList[$key])) {
-                    // El item está en la DB pero no en esta sesión → añadir
-                    $this->repairList[$key] = $item;
-                }
+            if (is_string($dbCart)) {
+                $dbCart = json_decode($dbCart, true) ?: [];
             }
-            // Persistir el estado unificado de vuelta a la DB y sesión
-            if (!empty($this->repairList)) {
+
+            if (!empty($dbCart)) {
+                if (empty($this->repairList)) {
+                    // Viene de otro dispositivo (móvil -> PC o viceversa): restaurar completamente
+                    $this->repairList = $dbCart;
+                } else {
+                    // Ambos tenían items: fusionar sin duplicar
+                    foreach ($dbCart as $key => $item) {
+                        if (!isset($this->repairList[$key])) {
+                            $this->repairList[$key] = $item;
+                        }
+                    }
+                }
+                session()->put('repair_list_session', $this->repairList);
+                $this->saveCartToDb();
+            } elseif (!empty($this->repairList)) {
+                // Tenía items locales en sesión, persistir a la BD de su usuario
                 $this->saveCartToDb();
             }
         }
@@ -837,10 +848,27 @@ class MainSearch extends Component
      */
     private function saveCartToDb(): void
     {
+        session()->put('repair_list_session', $this->repairList);
+
         if (!auth()->check()) {
             return;
         }
-        auth()->user()->update(['cart_data' => $this->repairList ?: null]);
+
+        try {
+            $user = auth()->user();
+            $cartPayload = !empty($this->repairList) ? $this->repairList : null;
+            $user->cart_data = $cartPayload;
+            $user->save();
+
+            \Illuminate\Support\Facades\DB::table('users')
+                ->where('id', $user->id)
+                ->update([
+                    'cart_data' => $cartPayload ? json_encode($cartPayload) : null,
+                    'updated_at' => now(),
+                ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('saveCartToDb error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -1672,6 +1700,7 @@ class MainSearch extends Component
         );
         $this->showIdentityPopup = false;
         $this->repairList = [];
+        $this->saveCartToDb();
         $this->confirmedOverrides = [];
         $this->showSuccessPopup = true;
     }
@@ -2447,6 +2476,7 @@ class MainSearch extends Component
 
             // 3. Clear state
             $this->repairList = [];
+            $this->saveCartToDb();
             $this->confirmedOverrides = [];
             $this->isSearching = false;
             $this->viewState = 'initial';
@@ -2608,6 +2638,7 @@ class MainSearch extends Component
 
         // 3. Clear state
         $this->repairList = [];
+        $this->saveCartToDb();
         $this->confirmedOverrides = [];
         $this->isSearching = false;
         $this->viewState = 'initial';

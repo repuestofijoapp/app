@@ -60,6 +60,31 @@ class GoogleAuthController extends Controller
             // Guardamos el ID de esta nueva sesión como la activa
             $user->update(['last_session_id' => session()->getId()]);
 
+            // Sincronizar carrito multidispositivo (Mi Reparación)
+            $sessionCart = session('repair_list_session') ?: [];
+            $dbCart = $user->cart_data ?? [];
+            if (is_string($dbCart)) {
+                $dbCart = json_decode($dbCart, true) ?: [];
+            }
+
+            if (!empty($sessionCart) && !empty($dbCart)) {
+                $mergedCart = array_merge($dbCart, $sessionCart);
+                $user->cart_data = $mergedCart;
+                $user->save();
+                \Illuminate\Support\Facades\DB::table('users')->where('id', $user->id)->update([
+                    'cart_data' => json_encode($mergedCart),
+                ]);
+                session()->put('repair_list_session', $mergedCart);
+            } elseif (!empty($sessionCart)) {
+                $user->cart_data = $sessionCart;
+                $user->save();
+                \Illuminate\Support\Facades\DB::table('users')->where('id', $user->id)->update([
+                    'cart_data' => json_encode($sessionCart),
+                ]);
+            } elseif (!empty($dbCart)) {
+                session()->put('repair_list_session', $dbCart);
+            }
+
             // Persistir aceptación de términos si viene de la sesión
             if (session('privacy_policy_accepted')) {
                 $user->update(['privacy_policy_accepted_at' => now()]);

@@ -37,6 +37,31 @@ class LoginController extends Controller
             // Guardamos el ID de esta sesión como la "Sesión Maestra"
             $user->update(['last_session_id' => $request->session()->getId()]);
 
+            // Sincronizar carrito multidispositivo (Mi Reparación)
+            $sessionCart = $request->session()->get('repair_list_session') ?: [];
+            $dbCart = $user->cart_data ?? [];
+            if (is_string($dbCart)) {
+                $dbCart = json_decode($dbCart, true) ?: [];
+            }
+
+            if (!empty($sessionCart) && !empty($dbCart)) {
+                $mergedCart = array_merge($dbCart, $sessionCart);
+                $user->cart_data = $mergedCart;
+                $user->save();
+                \Illuminate\Support\Facades\DB::table('users')->where('id', $user->id)->update([
+                    'cart_data' => json_encode($mergedCart),
+                ]);
+                $request->session()->put('repair_list_session', $mergedCart);
+            } elseif (!empty($sessionCart)) {
+                $user->cart_data = $sessionCart;
+                $user->save();
+                \Illuminate\Support\Facades\DB::table('users')->where('id', $user->id)->update([
+                    'cart_data' => json_encode($sessionCart),
+                ]);
+            } elseif (!empty($dbCart)) {
+                $request->session()->put('repair_list_session', $dbCart);
+            }
+
             // Cerramos otras sesiones para el driver web
             Auth::logoutOtherDevices($request->password);
 
