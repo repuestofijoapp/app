@@ -1220,6 +1220,10 @@
                 window.dispatchEvent(new CustomEvent('process-payment', {
                     detail: { token: token, email: email }
                 }));
+
+                if (typeof Livewire !== 'undefined') {
+                    Livewire.dispatch('process-payment', { token: token, email: email });
+                }
             } else {
                 console.error("Error Culqi:", Culqi.error);
                 const msg = (Culqi.error && Culqi.error.user_message) ? Culqi.error.user_message : 'Error al procesar la tarjeta. Intenta de nuevo.';

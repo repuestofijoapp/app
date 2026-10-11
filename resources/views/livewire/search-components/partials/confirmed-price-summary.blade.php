@@ -166,8 +166,8 @@
                                 </div>
                             @endif
 
-                            {{-- Botón Quitar / Restaurar --}}
-                            @if($confirmedQty > 0)
+                            {{-- Botón Quitar / Restaurar y Eliminar definitivamente --}}
+                            <div class="d-flex align-items-center gap-2">
                                 @if($isExcluded)
                                     <button type="button"
                                         wire:click="restoreConfirmedItem('{{ $pid }}')"
@@ -179,11 +179,21 @@
                                     <button type="button"
                                         wire:click="removeConfirmedItem('{{ $pid }}')"
                                         class="btn btn-sm rounded-pill px-3 py-1 border-0"
+                                        title="Excluir este repuesto del pago (ej. precio muy alto)"
                                         style="font-size:11px; background:#fee2e2; color:#991b1b; white-space:nowrap;">
                                         × Quitar
                                     </button>
                                 @endif
-                            @endif
+
+                                <button type="button"
+                                    wire:click="deleteFromConfirmed('{{ $pid }}')"
+                                    class="btn btn-sm p-1 border-0 text-muted"
+                                    title="Eliminar repuesto definitivamente de tu pedido (agregado por error)"
+                                    style="background:none; font-size:14px; line-height:1;"
+                                    onclick="confirm('¿Eliminar este repuesto definitivamente de tu pedido?') || event.stopImmediatePropagation()">
+                                    <i class="fas fa-trash-alt text-danger opacity-75"></i>
+                                </button>
+                            </div>
                         </div>
 
                     </div>

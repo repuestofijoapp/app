@@ -14,6 +14,7 @@ use App\Models\PedidoItem;
 use App\Models\ZbotQuery;
 use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -445,14 +446,18 @@ class MainSearch extends Component
         
         $overrides[$pid] = array_merge($overrides[$pid] ?? [], ['qty' => $newQty, 'excluded' => false]);
         $this->confirmedOverrides = $overrides;
+        $this->saveCartToDb();
+        $this->savePersistedSearchState();
     }
 
-    /** Excluye un item del carrito (cliente no quiere ese producto) */
+    /** Excluye un item del carrito (cliente no quiere ese producto o es muy caro) */
     public function removeConfirmedItem(string $pid)
     {
         $overrides = $this->confirmedOverrides;
         $overrides[$pid] = array_merge($overrides[$pid] ?? [], ['excluded' => true]);
         $this->confirmedOverrides = $overrides;
+        $this->saveCartToDb();
+        $this->savePersistedSearchState();
     }
 
     /** Restaura un item excluido */
@@ -461,6 +466,21 @@ class MainSearch extends Component
         $overrides = $this->confirmedOverrides;
         $overrides[$pid] = array_merge($overrides[$pid] ?? [], ['excluded' => false]);
         $this->confirmedOverrides = $overrides;
+        $this->saveCartToDb();
+        $this->savePersistedSearchState();
+    }
+
+    /** Elimina definitivamente un producto de la lista de reparación (agregado por error) */
+    public function deleteFromConfirmed(string $pid)
+    {
+        unset($this->repairList[$pid]);
+        unset($this->confirmedOverrides[$pid]);
+        $this->saveCartToDb();
+        $this->savePersistedSearchState();
+        $this->dispatch('notify', [
+            'type' => 'info',
+            'message' => 'Repuesto eliminado de tu lista de reparación.'
+        ]);
     }
 
     public $isPro = false;
@@ -677,6 +697,7 @@ class MainSearch extends Component
             return;
         }
 
+        $this->checkAndRestorePendingOrder();
         $this->viewState = 'repair_summary';
     }
 
@@ -777,23 +798,44 @@ class MainSearch extends Component
             }
 
             if (!empty($dbCart)) {
+                $cartItems = isset($dbCart['items']) ? $dbCart['items'] : $dbCart;
                 if (empty($this->repairList)) {
                     // Viene de otro dispositivo (móvil -> PC o viceversa): restaurar completamente
-                    $this->repairList = $dbCart;
+                    $this->repairList = $cartItems;
                 } else {
                     // Ambos tenían items: fusionar sin duplicar
-                    foreach ($dbCart as $key => $item) {
+                    foreach ($cartItems as $key => $item) {
                         if (!isset($this->repairList[$key])) {
                             $this->repairList[$key] = $item;
                         }
                     }
                 }
+
+                if (isset($dbCart['confirmed_overrides']) && is_array($dbCart['confirmed_overrides'])) {
+                    $this->confirmedOverrides = array_merge($this->confirmedOverrides, $dbCart['confirmed_overrides']);
+                }
+                if (!empty($dbCart['zbot_confirmed'])) {
+                    $this->zbotConfirmed = true;
+                }
+                if (!empty($dbCart['last_order_id'])) {
+                    $this->lastOrderId = $dbCart['last_order_id'];
+                    session()->put('current_pedido_id', $this->lastOrderId);
+                }
+                if (!empty($dbCart['zbot_search_start_time'])) {
+                    $this->zbotSearchStartTime = \Carbon\Carbon::parse($dbCart['zbot_search_start_time']);
+                }
+
                 session()->put('repair_list_session', $this->repairList);
+                session()->put('confirmed_overrides', $this->confirmedOverrides);
+                session()->put('zbot_confirmed', $this->zbotConfirmed);
                 $this->saveCartToDb();
             } elseif (!empty($this->repairList)) {
                 // Tenía items locales en sesión, persistir a la BD de su usuario
                 $this->saveCartToDb();
             }
+
+            // Consultar si hay un pedido activo pendiente de pago para este usuario
+            $this->checkAndRestorePendingOrder();
         }
 
         // Cargar estado de búsqueda persistido en la sesión para evitar pérdida en F5
@@ -850,6 +892,11 @@ class MainSearch extends Component
     private function saveCartToDb(): void
     {
         session()->put('repair_list_session', $this->repairList);
+        session()->put('confirmed_overrides', $this->confirmedOverrides);
+        session()->put('zbot_confirmed', $this->zbotConfirmed);
+        if ($this->lastOrderId) {
+            session()->put('current_pedido_id', $this->lastOrderId);
+        }
 
         if (!auth()->check()) {
             return;
@@ -857,18 +904,77 @@ class MainSearch extends Component
 
         try {
             $user = auth()->user();
-            $cartPayload = !empty($this->repairList) ? $this->repairList : null;
-            $user->cart_data = $cartPayload;
-            $user->save();
+            $startTimeStr = null;
+            if ($this->zbotSearchStartTime) {
+                $startTimeStr = is_string($this->zbotSearchStartTime)
+                    ? $this->zbotSearchStartTime
+                    : $this->zbotSearchStartTime->toIso8601String();
+            }
+
+            $cartPayload = [
+                'items' => $this->repairList,
+                'confirmed_overrides' => $this->confirmedOverrides,
+                'zbot_confirmed' => $this->zbotConfirmed,
+                'last_order_id' => $this->lastOrderId,
+                'zbot_search_start_time' => $startTimeStr,
+            ];
 
             \Illuminate\Support\Facades\DB::table('users')
                 ->where('id', $user->id)
                 ->update([
-                    'cart_data' => $cartPayload ? json_encode($cartPayload) : null,
+                    'cart_data' => !empty($this->repairList) ? json_encode($cartPayload) : null,
                     'updated_at' => now(),
                 ]);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('saveCartToDb error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Revisa si el usuario tiene un pedido pendiente con respuestas confirmadas
+     * de proveedores (ej. generado en móvil y ahora visualizado en PC).
+     */
+    public function checkAndRestorePendingOrder(): void
+    {
+        if (!auth()->check()) {
+            return;
+        }
+
+        $pendingPedido = Pedido::where('customer_id', auth()->id())
+            ->whereIn('status', ['por_confirmar', 'waiting'])
+            ->where('created_at', '>=', now()->subHours(24))
+            ->latest()
+            ->first();
+
+        if ($pendingPedido) {
+            $this->lastOrderId = $pendingPedido->id;
+            session()->put('current_pedido_id', $pendingPedido->id);
+            if (!$this->zbotSearchStartTime) {
+                $this->zbotSearchStartTime = $pendingPedido->created_at;
+            }
+
+            // Verificar si hay respuestas confirmadas de ZettaBot o si ya estaba confirmado
+            $hasConfirmedQueries = ZbotQuery::where('pedido_id', $pendingPedido->id)
+                ->where('status', 'confirmed')
+                ->exists();
+
+            if ($hasConfirmedQueries || $this->zbotConfirmed) {
+                $this->zbotConfirmed = true;
+                if (!empty($pendingPedido->costo_envio)) {
+                    $this->estimatedDeliveryCost = $pendingPedido->costo_envio;
+                }
+                if (!empty($pendingPedido->tipo_envio)) {
+                    $this->deliveryType = strtolower($pendingPedido->tipo_envio) === 'lima' ? 'lima' : 'provincia';
+                }
+                if (!empty($pendingPedido->direccion)) {
+                    $this->deliveryAddress = $pendingPedido->direccion;
+                    $this->recipientAddress = $pendingPedido->direccion;
+                }
+                if (!empty($pendingPedido->distrito)) {
+                    $this->deliveryDistrict = $pendingPedido->distrito;
+                }
+                $this->savePersistedSearchState();
+            }
         }
     }
 
@@ -894,6 +1000,10 @@ class MainSearch extends Component
             'plateSearch' => $this->plateSearch,
             // Lista de reparación
             'repairList' => $this->repairList,
+            'zbotConfirmed' => $this->zbotConfirmed,
+            'confirmedOverrides' => $this->confirmedOverrides,
+            'lastOrderId' => $this->lastOrderId,
+            'zbotSearchStartTime' => $this->zbotSearchStartTime,
             // Categoría seleccionada (IDs para recargar)
             'selectedCategory' => $this->selectedCategory?->id ?? null,
             'selectedSubcategory' => $this->selectedSubcategory?->id ?? null,
@@ -907,6 +1017,7 @@ class MainSearch extends Component
         \Illuminate\Support\Facades\Log::info('Search state saved before login redirect', [
             'viewState' => $this->viewState,
             'repairItems' => count($this->repairList),
+            'zbotConfirmed' => $this->zbotConfirmed,
         ]);
     }
 
@@ -931,6 +1042,8 @@ class MainSearch extends Component
             'searchContext' => $this->searchContext,
             'isSearching' => $this->isSearching,
             'zbotSearchStartTime' => $this->zbotSearchStartTime,
+            'zbotConfirmed' => $this->zbotConfirmed,
+            'confirmedOverrides' => $this->confirmedOverrides,
             'lastOrderId' => $this->lastOrderId,
             'triedProviderIds' => $this->triedProviderIds,
             'searchingForAlternatives' => $this->searchingForAlternatives,
@@ -2004,6 +2117,8 @@ class MainSearch extends Component
         $this->isSearching = false;
         $this->zbotConfirmed = true;  // activa la vista post-confirmación con precios
         $this->viewState = 'repair_summary'; // Show the confirmed items view
+        $this->saveCartToDb();
+        $this->savePersistedSearchState();
     }
 
     public function cancelSearch()
@@ -2011,6 +2126,8 @@ class MainSearch extends Component
         $this->isSearching = false;
         $this->showZbotModal = false;
         $this->zbotConfirmed = false;
+        $this->saveCartToDb();
+        $this->savePersistedSearchState();
 
         $pedidoId = session()->get('current_pedido_id') ?? $this->lastOrderId;
         $startTime = $this->zbotSearchStartTime ?? now()->subMinutes(15);
@@ -2348,6 +2465,7 @@ class MainSearch extends Component
             ->orderByRaw("FIELD(oversize,'STD','025','050','075','100')");
     }
 
+    #[On('process-payment')]
     public function processCulqiPayment($token, $email)
     {
         $confirmedTotal = $this->getConfirmedRepuestosTotal();
