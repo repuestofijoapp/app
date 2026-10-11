@@ -535,6 +535,7 @@ class MainSearch extends Component
     public $isSearching = false;
     public $showZbotModal = false;
     public $zbotSearchStartTime = null;
+    public $zbotConfirmed = false; // true tras cerrar el modal ZettaBot → muestra resumen post-confirmación
     public $showLoginModal = false;
     public $loginBlockMessage = '';
     public $showUserOrderDetailModal = false;
@@ -1393,6 +1394,7 @@ class MainSearch extends Component
         $this->compatibleCategoryIds = [];
         $this->viewState = 'initial';
         $this->searchType = '';
+        $this->zbotConfirmed = false;
         $this->resetPage();
         $this->savePersistedSearchState();
     }
@@ -1895,6 +1897,7 @@ class MainSearch extends Component
         $this->showLeadForm = false;
         $this->triedProviderIds = [];
         $this->searchingForAlternatives = false;
+        $this->zbotConfirmed = false; // reset por si hay un ciclo anterior
 
         \Illuminate\Support\Facades\Log::info("Iniciando processFinalOrder. Items: " . count($this->repairList));
 
@@ -1999,6 +2002,7 @@ class MainSearch extends Component
     {
         $this->showZbotModal = false;
         $this->isSearching = false;
+        $this->zbotConfirmed = true;  // activa la vista post-confirmación con precios
         $this->viewState = 'repair_summary'; // Show the confirmed items view
     }
 
@@ -2006,6 +2010,7 @@ class MainSearch extends Component
     {
         $this->isSearching = false;
         $this->showZbotModal = false;
+        $this->zbotConfirmed = false;
 
         $pedidoId = session()->get('current_pedido_id') ?? $this->lastOrderId;
         $startTime = $this->zbotSearchStartTime ?? now()->subMinutes(15);
