@@ -701,14 +701,76 @@ class MainSearch extends Component
         $this->savePersistedSearchState();
     }
 
+    #[On('cancelAndResetAll')]
+    public function cancelAndResetAll()
+    {
+        // 1. Si había un pedido pendiente asociado, cancelarlo
+        $pedidoId = $this->lastOrderId ?? session('current_pedido_id');
+        if (!empty($pedidoId)) {
+            $pedido = Pedido::find($pedidoId);
+            if ($pedido && in_array($pedido->status, ['por_confirmar', 'pendiente'])) {
+                $pedido->update([
+                    'status' => 'cancelado',
+                    'cancellation_reason' => 'Cancelado por el cliente para nueva búsqueda',
+                ]);
+            }
+        }
+
+        // 2. Limpiar todo el estado de la cotización y dejar en cero mi reparación
+        $this->repairList = [];
+        $this->zbotConfirmed = false;
+        $this->confirmedOverrides = [];
+        $this->lastOrderId = null;
+        $this->zbotSearchStartTime = null;
+        $this->isSearching = false;
+        $this->viewState = 'initial';
+        $this->oemSearch = '';
+        $this->plateSearch = '';
+        $this->vehicle = null;
+        $this->selectedCategory = null;
+        $this->selectedSubcategory = null;
+        $this->selectedBrand = '';
+        $this->selectedModel = '';
+        $this->selectedEngine = '';
+        $this->selectedEngineObj = null;
+        $this->searchType = '';
+        $this->searchContext = [];
+        $this->estimatedDeliveryCost = 0;
+        $this->deliveryType = 'lima';
+
+        // 3. Limpiar sesión y BD del usuario
+        session()->forget('current_pedido_id');
+        session()->forget('repair_list_session');
+        session()->forget('confirmed_overrides');
+        session()->forget('zbot_confirmed');
+        session()->forget('persisted_search_state');
+        session()->forget('search_state_snapshot');
+
+        $this->saveCartToDb();
+        $this->savePersistedSearchState();
+        $this->resetPage();
+        $this->loadInitialFilters();
+
+        $this->dispatch('notify', [
+            'type' => 'info',
+            'message' => 'Se ha cancelado la cotización previa. Puedes iniciar una nueva búsqueda.'
+        ]);
+    }
+
+    #[On('viewConfirmedOrder')]
+    public function viewConfirmedOrder()
+    {
+        $this->isSearching = false;
+        $this->viewState = 'repair_summary';
+        $this->zbotConfirmed = true;
+    }
+
     public function toggleRepairSummary()
     {
-        // Salir del repair_summary: detectar tanto viewState correcto como estado inconsistente
-        // (puede ocurrir si la sesión se restauró con zbotConfirmed=true pero viewState incorrecto)
-        if ($this->viewState === 'repair_summary' || ($this->zbotConfirmed && !empty($this->repairList))) {
+        // Salir del repair_summary: volver a vista de inicio o vehículo
+        if ($this->viewState === 'repair_summary') {
             $this->isSearching = false;
             $this->viewState = ($this->vehicle || $this->selectedEngineObj) ? 'vehicle_found' : 'initial';
-            $this->zbotConfirmed = false;
             $this->saveCartToDb();
             return;
         }
@@ -1477,6 +1539,11 @@ class MainSearch extends Component
 
     public function performSearch($type = 'plate')
     {
+        if ($this->zbotConfirmed && count($this->repairList) > 0) {
+            $this->dispatch('swal:confirmed-order-active');
+            return;
+        }
+
         if (!auth()->check()) {
             $this->saveSearchState(); // guardar búsqueda por placa/OEM en curso
             $this->showLoginModal = true;
@@ -1809,7 +1876,11 @@ class MainSearch extends Component
 
     public function addToRepair($productId)
     {
-        $this->zbotConfirmed = false; // Nuevo item agregado: requiere nueva consulta
+        if ($this->zbotConfirmed && count($this->repairList) > 0) {
+            $this->dispatch('swal:confirmed-order-active');
+            return;
+        }
+
         $product = Product::with(['provider', 'oversizes'])->find($productId);
         if (!$product)
             return;
@@ -1850,7 +1921,11 @@ class MainSearch extends Component
      */
     public function addToRepairWithOversize($productId, $oversize)
     {
-        $this->zbotConfirmed = false; // Nuevo item agregado: requiere nueva consulta
+        if ($this->zbotConfirmed && count($this->repairList) > 0) {
+            $this->dispatch('swal:confirmed-order-active');
+            return;
+        }
+
         $product = Product::with('provider')->find($productId);
         if (!$product) return;
 

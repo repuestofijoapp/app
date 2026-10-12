@@ -162,23 +162,40 @@
             </div>
 
             {{-- Search OEM Field (Header) --}}
-            <div class="input-group overflow-hidden shadow-sm w-100 @if($viewState === 'repair_summary') d-none d-md-flex @else d-flex @endif"
+            <div class="input-group overflow-hidden shadow-sm w-100 @if($viewState === 'repair_summary') d-none @else d-flex @endif"
                 style="max-width: 600px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);">
                 <input type="text" class="form-control form-control-custom border-0"
-                    placeholder="Busca por código OEM..." wire:model="oemSearch"
-                    wire:keydown.enter="performSearch('oem')"
-                    style="height: 48px !important; font-size: 1.1rem; line-height: 1; padding: 0 20px;">
+                    @if($zbotConfirmed && count($repairList) > 0)
+                        placeholder="Pedido confirmado en curso..."
+                        readonly
+                        onclick="Livewire.dispatch('swal:confirmed-order-active')"
+                        style="height: 48px !important; font-size: 1.1rem; line-height: 1; padding: 0 20px; cursor: pointer; background: rgba(255,255,255,0.1); color: #fff;"
+                    @else
+                        placeholder="Busca por código OEM..." wire:model="oemSearch"
+                        wire:keydown.enter="performSearch('oem')"
+                        style="height: 48px !important; font-size: 1.1rem; line-height: 1; padding: 0 20px;"
+                    @endif>
 
                 {{-- Mobile Search Button (RED) --}}
                 <button class="btn btn-danger d-md-none d-flex align-items-center justify-content-center"
-                    wire:click="performSearch('oem')" style="width: 50px; height: 48px !important;">
+                    @if($zbotConfirmed && count($repairList) > 0)
+                        onclick="Livewire.dispatch('swal:confirmed-order-active')"
+                    @else
+                        wire:click="performSearch('oem')"
+                    @endif
+                    style="width: 50px; height: 48px !important;">
                     <i class="fas fa-search"></i>
                 </button>
 
                 {{-- Desktop Search Button (BLUE/Original) --}}
                 <button
                     class="btn btn-primary-custom px-4 fw-bold d-none d-md-flex align-items-center justify-content-center"
-                    wire:click="performSearch('oem')" style="height: 48px !important; letter-spacing: 1px;">
+                    @if($zbotConfirmed && count($repairList) > 0)
+                        onclick="Livewire.dispatch('swal:confirmed-order-active')"
+                    @else
+                        wire:click="performSearch('oem')"
+                    @endif
+                    style="height: 48px !important; letter-spacing: 1px;">
                     <span>BUSCAR</span>
                 </button>
             </div>
@@ -1509,12 +1526,9 @@
                                         <h3 class="fw-bold text-primary-custom mb-0">MI REPARACIÓN — PRECIOS CONFIRMADOS</h3>
                                         <p class="text-muted small mb-0">Revisa la disponibilidad y precios confirmados por nuestros proveedores</p>
                                     </div>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" wire:click="reopenCart">
-                                            <i class="fas fa-edit me-1"></i> Modificar lista
-                                        </button>
-                                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" wire:click="resetToHome">
-                                            <i class="fas fa-arrow-left me-1"></i> Nueva búsqueda
+                                    <div>
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold" onclick="promptCancelAndResetAll()">
+                                            <i class="fas fa-times me-1"></i> Cancelar todo y hacer nueva búsqueda
                                         </button>
                                     </div>
                                 </div>
@@ -4738,6 +4752,66 @@
                 }
             });
         })();
+
+        window.promptCancelAndResetAll = function () {
+            if (typeof Swal === 'undefined') {
+                if (confirm("Se van a eliminar los productos confirmados por el proveedor, no podrás recuperarlos. ¿Deseas confirmar?")) {
+                    Livewire.dispatch('cancelAndResetAll');
+                }
+                return;
+            }
+
+            Swal.fire({
+                title: '<span style="font-size: 1.25rem; font-weight: 700; color: #dc2626;">¿Cancelar pedido confirmado?</span>',
+                html: '<span style="font-size: 1.05rem; color: #4b5563; line-height: 1.5;">Se van a eliminar los productos confirmados por el proveedor, no podrás recuperarlos.</span>',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'px-4 py-2 fw-bold shadow-sm',
+                    cancelButton: 'px-4 py-2 fw-bold shadow-sm'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('cancelAndResetAll');
+                }
+            });
+        };
+
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('swal:confirmed-order-active', () => {
+                if (typeof Swal === 'undefined') {
+                    alert('Tienes un pedido confirmado en curso. Completa tu pago o cancela la cotización actual para iniciar un nuevo pedido.');
+                    return;
+                }
+
+                Swal.fire({
+                    title: '<span style="font-size: 1.25rem; font-weight: 700; color: #1f2937;">Pedido confirmado en curso</span>',
+                    html: '<span style="font-size: 1.02rem; color: #4b5563; line-height: 1.5;">Ya tienes una cotización confirmada por el proveedor lista para pagar.<br><br>No puedes añadir nuevos productos a este pedido. Si deseas cotizar repuestos diferentes, completa este pedido o cancela todo para iniciar una nueva búsqueda.</span>',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#16a34a',
+                    cancelButtonColor: '#dc2626',
+                    confirmButtonText: 'Ver mi pedido confirmado',
+                    cancelButtonText: 'Cancelar todo y buscar de nuevo',
+                    reverseButtons: true,
+                    customClass: {
+                        confirmButton: 'px-4 py-2 fw-bold shadow-sm',
+                        cancelButton: 'px-4 py-2 fw-bold shadow-sm'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Livewire.dispatch('viewConfirmedOrder');
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        window.promptCancelAndResetAll();
+                    }
+                });
+            });
+        });
     </script>
 
 </div>{{-- /main-container --}}

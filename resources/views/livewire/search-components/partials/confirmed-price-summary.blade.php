@@ -293,6 +293,14 @@
         Al confirmar aceptas nuestros <a href="#" class="text-muted">Términos de Servicio</a>.
     </p>
 
+    <div class="mt-3 text-center">
+        <button type="button"
+            class="btn btn-outline-danger btn-sm rounded-pill px-4 py-2 fw-bold"
+            onclick="promptCancelAndResetAll()">
+            <i class="fas fa-times-circle me-1"></i> Cancelar todo y hacer nueva búsqueda
+        </button>
+    </div>
+
 @else
     {{-- === NO STOCK STATE === --}}
     <div class="rounded-3 p-3 mb-3 text-center"
@@ -323,15 +331,9 @@
     </div>
     <div class="d-flex flex-column gap-2">
         <button type="button"
-            class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow-sm"
-            style="background:#1d4ed8; border:none;"
-            wire:click="reopenCart">
-            <i class="fas fa-shopping-cart me-2"></i> VER Y EDITAR MI LISTA DE REPUESTOS
-        </button>
-        <button type="button"
-            class="btn btn-outline-secondary w-100 py-2 fw-medium rounded-3"
-            wire:click="resetToHome">
-            VOLVER A BUSCAR 🔍
+            class="btn btn-danger w-100 py-3 fw-bold rounded-3 shadow-sm"
+            onclick="promptCancelAndResetAll()">
+            <i class="fas fa-times-circle me-2"></i> CANCELAR TODO Y HACER NUEVA BÚSQUEDA
         </button>
     </div>
 @endif
