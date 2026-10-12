@@ -693,8 +693,13 @@ class MainSearch extends Component
 
     public function toggleRepairSummary()
     {
-        if ($this->viewState === 'repair_summary') {
+        // Salir del repair_summary: detectar tanto viewState correcto como estado inconsistente
+        // (puede ocurrir si la sesión se restauró con zbotConfirmed=true pero viewState incorrecto)
+        if ($this->viewState === 'repair_summary' || ($this->zbotConfirmed && !empty($this->repairList))) {
+            $this->isSearching = false;
             $this->viewState = ($this->vehicle || $this->selectedEngineObj) ? 'vehicle_found' : 'initial';
+            $this->zbotConfirmed = false;
+            $this->saveCartToDb();
             return;
         }
 
@@ -876,6 +881,12 @@ class MainSearch extends Component
             }
         }
 
+        // ★ Corrección de estado inconsistente: si zbotConfirmed = true y viewState = repair_summary,
+        // nunca mostrar la animación de búsqueda (puede haber quedado en true de una sesión anterior)
+        if ($this->zbotConfirmed && $this->viewState === 'repair_summary') {
+            $this->isSearching = false;
+        }
+
         // ★ RESTAURAR ESTADO DE BÚSqueda si el usuario acabó de iniciar sesión
         if (session()->has('search_state_snapshot')) {
             $snap = session()->pull('search_state_snapshot');
@@ -996,6 +1007,7 @@ class MainSearch extends Component
 
                 if ($hasConfirmedQueries || $this->zbotConfirmed) {
                     $this->zbotConfirmed = true;
+                    $this->isSearching = false; // ★ Asegurar que no quede "buscando" cuando ya está confirmado
                     $this->viewState = 'repair_summary';
                     if (!empty($pendingPedido->costo_envio)) {
                         $this->estimatedDeliveryCost = $pendingPedido->costo_envio;
@@ -1012,6 +1024,28 @@ class MainSearch extends Component
                     }
                     $this->saveCartToDb();
                     $this->savePersistedSearchState();
+                }
+            } else {
+                // ★ Sin pedido activo: si tenía zbotConfirmed desde datos antiguos, limpiar el estado
+                // para evitar que el usuario quede atascado en la pantalla de resumen sin pedido real
+                if ($this->zbotConfirmed) {
+                    $isPaidOrCancelled = !empty($this->lastOrderId) && Pedido::whereIn('id', [$this->lastOrderId])
+                        ->whereIn('status', ['pagado', 'cancelado', 'entregado', 'en_preparacion', 'en_camino'])
+                        ->exists();
+
+                    if ($isPaidOrCancelled || empty($this->lastOrderId)) {
+                        // El pedido ya fue pagado/cancelado o no hay referencia: limpiar estado
+                        $this->zbotConfirmed = false;
+                        $this->lastOrderId = null;
+                        $this->isSearching = false;
+                        $this->zbotSearchStartTime = null;
+                        $this->viewState = 'initial';
+                        $this->repairList = [];
+                        $this->confirmedOverrides = [];
+                        $this->saveCartToDb();
+                        $this->savePersistedSearchState();
+                        \Illuminate\Support\Facades\Log::info('checkAndRestorePendingOrder: cleared stale zbotConfirmed state for user ' . auth()->id());
+                    }
                 }
             }
         } catch (\Throwable $e) {
