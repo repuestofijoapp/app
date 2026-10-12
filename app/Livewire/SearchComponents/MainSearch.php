@@ -673,6 +673,7 @@ class MainSearch extends Component
 
     public function resetToHome()
     {
+        $this->zbotConfirmed = false;
         $this->oemSearch = '';
         $this->plateSearch = '';
         $this->vehicle = null;
@@ -688,6 +689,15 @@ class MainSearch extends Component
         $this->searchContext = [];
         $this->resetPage();
         $this->loadInitialFilters();
+        $this->savePersistedSearchState();
+    }
+
+    public function reopenCart()
+    {
+        $this->zbotConfirmed = false;
+        $this->isSearching = false;
+        $this->viewState = 'repair_summary';
+        $this->saveCartToDb();
         $this->savePersistedSearchState();
     }
 
@@ -894,8 +904,12 @@ class MainSearch extends Component
             }
         }
 
-        // ★ Corrección de estado inconsistente: si zbotConfirmed = true y viewState = repair_summary,
-        // nunca mostrar la animación de búsqueda (puede haber quedado en true de una sesión anterior)
+        // ★ Corrección de estado inconsistente: si zbotConfirmed = true pero no hay repuestos
+        // confirmados para el carrito actual, resetear a false para no bloquear la vista del carrito
+        if ($this->zbotConfirmed && empty($this->getConfirmedItems())) {
+            $this->zbotConfirmed = false;
+        }
+
         if ($this->zbotConfirmed && $this->viewState === 'repair_summary') {
             $this->isSearching = false;
         }
@@ -1024,24 +1038,31 @@ class MainSearch extends Component
                     ->exists();
 
                 if ($hasConfirmedQueries || $this->zbotConfirmed) {
-                    $this->zbotConfirmed = true;
-                    $this->isSearching = false; // ★ Asegurar que no quede "buscando" cuando ya está confirmado
-                    $this->viewState = 'repair_summary';
-                    if (!empty($pendingPedido->costo_envio)) {
-                        $this->estimatedDeliveryCost = $pendingPedido->costo_envio;
+                    $confirmedItems = $this->getConfirmedItems();
+                    if (!empty($confirmedItems)) {
+                        $this->zbotConfirmed = true;
+                        $this->isSearching = false; // ★ Asegurar que no quede "buscando" cuando ya está confirmado
+                        $this->viewState = 'repair_summary';
+                        if (!empty($pendingPedido->costo_envio)) {
+                            $this->estimatedDeliveryCost = $pendingPedido->costo_envio;
+                        }
+                        if (!empty($pendingPedido->tipo_envio)) {
+                            $this->deliveryType = strtolower($pendingPedido->tipo_envio) === 'lima' ? 'lima' : 'provincia';
+                        }
+                        if (!empty($pendingPedido->direccion)) {
+                            $this->deliveryAddress = $pendingPedido->direccion;
+                            $this->recipientAddress = $pendingPedido->direccion;
+                        }
+                        if (!empty($pendingPedido->distrito)) {
+                            $this->deliveryDistrict = $pendingPedido->distrito;
+                        }
+                        $this->saveCartToDb();
+                        $this->savePersistedSearchState();
+                    } else {
+                        // Si los repuestos del carrito actual no tienen confirmaciones activas,
+                        // dejar zbotConfirmed en false para que el usuario pueda ver su carrito y consultar
+                        $this->zbotConfirmed = false;
                     }
-                    if (!empty($pendingPedido->tipo_envio)) {
-                        $this->deliveryType = strtolower($pendingPedido->tipo_envio) === 'lima' ? 'lima' : 'provincia';
-                    }
-                    if (!empty($pendingPedido->direccion)) {
-                        $this->deliveryAddress = $pendingPedido->direccion;
-                        $this->recipientAddress = $pendingPedido->direccion;
-                    }
-                    if (!empty($pendingPedido->distrito)) {
-                        $this->deliveryDistrict = $pendingPedido->distrito;
-                    }
-                    $this->saveCartToDb();
-                    $this->savePersistedSearchState();
                 }
             } else {
                 // ★ Sin pedido activo: si tenía zbotConfirmed desde datos antiguos, limpiar el estado
@@ -1788,6 +1809,7 @@ class MainSearch extends Component
 
     public function addToRepair($productId)
     {
+        $this->zbotConfirmed = false; // Nuevo item agregado: requiere nueva consulta
         $product = Product::with(['provider', 'oversizes'])->find($productId);
         if (!$product)
             return;
@@ -1828,6 +1850,7 @@ class MainSearch extends Component
      */
     public function addToRepairWithOversize($productId, $oversize)
     {
+        $this->zbotConfirmed = false; // Nuevo item agregado: requiere nueva consulta
         $product = Product::with('provider')->find($productId);
         if (!$product) return;
 
@@ -1872,6 +1895,7 @@ class MainSearch extends Component
     public function removeFromRepair($productId)
     {
         unset($this->repairList[$productId]);
+        $this->zbotConfirmed = false;
         $this->dispatch('notify', ['type' => 'info', 'message' => 'Repuesto eliminado']);
         $this->savePersistedSearchState();
         $this->saveCartToDb();

@@ -321,11 +321,19 @@
             @endforeach
         </div>
     </div>
-    <button type="button"
-        class="btn btn-dark w-100 py-3 fw-bold rounded-3 shadow hover-scale"
-        wire:click="resetToHome">
-        VOLVER A BUSCAR 🔍
-    </button>
+    <div class="d-flex flex-column gap-2">
+        <button type="button"
+            class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow-sm"
+            style="background:#1d4ed8; border:none;"
+            wire:click="reopenCart">
+            <i class="fas fa-shopping-cart me-2"></i> VER Y EDITAR MI LISTA DE REPUESTOS
+        </button>
+        <button type="button"
+            class="btn btn-outline-secondary w-100 py-2 fw-medium rounded-3"
+            wire:click="resetToHome">
+            VOLVER A BUSCAR 🔍
+        </button>
+    </div>
 @endif
 
 @if(collect($this->getZbotProviders())->contains('result', '⚠ No responde'))

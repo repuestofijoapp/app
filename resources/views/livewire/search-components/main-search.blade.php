@@ -1509,9 +1509,14 @@
                                         <h3 class="fw-bold text-primary-custom mb-0">MI REPARACIÓN — PRECIOS CONFIRMADOS</h3>
                                         <p class="text-muted small mb-0">Revisa la disponibilidad y precios confirmados por nuestros proveedores</p>
                                     </div>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" wire:click="resetToHome">
-                                        <i class="fas fa-arrow-left me-1"></i> Nueva búsqueda
-                                    </button>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" wire:click="reopenCart">
+                                            <i class="fas fa-edit me-1"></i> Modificar lista
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" wire:click="resetToHome">
+                                            <i class="fas fa-arrow-left me-1"></i> Nueva búsqueda
+                                        </button>
+                                    </div>
                                 </div>
                                 @include('livewire.search-components.partials.confirmed-price-summary')
                             </div>
