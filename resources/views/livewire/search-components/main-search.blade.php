@@ -1,5 +1,4 @@
-<div class="main-container"
-    x-on:process-payment.window="$wire.processCulqiPayment($event.detail.token, $event.detail.email)">
+<div class="main-container">
     {{-- PRIVACY POLICY MODAL (Global) --}}
     @if($showPrivacyModal)
         <div class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"

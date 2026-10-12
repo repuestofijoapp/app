@@ -1204,9 +1204,21 @@
             Culqi.open();
         }
 
+        let isProcessingCulqi = false;
+
+        window.addEventListener('payment-finished', function() {
+            isProcessingCulqi = false;
+        });
+
         // Callback obligatorio que Culqi llama cuando el usuario completa o cancela el pago
         window.culqi = function() {
             if (Culqi.token) {
+                if (isProcessingCulqi) {
+                    console.warn("Pago ya en proceso. Ignorando evento duplicado de Culqi.");
+                    return;
+                }
+                isProcessingCulqi = true;
+
                 const token = Culqi.token.id;
                 const email = window.currentCulqiEmail || Culqi.token.email;
                 console.log("Token Culqi recibido:", token);
@@ -1216,15 +1228,15 @@
                     Culqi.close();
                 }
 
-                // ── MOSTRAR ANIMACIÓN DE PROCESAMIENTO INMEDIATAMENTE Y LLAMAR A LIVEWIRE ──
-                window.dispatchEvent(new CustomEvent('process-payment', {
-                    detail: { token: token, email: email }
-                }));
+                // ── MOSTRAR ANIMACIÓN DE PROCESAMIENTO INMEDIATAMENTE ──
+                window.dispatchEvent(new CustomEvent('show-payment-overlay'));
 
+                // ── LLAMAR A LIVEWIRE (ÚNICA VÍA) ──
                 if (typeof Livewire !== 'undefined') {
                     Livewire.dispatch('process-payment', { token: token, email: email });
                 }
             } else {
+                isProcessingCulqi = false;
                 console.error("Error Culqi:", Culqi.error);
                 const msg = (Culqi.error && Culqi.error.user_message) ? Culqi.error.user_message : 'Error al procesar la tarjeta. Intenta de nuevo.';
                 alert(msg);
@@ -1234,6 +1246,7 @@
 
     {{-- OVERLAY DE PROCESAMIENTO DE PAGO PREMIUM --}}
     <div x-data="{ showOverlay: false }"
+         x-on:show-payment-overlay.window="showOverlay = true"
          x-on:process-payment.window="showOverlay = true"
          x-on:payment-finished.window="setTimeout(() => { showOverlay = false; }, 400)"
          x-show="showOverlay"

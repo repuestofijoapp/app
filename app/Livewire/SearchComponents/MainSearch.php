@@ -2661,17 +2661,32 @@ class MainSearch extends Component
     #[On('process-payment')]
     public function processCulqiPayment($token, $email)
     {
-        $confirmedTotal = $this->getConfirmedRepuestosTotal();
         $pedidoId = session()->get('current_pedido_id') ?? $this->lastOrderId;
 
         if (!$pedidoId) {
+            $this->dispatch('payment-finished');
             $this->dispatch('notify', ['type' => 'error', 'message' => 'No se encontró el pedido actual.']);
             return;
         }
 
         $pedido = Pedido::find($pedidoId);
         if (!$pedido) {
+            $this->dispatch('payment-finished');
             $this->dispatch('notify', ['type' => 'error', 'message' => 'Pedido no encontrado en el sistema.']);
+            return;
+        }
+
+        // Si el pedido ya fue pagado, omitir para evitar cobro duplicado
+        if ($pedido->status === 'pagado') {
+            \Illuminate\Support\Facades\Log::info("Pedido #{$pedido->id} ya se encuentra pagado. Omitiendo cobro duplicado.");
+            $this->dispatch('payment-finished');
+            return;
+        }
+
+        $confirmedTotal = $this->getConfirmedRepuestosTotal();
+        if ($confirmedTotal <= 0) {
+            \Illuminate\Support\Facades\Log::warning("Intento de cobro sin productos confirmados para pedido #{$pedidoId}");
+            $this->dispatch('payment-finished');
             return;
         }
 
@@ -2816,6 +2831,8 @@ class MainSearch extends Component
             $this->selectedEngine = '';
             $this->selectedEngineObj = null;
             $this->savePersistedSearchState();
+            session()->forget('current_pedido_id');
+            $this->lastOrderId = null;
 
             $this->dispatch('payment-finished');
             $this->dispatch('notify', ['type' => 'success', 'message' => '¡Pago exitoso! Su pedido ha sido procesado correctamente.']);
