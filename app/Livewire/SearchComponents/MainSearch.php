@@ -2580,8 +2580,18 @@ class MainSearch extends Component
         $finalTotal = $confirmedTotal + $pedido->costo_envio;
         $amountInCents = (int) round($finalTotal * 100);
 
+        $user = auth()->user() ?? $pedido->customer;
+        $nameParts = explode(' ', trim($user?->name ?? 'Cliente'));
+        $firstName = $nameParts[0] ?? 'Cliente';
+        $lastName = isset($nameParts[1]) ? implode(' ', array_slice($nameParts, 1)) : 'Usuario';
+        $customerData = [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'phone' => $pedido->telefono_contacto ?? $user?->phone ?? '999999999',
+        ];
+
         $culqiService = new \App\Services\CulqiService();
-        $result = $culqiService->createCharge($token, $amountInCents, $email, $pedido->id);
+        $result = $culqiService->createCharge($token, $amountInCents, $email, $pedido->id, $customerData);
 
         if ($result['success']) {
             $charge = $result['charge'];

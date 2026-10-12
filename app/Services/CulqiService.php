@@ -26,9 +26,16 @@ class CulqiService
      * @param string $orderId Internal Order ID for reference
      * @return array
      */
-    public function createCharge($token, $amount, $email, $orderId)
+    public function createCharge($token, $amount, $email, $orderId, array $customerData = [])
     {
         try {
+            $firstName = !empty($customerData['first_name']) ? $customerData['first_name'] : (explode('@', $email)[0] ?: 'Cliente');
+            $lastName = !empty($customerData['last_name']) ? $customerData['last_name'] : 'Usuario';
+            $phone = !empty($customerData['phone']) ? preg_replace('/[^0-9]/', '', $customerData['phone']) : '999999999';
+            if (strlen($phone) < 9) {
+                $phone = '999999999';
+            }
+
             $response = Http::withToken($this->privateKey, 'Bearer')
                 ->withHeaders([
                     'Accept' => 'application/json',
@@ -41,14 +48,13 @@ class CulqiService
                     'source_id' => $token,
                     'description' => "Pedido #{$orderId} en RepuestoFijo",
                     'antifraud_details' => [
-                        'first_name' => explode('@', $email)[0],
-                        'last_name' => 'Cliente',
+                        'first_name' => $firstName,
+                        'last_name' => $lastName,
                         'email' => $email,
-                        'phone_number' => '999999999',
-                        'device_fingerprint' => 'web-checkout'
+                        'phone_number' => $phone,
                     ],
                     'metadata' => [
-                        'pedido_id' => $orderId
+                        'pedido_id' => (string) $orderId
                     ]
                 ]);
 
