@@ -83,11 +83,11 @@ class MainSearch extends Component
 
                 if ($q) {
                     // Handle timeout (no response after 9 minutes)
+                    // NOTA: Solo actualizamos el estado aquí. El mensaje WA de expiración
+                    // se envía únicamente desde checkZbotResponses() para evitar errores
+                    // de red durante el ciclo de render (que causaría un 500).
                     if ($q->status === 'waiting' && $q->expires_at && $q->expires_at->isPast()) {
                         $q->update(['status' => 'expired']);
-                        // Final message to provider
-                        $ws = new WhatsAppService();
-                        $ws->sendMessage($q->chat_id, "Sin respuesta en el tiempo límite. El pedido será redirigido a otro proveedor.");
                     }
 
                     if ($q->status === 'confirmed') {
