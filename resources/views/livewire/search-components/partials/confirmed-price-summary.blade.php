@@ -13,7 +13,7 @@
         $unconfirmedItems = [];
         foreach ($this->repairList as $pid => $rItem) {
             $match = $confirmedByPid[$pid] ?? null;
-            if (!$match || $match['qty'] <= 0) {
+            if (!$match || ($match['qty'] ?? 0) <= 0) {
                 $unconfirmedItems[] = $rItem;
             }
         }
@@ -66,8 +66,8 @@
                     $match = $confirmedByPid[$pid] ?? null;
 
                     // Raw confirmed qty from provider (before user overrides)
-                    $rawConfirmedQty = $match ? $match['qty'] : 0;
-                    $requestedQty = $rItem['qty'];
+                    $rawConfirmedQty = $match ? ($match['qty'] ?? 0) : 0;
+                    $requestedQty = $rItem['qty'] ?? 1;
                     // Detect if client has excluded this item using the product ID as key
                     $isExcluded = ($confirmedOverrides[$pid]['excluded'] ?? false);
                     // Effective qty: 0 if excluded, user override if set, otherwise provider qty

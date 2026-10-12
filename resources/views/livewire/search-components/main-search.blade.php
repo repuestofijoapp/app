@@ -1418,7 +1418,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <span class="text-muted small">x{{ $item['qty'] }}</span>
+                                                        <span class="text-muted small">x{{ $item['qty'] ?? 1 }}</span>
                                                     </div>
                                                 @endforeach
                                             </div>
@@ -1576,11 +1576,11 @@
                                                 <div class="input-group input-group-sm d-inline-flex border rounded overflow-hidden"
                                                     style="width: 100px;">
                                                     <button class="btn btn-light border-0"
-                                                        wire:click="updateQuantity('{{ $id }}', {{ $item['qty'] - 1 }})">-</button>
+                                                        wire:click="updateQuantity('{{ $id }}', {{ ($item['qty'] ?? 1) - 1 }})">-</button>
                                                     <input type="text" class="form-control text-center border-0 fw-medium"
-                                                        value="{{ $item['qty'] }}" readonly>
+                                                        value="{{ $item['qty'] ?? 1 }}" readonly>
                                                     <button class="btn btn-light border-0"
-                                                        wire:click="updateQuantity('{{ $id }}', {{ $item['qty'] + 1 }})">+</button>
+                                                        wire:click="updateQuantity('{{ $id }}', {{ ($item['qty'] ?? 1) + 1 }})">+</button>
                                                 </div>
                                             </td>
                                             <td class="text-end border-0">
@@ -1653,13 +1653,13 @@
                                             <div class="input-group input-group-sm d-inline-flex border rounded overflow-hidden"
                                                 style="width: 110px; height: 35px;">
                                                 <button class="btn btn-light border-0 fw-bold" style="width: 35px;"
-                                                    wire:click="updateQuantity('{{ $id }}', {{ $item['qty'] - 1 }})">
+                                                    wire:click="updateQuantity('{{ $id }}', {{ ($item['qty'] ?? 1) - 1 }})">
                                                     -
                                                 </button>
                                                 <input type="text" class="form-control text-center border-0 fw-medium bg-white"
-                                                    value="{{ $item['qty'] }}" readonly>
+                                                    value="{{ $item['qty'] ?? 1 }}" readonly>
                                                 <button class="btn btn-light border-0 fw-bold" style="width: 35px;"
-                                                    wire:click="updateQuantity('{{ $id }}', {{ $item['qty'] + 1 }})">
+                                                    wire:click="updateQuantity('{{ $id }}', {{ ($item['qty'] ?? 1) + 1 }})">
                                                     +
                                                 </button>
                                             </div>
@@ -4067,7 +4067,7 @@
                                                                 style="width:6px;height:6px;"></div>
                                                             <span class="text-dark small">{{ $item['product']['name'] }}</span>
                                                         </div>
-                                                        <span class="text-muted small">x{{ $item['qty'] }}</span>
+                                                        <span class="text-muted small">x{{ $item['qty'] ?? 1 }}</span>
                                                     </div>
                                                 @endforeach
                                             </div>

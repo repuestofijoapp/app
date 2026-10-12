@@ -315,7 +315,7 @@ class MainSearch extends Component
 
             foreach ($items as $repairListId => $item) {
                 $product = $item['product'];
-                $qty = $item['qty'];
+                $qty = $item['qty'] ?? 1; // defensivo: puede faltar en items restaurados
                 $hasPrice = isset($product['price']) && $product['price'] > 0;
 
                 // Look up override keyed by repairListId (the product ID in repairList)
@@ -836,6 +836,19 @@ class MainSearch extends Component
                     }
                 }
 
+                // ★ Sanear items del carrito: asegurar que cada item tenga 'qty' y 'product.id'
+                // (items de versiones antiguas o restaurados de ZbotQuery pueden carecer de 'qty')
+                foreach ($this->repairList as $pid => &$cartItem) {
+                    if (!is_array($cartItem) || empty($cartItem['product']['id'])) {
+                        unset($this->repairList[$pid]); // item inválido, descartar
+                        continue;
+                    }
+                    if (!isset($cartItem['qty'])) {
+                        $cartItem['qty'] = 1;
+                    }
+                }
+                unset($cartItem); // romper referencia
+
                 if (isset($dbCart['confirmed_overrides']) && is_array($dbCart['confirmed_overrides'])) {
                     $this->confirmedOverrides = array_merge($this->confirmedOverrides, $dbCart['confirmed_overrides']);
                 }
@@ -991,8 +1004,13 @@ class MainSearch extends Component
                     foreach ($zQueries as $zq) {
                         if (!empty($zq->items_json) && is_array($zq->items_json)) {
                             foreach ($zq->items_json as $item) {
+                                if (!is_array($item)) continue;
                                 $pid = $item['product']['id'] ?? null;
                                 if ($pid && !isset($this->repairList[$pid])) {
+                                    // Asegurar que el item tenga qty
+                                    if (!isset($item['qty'])) {
+                                        $item['qty'] = 1;
+                                    }
                                     $this->repairList[$pid] = $item;
                                 }
                             }
