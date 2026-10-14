@@ -24,9 +24,9 @@ return [
     ],
 
     'green_api' => [
-        'instance_id' => env('GREEN_API_INSTANCE_ID'),
-        'token' => env('GREEN_API_TOKEN'),
-        'simulation' => env('GREEN_API_SIMULATION', true),
+        'instance_id' => env('GREEN_API_ID_INSTANCE', env('GREEN_API_INSTANCE_ID')),
+        'token' => env('GREEN_API_TOKEN_INSTANCE', env('GREEN_API_TOKEN')),
+        'simulation' => env('GREEN_API_SIMULATION', false),
     ],
 
     'ses' => [

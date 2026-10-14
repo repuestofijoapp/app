@@ -13,8 +13,8 @@ class WhatsAppService
 
     public function __construct()
     {
-        $this->idInstance = env('GREEN_API_ID_INSTANCE');
-        $this->apiToken = env('GREEN_API_TOKEN_INSTANCE');
+        $this->idInstance = config('services.green_api.instance_id') ?: env('GREEN_API_ID_INSTANCE');
+        $this->apiToken = config('services.green_api.token') ?: env('GREEN_API_TOKEN_INSTANCE');
 
         // Extract prefix from ID (first 4 digits) or use default
         $prefix = substr($this->idInstance, 0, 4);
