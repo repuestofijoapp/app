@@ -1,6 +1,6 @@
-@if ($paginator->hasPages())
-    <nav class="d-flex align-items-center justify-content-between">
-        <div class="d-flex gap-2">
+@if ($paginator->total() > 0)
+    <nav class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex gap-2 align-items-center">
             {{-- Previous Page Link --}}
             @if ($paginator->onFirstPage())
                 <span class="btn-pagination-disabled">
@@ -13,23 +13,27 @@
             @endif
 
             {{-- Pagination Elements --}}
-            @foreach ($elements as $element)
-                {{-- "Three Dots" Separator --}}
-                @if (is_string($element))
-                    <span class="btn-pagination-dots">{{ $element }}</span>
-                @endif
+            @if ($paginator->hasPages())
+                @foreach ($elements as $element)
+                    {{-- "Three Dots" Separator --}}
+                    @if (is_string($element))
+                        <span class="btn-pagination-dots">{{ $element }}</span>
+                    @endif
 
-                {{-- Array Of Links --}}
-                @if (is_array($element))
-                    @foreach ($element as $page => $url)
-                        @if ($page == $paginator->currentPage())
-                            <span class="btn-pagination-active">{{ $page }}</span>
-                        @else
-                            <button wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')" class="btn-pagination">{{ $page }}</button>
-                        @endif
-                    @endforeach
-                @endif
-            @endforeach
+                    {{-- Array Of Links --}}
+                    @if (is_array($element))
+                        @foreach ($element as $page => $url)
+                            @if ($page == $paginator->currentPage())
+                                <span class="btn-pagination-active">{{ $page }}</span>
+                            @else
+                                <button wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')" class="btn-pagination">{{ $page }}</button>
+                            @endif
+                        @endforeach
+                    @endif
+                @endforeach
+            @else
+                <span class="btn-pagination-active">1</span>
+            @endif
 
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
@@ -44,7 +48,7 @@
         </div>
 
         <div class="text-white opacity-50" style="font-size: 0.8rem; font-weight: 600;">
-            Mostrando {{ $paginator->firstItem() }} a {{ $paginator->lastItem() }} de {{ $paginator->total() }} resultados
+            Mostrando {{ $paginator->firstItem() ?? 1 }} a {{ $paginator->lastItem() ?? $paginator->total() }} de {{ $paginator->total() }} resultados
         </div>
     </nav>
 

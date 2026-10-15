@@ -228,6 +228,91 @@
             border-color: #00d68f;
         }
 
+        /* Botones de Contacto (Email y WhatsApp) */
+        .btn-contact {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+            text-decoration: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .btn-email-active {
+            background: rgba(168, 85, 247, 0.12);
+            border: 1px solid rgba(168, 85, 247, 0.45);
+            color: #a855f7;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+            cursor: pointer;
+        }
+
+        .btn-email-active:hover {
+            background: rgba(168, 85, 247, 0.25);
+            border-color: #c084fc;
+            color: #f3e8ff;
+            box-shadow: 0 0 16px rgba(168, 85, 247, 0.45);
+            transform: translateY(-2px);
+        }
+
+        .btn-whatsapp-active {
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.45);
+            color: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+            cursor: pointer;
+        }
+
+        .btn-whatsapp-active:hover {
+            background: rgba(34, 197, 94, 0.25);
+            border-color: #4ade80;
+            color: #dcfce7;
+            box-shadow: 0 0 16px rgba(34, 197, 94, 0.45);
+            transform: translateY(-2px);
+        }
+
+        /* Estilo opaco / desactivado (según captura 5) */
+        .btn-contact-disabled {
+            opacity: 0.35;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: not-allowed;
+            pointer-events: auto;
+        }
+
+        .btn-email-disabled {
+            color: #a855f7;
+        }
+
+        .btn-whatsapp-disabled {
+            color: #22c55e;
+        }
+
+        /* Tooltip oscuro de alta fidelidad */
+        .tooltip-inner {
+            background: #0f172a !important;
+            color: #f8fafc !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            font-family: 'Syne', sans-serif !important;
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            padding: 6px 12px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7) !important;
+        }
+
+        .bs-tooltip-top .tooltip-arrow::before,
+        .bs-tooltip-auto[data-popper-placement^="top"] .tooltip-arrow::before {
+            border-top-color: #0f172a !important;
+        }
+        .bs-tooltip-bottom .tooltip-arrow::before,
+        .bs-tooltip-auto[data-popper-placement^="bottom"] .tooltip-arrow::before {
+            border-bottom-color: #0f172a !important;
+        }
+
 
 
         @media (max-width: 768px) {
@@ -334,11 +419,11 @@
                 <thead>
                     <tr>
                         <th>Usuario</th>
-                        <th>Email</th>
-                        <th>Teléfono</th>
+                        <th class="text-center">Contacto</th>
                         <th>Documento</th>
                         <th>Rol</th>
                         <th>Estado</th>
+                        <th>Fecha Creación</th>
                         <th>Bloqueado por</th>
                         <th class="text-right">Acciones</th>
                     </tr>
@@ -349,16 +434,54 @@
                             <td data-label="Usuario">
                                 <span class="fw-bold">{{ $user->name }}</span>
                             </td>
-                            <td data-label="Email" class="text-white">{{ $user->email }}</td>
-                            <td data-label="Teléfono" class="text-white">
-                                @if($user->phone)
-                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $user->phone) }}" target="_blank"
-                                        class="text-success text-decoration-none">
-                                        <i class="fab fa-whatsapp mr-1"></i> {{ $user->phone }}
-                                    </a>
-                                @else
-                                    <span class="text-white-50 small">No registrado</span>
-                                @endif
+                            <td data-label="Contacto" class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    {{-- Email Icon Button --}}
+                                    @if(!empty($user->email))
+                                        <a href="mailto:{{ $user->email }}"
+                                            class="btn-contact btn-email-active"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="{{ $user->email }} (Clic para redactar)">
+                                            <i class="fas fa-envelope"></i>
+                                        </a>
+                                    @else
+                                        <span class="btn-contact btn-contact-disabled btn-email-disabled"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="Sin email registrado">
+                                            <i class="fas fa-envelope"></i>
+                                        </span>
+                                    @endif
+
+                                    {{-- WhatsApp Icon Button --}}
+                                    @php
+                                        $rawPhone = $user->phone ? preg_replace('/[^0-9]/', '', $user->phone) : '';
+                                        $waPhone = '';
+                                        if (!empty($rawPhone)) {
+                                            $waPhone = (strlen($rawPhone) === 9 && str_starts_with($rawPhone, '9')) ? '51' . $rawPhone : $rawPhone;
+                                        }
+                                    @endphp
+
+                                    @if(!empty($user->phone) && !empty($waPhone))
+                                        <a href="https://wa.me/{{ $waPhone }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="btn-contact btn-whatsapp-active"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="{{ $user->phone }} (Clic para abrir WhatsApp)">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </a>
+                                    @else
+                                        <span class="btn-contact btn-contact-disabled btn-whatsapp-disabled"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="Sin teléfono registrado">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
                             <td data-label="Documento">
                                 @if($user->ruc_dni || $user->business_name)
@@ -416,6 +539,12 @@
                                     </span>
                                 @endif
                             </td>
+                            <td data-label="Fecha Creación">
+                                <div class="d-flex flex-column" style="font-size: 0.8rem;">
+                                    <span class="text-white fw-bold">{{ $user->created_at ? $user->created_at->format('d/m/Y') : '—' }}</span>
+                                    <span class="text-white-50" style="font-size: 0.7rem;">{{ $user->created_at ? $user->created_at->format('H:i') : '' }}</span>
+                                </div>
+                            </td>
                             <td data-label="Bloqueado por">
                                 @if(!$user->is_active && $user->blocked_at)
                                     <div class="d-flex flex-column" style="font-size: 0.75rem;">
@@ -450,7 +579,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-8">
+                            <td colspan="8" class="text-center text-muted py-8">
                                 No se encontraron usuarios.
                             </td>
                         </tr>
@@ -459,7 +588,7 @@
             </table>
         </div>
 
-        <div class="mt-6">
+        <div class="pagination-premium mt-6">
             {{ $users->links('vendor.pagination.custom-repuestofijo') }}
         </div>
     </div>
