@@ -1238,8 +1238,21 @@
             } else {
                 isProcessingCulqi = false;
                 console.error("Error Culqi:", Culqi.error);
-                const msg = (Culqi.error && Culqi.error.user_message) ? Culqi.error.user_message : 'Error al procesar la tarjeta. Intenta de nuevo.';
-                alert(msg);
+                const msg = (Culqi.error && Culqi.error.user_message) ? Culqi.error.user_message : 'Error al procesar la tarjeta. Por favor, intenta de nuevo o usa Yape.';
+                if (typeof Livewire !== 'undefined') {
+                    Livewire.dispatch('culqi-frontend-error', { message: msg });
+                }
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Pago no completado',
+                        text: msg,
+                        confirmButtonColor: '#dc2626',
+                        confirmButtonText: 'Entendido'
+                    });
+                } else {
+                    alert(msg);
+                }
             }
         };
     </script>

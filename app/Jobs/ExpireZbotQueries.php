@@ -73,5 +73,23 @@ class ExpireZbotQueries implements ShouldQueue
                 Log::info("[ExpireZbotQueries] Pedido #{$pedidoId} mantiene por_confirmar (hay proveedores con stock).");
             }
         }
+
+        // 4. Cancelar pedidos abandonados en 'por_confirmar' tras 45 minutos de inactividad
+        $abandonedOrders = Pedido::where('status', 'por_confirmar')
+            ->where('created_at', '<', $now->copy()->subMinutes(45))
+            ->get();
+
+        foreach ($abandonedOrders as $abandoned) {
+            $reason = !empty($abandoned->cancellation_reason)
+                ? 'Tiempo límite de pago expirado (' . $abandoned->cancellation_reason . ')'
+                : 'Tiempo límite de pago expirado por inactividad.';
+
+            $abandoned->update([
+                'status' => 'cancelado',
+                'cancellation_reason' => $reason,
+            ]);
+
+            Log::info("[ExpireZbotQueries] Pedido impago abandonado #{$abandoned->id} cancelado automáticamente tras 45 minutos.");
+        }
     }
 }

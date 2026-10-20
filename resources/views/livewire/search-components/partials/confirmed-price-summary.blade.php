@@ -23,6 +23,24 @@
         $hasPartial = $unconfirmedCount > 0;
     @endphp
 
+    {{-- === PAYMENT ERROR BANNER (si falló el cobro con Culqi) === --}}
+    @if(!empty($this->paymentErrorMessage))
+        <div class="rounded-3 p-3 mb-3 text-start d-flex align-items-start gap-3 shadow-sm border"
+            style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-color: #ef4444 !important;">
+            <div style="font-size: 26px; line-height:1;">⚠️</div>
+            <div class="flex-grow-1">
+                <div class="fw-bold" style="color:#991b1b; font-size:13px;">No se pudo procesar tu pago</div>
+                <div class="mt-1" style="color:#b91c1c; font-size:12px; line-height:1.5;">
+                    {{ $this->paymentErrorMessage }}
+                </div>
+                <div class="mt-2 text-dark" style="font-size:12px; line-height:1.4;">
+                    💡 <strong>Tus repuestos confirmados siguen reservados.</strong> Por favor verifica los datos de tu tarjeta, prueba con otra tarjeta o utiliza la opción <strong>Yape</strong> dentro de la pasarela.
+                </div>
+            </div>
+            <button type="button" class="btn-close" style="font-size: 10px;" wire:click="$set('paymentErrorMessage', '')" title="Cerrar aviso"></button>
+        </div>
+    @endif
+
     {{-- === STATUS BANNER === --}}
     @if($hasPartial)
         <div class="rounded-3 p-3 mb-3 text-start d-flex align-items-start gap-3"
@@ -282,10 +300,14 @@
         @else
             disabled
         @endif>
-        <i class="fas fa-lock me-2" style="font-size:13px;"></i>
         @if($allExcluded)
+            <i class="fas fa-lock me-2" style="font-size:13px;"></i>
             Carrito vacío
+        @elseif(!empty($this->paymentErrorMessage))
+            <i class="fas fa-redo-alt me-2" style="font-size:13px;"></i>
+            REINTENTAR PAGO S/ {{ number_format($finalTotal, 2) }} →
         @else
+            <i class="fas fa-lock me-2" style="font-size:13px;"></i>
             PAGAR S/ {{ number_format($finalTotal, 2) }} →
         @endif
     </button>

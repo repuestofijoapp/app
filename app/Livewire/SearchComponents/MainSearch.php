@@ -583,8 +583,14 @@ class MainSearch extends Component
     public $showOrdersDrawer = false;
     public $showPrivacyModal = false;
     public $showIncidentModal = false;
-    public $selectedOrderIdForIncident = null;
     public $drawerSubState = 'menu'; // 'menu' | 'orders' | 'addresses' | 'profile'
+    public $paymentErrorMessage = '';
+
+    #[On('culqi-frontend-error')]
+    public function handleCulqiFrontendError($message = null): void
+    {
+        $this->paymentErrorMessage = $message ?: 'Error al procesar la tarjeta en la pasarela. Por favor, intenta de nuevo.';
+    }
 
     public function openPrivacyModal()
     {
@@ -721,6 +727,7 @@ class MainSearch extends Component
         $this->zbotConfirmed = false;
         $this->confirmedOverrides = [];
         $this->lastOrderId = null;
+        $this->paymentErrorMessage = '';
         $this->zbotSearchStartTime = null;
         $this->isSearching = false;
         $this->viewState = 'initial';
@@ -1070,6 +1077,9 @@ class MainSearch extends Component
             if ($pendingPedido) {
                 $this->lastOrderId = $pendingPedido->id;
                 session()->put('current_pedido_id', $pendingPedido->id);
+                if (!empty($pendingPedido->cancellation_reason)) {
+                    $this->paymentErrorMessage = $pendingPedido->cancellation_reason;
+                }
                 if (!$this->zbotSearchStartTime) {
                     $this->zbotSearchStartTime = $pendingPedido->created_at?->toIso8601String() ?? now()->subHours(24)->toIso8601String();
                 }
@@ -2707,103 +2717,21 @@ class MainSearch extends Component
         $culqiService = new \App\Services\CulqiService();
         $result = $culqiService->createCharge($token, $amountInCents, $email, $pedido->id, $customerData);
 
+        // Siempre sincronizar items y totales reales para que el pedido no quede vacío ni en S/ 0.00
+        $this->syncPedidoItemsAndTotals($pedido, $confirmedTotal, $finalTotal);
+
         if ($result['success']) {
             $charge = $result['charge'];
             $chargeId = $charge['id'] ?? null;
 
             // 1. Update the Pedido with final totals, payment method, charge ID and status 'pagado'
             $pedido->update([
-                'subtotal' => $confirmedTotal,
-                'total' => $finalTotal,
                 'metodo_pago' => 'Culqi',
                 'culqi_charge_id' => $chargeId,
                 'payment_confirmed_at' => now(),
                 'status' => 'pagado',
+                'cancellation_reason' => null,
             ]);
-
-            // Registrar los items confirmados con precio real del proveedor
-            $startTime = $this->zbotSearchStartTime ?? now()->subMinutes(15);
-            $confirmedQueries = ZbotQuery::where('pedido_id', $pedido->id)
-                ->where('status', 'confirmed')
-                ->get()
-                ->keyBy('provider_id');
-
-            foreach ($this->repairList as $pid => $data) {
-                $providerId = $data['product']['provider_id'];
-                $query = $confirmedQueries->get($providerId);
-
-                // === APPLY CUSTOMER OVERRIDES ===
-                $override = $this->confirmedOverrides[$pid] ?? null;
-
-                // Skip items the customer explicitly removed
-                if ($override && ($override['excluded'] ?? false)) {
-                    continue;
-                }
-
-                $qtyConfirmed = $data['qty'];
-                $precioUnit = 0;
-
-                if ($query) {
-                    if (!empty($query->items_confirmed_json) && is_array($query->items_confirmed_json)) {
-                        $found = false;
-                        foreach ($query->items_confirmed_json as $cItem) {
-                            if (($cItem['oem_code'] ?? '') === ($data['product']['supplier_code'] ?? '')) {
-                                $qtyConfirmed = $cItem['qty_confirmed'] ?? 0;
-                                $precioUnit = $cItem['price_unit'] ?? 0;
-                                $found = true;
-                                break;
-                            }
-                        }
-                        if (!$found) {
-                            $qtyConfirmed = 0;
-                        }
-                    } else {
-                        $normalizedText = str_replace(',', '.', $query->price);
-                        $cleanText = preg_replace('/[^0-9. ]/', ' ', $normalizedText);
-                        $pricesFound = array_map('floatval', preg_split('/\s+/', trim($cleanText)));
-                        
-                        $itemsRequested = $query->items_json ?? [];
-                        $itemIndex = 0;
-                        foreach ($itemsRequested as $index => $reqItem) {
-                            if (($reqItem['product']['supplier_code'] ?? '') === ($data['product']['supplier_code'] ?? '')) {
-                                $itemIndex = $index;
-                                break;
-                            }
-                        }
-                        $precioUnit = $pricesFound[$itemIndex] ?? end($pricesFound) ?? 0;
-                    }
-                }
-
-                // Apply customer quantity override (if they reduced qty)
-                if ($override && isset($override['qty']) && (int)$override['qty'] > 0) {
-                    $qtyConfirmed = min((int)$override['qty'], $qtyConfirmed);
-                }
-
-                $provider = \App\Models\Provider::find($providerId);
-                $requiresZbot = $provider ? $provider->requires_zbot : true;
-                $hasPrice = isset($data['product']['price']) && floatval($data['product']['price']) > 0;
-
-                if ($hasPrice && !$requiresZbot) {
-                    $precioUnitWithMarkup = round(floatval($data['product']['price']) * 1.18, 2);
-                } else {
-                    if ($precioUnit <= 0) {
-                        $precioUnit = $data['product']['price'] ?? 0;
-                    }
-                    $precioUnitWithMarkup = round($precioUnit * 1.10 * 1.18, 2);
-                }
-
-                if ($qtyConfirmed > 0) {
-                    PedidoItem::create([
-                        'pedido_id' => $pedido->id,
-                        'product_id' => $data['product']['id'],
-                        'oversize' => $data['product']['oversize'] ?? null,
-                        'provider_id' => $providerId,
-                        'cantidad' => $qtyConfirmed,
-                        'precio_unitario' => $precioUnitWithMarkup,
-                        'subtotal' => $precioUnitWithMarkup * $qtyConfirmed,
-                    ]);
-                }
-            }
 
             // 2. Send "PAGO CONFIRMADO" to all providers that confirmed stock
             $ws = new WhatsAppService();
@@ -2833,15 +2761,118 @@ class MainSearch extends Component
             $this->savePersistedSearchState();
             session()->forget('current_pedido_id');
             $this->lastOrderId = null;
+            $this->paymentErrorMessage = '';
 
             $this->dispatch('payment-finished');
             $this->dispatch('notify', ['type' => 'success', 'message' => '¡Pago exitoso! Su pedido ha sido procesado correctamente.']);
             $this->js("window.dispatchEvent(new CustomEvent('payment-finished'));");
         } else {
+            // Guardar motivo de fallo para auditoría y visualización
+            $errorMessage = $result['message'] ?? 'Error desconocido al procesar el pago.';
+            $this->paymentErrorMessage = $errorMessage;
+            $pedido->update([
+                'cancellation_reason' => 'Error de cobro Culqi: ' . $errorMessage,
+            ]);
+
             $this->dispatch('payment-finished');
             $this->js("window.dispatchEvent(new CustomEvent('payment-finished'));");
-            \Illuminate\Support\Facades\Log::error('Pago con Culqi fallido', ['pedido_id' => $pedido->id, 'error' => $result['message']]);
-            $this->dispatch('notify', ['type' => 'error', 'message' => 'Error de pago: ' . $result['message']]);
+            \Illuminate\Support\Facades\Log::error('Pago con Culqi fallido', ['pedido_id' => $pedido->id, 'error' => $errorMessage]);
+            $this->dispatch('notify', ['type' => 'error', 'message' => 'Error de pago: ' . $errorMessage]);
+        }
+    }
+
+    private function syncPedidoItemsAndTotals(Pedido $pedido, float $confirmedTotal, float $finalTotal): void
+    {
+        $pedido->update([
+            'subtotal' => $confirmedTotal,
+            'total' => $finalTotal,
+        ]);
+
+        // Evitar duplicados si se reintenta el cobro
+        PedidoItem::where('pedido_id', $pedido->id)->delete();
+
+        // Registrar los items confirmados con precio real del proveedor
+        $startTime = $this->zbotSearchStartTime ?? now()->subMinutes(15);
+        $confirmedQueries = ZbotQuery::where('pedido_id', $pedido->id)
+            ->where('status', 'confirmed')
+            ->get()
+            ->keyBy('provider_id');
+
+        foreach ($this->repairList as $pid => $data) {
+            $providerId = $data['product']['provider_id'];
+            $query = $confirmedQueries->get($providerId);
+
+            // === APPLY CUSTOMER OVERRIDES ===
+            $override = $this->confirmedOverrides[$pid] ?? null;
+
+            // Skip items the customer explicitly removed
+            if ($override && ($override['excluded'] ?? false)) {
+                continue;
+            }
+
+            $qtyConfirmed = $data['qty'];
+            $precioUnit = 0;
+
+            if ($query) {
+                if (!empty($query->items_confirmed_json) && is_array($query->items_confirmed_json)) {
+                    $found = false;
+                    foreach ($query->items_confirmed_json as $cItem) {
+                        if (($cItem['oem_code'] ?? '') === ($data['product']['supplier_code'] ?? '')) {
+                            $qtyConfirmed = $cItem['qty_confirmed'] ?? 0;
+                            $precioUnit = $cItem['price_unit'] ?? 0;
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if (!$found) {
+                        $qtyConfirmed = 0;
+                    }
+                } else {
+                    $normalizedText = str_replace(',', '.', $query->price);
+                    $cleanText = preg_replace('/[^0-9. ]/', ' ', $normalizedText);
+                    $pricesFound = array_map('floatval', preg_split('/\s+/', trim($cleanText)));
+                    
+                    $itemsRequested = $query->items_json ?? [];
+                    $itemIndex = 0;
+                    foreach ($itemsRequested as $index => $reqItem) {
+                        if (($reqItem['product']['supplier_code'] ?? '') === ($data['product']['supplier_code'] ?? '')) {
+                            $itemIndex = $index;
+                            break;
+                        }
+                    }
+                    $precioUnit = $pricesFound[$itemIndex] ?? end($pricesFound) ?? 0;
+                }
+            }
+
+            // Apply customer quantity override (if they reduced qty)
+            if ($override && isset($override['qty']) && (int)$override['qty'] > 0) {
+                $qtyConfirmed = min((int)$override['qty'], $qtyConfirmed);
+            }
+
+            $provider = \App\Models\Provider::find($providerId);
+            $requiresZbot = $provider ? $provider->requires_zbot : true;
+            $hasPrice = isset($data['product']['price']) && floatval($data['product']['price']) > 0;
+
+            if ($hasPrice && !$requiresZbot) {
+                $precioUnitWithMarkup = round(floatval($data['product']['price']) * 1.18, 2);
+            } else {
+                if ($precioUnit <= 0) {
+                    $precioUnit = $data['product']['price'] ?? 0;
+                }
+                $precioUnitWithMarkup = round($precioUnit * 1.10 * 1.18, 2);
+            }
+
+            if ($qtyConfirmed > 0) {
+                PedidoItem::create([
+                    'pedido_id' => $pedido->id,
+                    'product_id' => $data['product']['id'],
+                    'oversize' => $data['product']['oversize'] ?? null,
+                    'provider_id' => $providerId,
+                    'cantidad' => $qtyConfirmed,
+                    'precio_unitario' => $precioUnitWithMarkup,
+                    'subtotal' => $precioUnitWithMarkup * $qtyConfirmed,
+                ]);
+            }
         }
     }
 
@@ -3186,6 +3217,15 @@ class MainSearch extends Component
     {
         $pedido = Pedido::with(['items.product'])->find($orderId);
         if (!$pedido) return;
+
+        // Validación fiscal: Solo pedidos pagados y con monto mayor a cero
+        if ($pedido->status !== 'pagado' || floatval($pedido->total) <= 0) {
+            $this->dispatch('notify', [
+                'type' => 'error',
+                'message' => 'Solo se pueden emitir comprobantes electrónicos de pedidos confirmados y pagados.'
+            ]);
+            return;
+        }
 
         // Generate invoice using BillingService if not already generated
         if (empty($pedido->invoice_url)) {

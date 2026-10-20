@@ -91,6 +91,10 @@ class Pedido extends Model
 
     public function getStatusLabelAttribute(): string
     {
+        if ($this->status === 'por_confirmar' && !empty($this->cancellation_reason)) {
+            return 'Pago Rechazado';
+        }
+
         return match ($this->status) {
             'pendiente' => 'Pendiente',
             'por_confirmar' => 'Por confirmar',
@@ -105,6 +109,10 @@ class Pedido extends Model
 
     public function getStatusColorAttribute(): string
     {
+        if ($this->status === 'por_confirmar' && !empty($this->cancellation_reason)) {
+            return '#ef4444';
+        }
+
         return match ($this->status) {
             'pendiente' => '#6B7A99',
             'por_confirmar' => '#fbbf24',

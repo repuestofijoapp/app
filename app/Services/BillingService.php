@@ -19,6 +19,14 @@ class BillingService
      */
     public function generateInvoice($pedido, $billingType, $customerData)
     {
+        if ($pedido->status !== 'pagado' || floatval($pedido->total) <= 0) {
+            Log::warning("Intento de emitir comprobante para pedido no pagado o con total cero #{$pedido->id}");
+            return [
+                'success' => false,
+                'message' => 'No se puede emitir un comprobante fiscal para un pedido no pagado o con importe cero.',
+            ];
+        }
+
         Log::info("Iniciando generación de boleta electrónica para el pedido #{$pedido->id}");
 
         $apiUrl = env('APISPERU_API_URL', 'https://facturacion.apisperu.com/api/v1');

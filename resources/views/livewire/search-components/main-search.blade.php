@@ -3143,6 +3143,10 @@
                                             @php
                                                 $statusConfig = [
                                                     'pendiente' => ['label' => 'Pendiente', 'class' => 'bg-secondary text-white'],
+                                                    'por_confirmar' => [
+                                                        'label' => !empty($order->cancellation_reason) ? 'Pago Rechazado' : 'Por confirmar',
+                                                        'class' => !empty($order->cancellation_reason) ? 'bg-danger text-white' : 'bg-warning text-dark'
+                                                    ],
                                                     'pagado' => ['label' => 'Pagado', 'class' => 'bg-success text-white'],
                                                     'en_preparacion' => ['label' => 'En preparación', 'class' => 'bg-warning text-dark'],
                                                     'en_camino' => ['label' => 'En camino', 'class' => 'bg-info text-white'],
@@ -3150,7 +3154,10 @@
                                                     'cancelado' => ['label' => 'Cancelado', 'class' => 'bg-danger text-white'],
                                                 ];
                                                 $orderStatusValue = is_object($order->status) ? $order->status->value : $order->status;
-                                                $s = $statusConfig[$orderStatusValue] ?? ['label' => 'Status', 'class' => 'bg-light text-dark'];
+                                                $s = $statusConfig[$orderStatusValue] ?? [
+                                                    'label' => !empty($order->cancellation_reason) ? 'Pago Rechazado' : 'Por confirmar',
+                                                    'class' => !empty($order->cancellation_reason) ? 'bg-danger text-white' : 'bg-warning text-dark'
+                                                ];
                                             @endphp
                                             <div class="text-end">
                                                 <span class="badge {{ $s['class'] }} mb-2"
@@ -3801,9 +3808,32 @@
                                 <div class="bg-light p-3 rounded-3">
                                     <div class="d-flex justify-content-between mb-2">
                                         <span class="text-muted">Estado:</span>
+                                        @php
+                                            $modalLabel = $userSelectedOrder->status_label;
+                                            $modalBadge = 'bg-primary text-white';
+                                            if ($userSelectedOrder->status === 'por_confirmar') {
+                                                if (!empty($userSelectedOrder->cancellation_reason)) {
+                                                    $modalLabel = 'Pago Rechazado';
+                                                    $modalBadge = 'bg-danger text-white';
+                                                } else {
+                                                    $modalLabel = 'Por confirmar';
+                                                    $modalBadge = 'bg-warning text-dark';
+                                                }
+                                            } elseif ($userSelectedOrder->status === 'pagado') {
+                                                $modalBadge = 'bg-success text-white';
+                                            } elseif ($userSelectedOrder->status === 'cancelado') {
+                                                $modalBadge = 'bg-danger text-white';
+                                            }
+                                        @endphp
                                         <span
-                                            class="badge bg-primary rounded-pill">{{ ucfirst($userSelectedOrder->status) }}</span>
+                                            class="badge {{ $modalBadge }} rounded-pill">{{ $modalLabel }}</span>
                                     </div>
+                                    @if(!empty($userSelectedOrder->cancellation_reason))
+                                        <div class="alert alert-danger py-2 px-3 small rounded-3 mb-2 d-flex align-items-center" style="font-size: 0.8rem;">
+                                            <i class="fas fa-exclamation-circle me-2 flex-shrink-0"></i>
+                                            <span>{{ $userSelectedOrder->cancellation_reason }}</span>
+                                        </div>
+                                    @endif
                                     <div class="d-flex justify-content-between mb-2">
                                         <span class="text-muted">Total:</span>
                                         <span class="fw-bold text-dark">S/
@@ -3935,20 +3965,25 @@
                     </div>
                     <div class="modal-footer border-0 p-4 pt-0 d-flex justify-content-between align-items-center">
                         <div>
-                            @if(!empty($userSelectedOrder->invoice_url) && $userSelectedOrder->invoice_url !== '#')
-                                <a href="{{ $userSelectedOrder->invoice_url }}" target="_blank"
-                                    class="btn btn-success rounded-pill px-4 fw-bold">
-                                    <i class="fas fa-external-link-alt me-2"></i>Ver PDF Oficial SUNAT (Con QR)
-                                </a>
+                            @if($userSelectedOrder->status === 'pagado' && floatval($userSelectedOrder->total) > 0)
+                                @if(!empty($userSelectedOrder->invoice_url) && $userSelectedOrder->invoice_url !== '#')
+                                    <a href="{{ $userSelectedOrder->invoice_url }}" target="_blank"
+                                        class="btn btn-success rounded-pill px-4 fw-bold">
+                                        <i class="fas fa-external-link-alt me-2"></i>Ver PDF Oficial SUNAT (Con QR)
+                                    </a>
+                                @else
+                                    <button type="button" class="btn btn-outline-primary rounded-pill px-4 fw-bold"
+                                        wire:click="downloadInvoice({{ $userSelectedOrder->id }})">
+                                        <i class="fas fa-spinner fa-spin me-2" wire:loading wire:target="downloadInvoice"></i>
+                                        <i class="fas fa-file-pdf me-2" wire:loading.remove wire:target="downloadInvoice"></i>
+                                        <span>Generar Comprobante SUNAT (PDF)</span>
+                                    </button>
+                                @endif
                             @else
-                                <button type="button" class="btn btn-outline-primary rounded-pill px-4 fw-bold"
-                                    wire:click="downloadInvoice({{ $userSelectedOrder->id }})"
-                                    @if($userSelectedOrder->status === 'cancelado') disabled
-                                    style="opacity: 0.5; cursor: not-allowed;" @endif>
-                                    <i class="fas fa-spinner fa-spin me-2" wire:loading wire:target="downloadInvoice"></i>
-                                    <i class="fas fa-file-pdf me-2" wire:loading.remove wire:target="downloadInvoice"></i>
-                                    <span>Generar Comprobante SUNAT (PDF)</span>
-                                </button>
+                                <span class="d-inline-flex align-items-center text-muted small bg-light px-3 py-2 rounded-pill border">
+                                    <i class="fas fa-lock me-2 text-warning"></i>
+                                    Comprobante disponible al confirmar el pago
+                                </span>
                             @endif
                         </div>
                         <div class="d-flex gap-2">
