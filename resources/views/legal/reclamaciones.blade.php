@@ -737,7 +737,7 @@
                     <input type="checkbox" id="consentimiento" name="consentimiento" required>
                     <label for="consentimiento">
                         Autorizo a RepuestoFijo a tratar mis datos personales para gestionar esta reclamación, conforme
-                        a la <a href="{{ route('legal.privacidad') }}" target="_blank" rel="noopener noreferrer" style="color: #BE3C3B; text-decoration: underline; font-weight: 600;">Política de Privacidad</a> y la Ley N° 29733.
+                        a la <a href="{{ route('legal.privacidad') }}" onclick="openLegalPopupFromIframe('popup-privacidad', event)" target="_blank" rel="noopener noreferrer" style="color: #BE3C3B; text-decoration: underline; font-weight: 600; cursor: pointer;">Política de Privacidad</a> y la Ley N° 29733.
                     </label>
                 </div>
 
@@ -829,6 +829,20 @@
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Enviar reclamación</span>';
                 });
+        }
+        function openLegalPopupFromIframe(popupId, e) {
+            if (window.parent && window.parent !== window) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                if (typeof window.parent.rfOpenPopup === 'function') {
+                    window.parent.rfOpenPopup(popupId, e);
+                } else {
+                    window.parent.postMessage({ action: 'rfOpenPopup', id: popupId }, '*');
+                }
+                return false;
+            }
         }
         if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
     </script>

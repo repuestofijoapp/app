@@ -4728,6 +4728,8 @@
                 if (loader) loader.classList.add('loaded');
             };
 
+            var rfTopZIndex = 100000;
+
             window.rfOpenPopup = function (id, event) {
                 if (event) {
                     event.preventDefault();
@@ -4735,6 +4737,10 @@
                 }
                 var overlay = document.getElementById(id);
                 if (!overlay) return;
+
+                // Elevar z-index para que el nuevo popup siempre quede superpuesto sobre cualquier modal existente
+                rfTopZIndex += 2;
+                overlay.style.zIndex = rfTopZIndex;
 
                 // Cargar iframe bajo demanda solo la primera vez
                 var cfg = rfPopupMap[id];
@@ -4763,6 +4769,26 @@
                     rfClosePopup(id, e);
                 }
             };
+
+            // Escuchar peticiones desde iframes hijos (ej. enlace de privacidad dentro del Libro de Reclamaciones)
+            window.addEventListener('message', function (e) {
+                if (e.data && e.data.action === 'rfOpenPopup' && e.data.id) {
+                    window.rfOpenPopup(e.data.id);
+                }
+            });
+
+            // Cerrar el modal más superficial al presionar Escape
+            window.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    var activePopups = Array.from(document.querySelectorAll('.rf-popup-overlay.active'));
+                    if (activePopups.length > 0) {
+                        activePopups.sort(function (a, b) {
+                            return (parseInt(window.getComputedStyle(b).zIndex, 10) || 0) - (parseInt(window.getComputedStyle(a).zIndex, 10) || 0);
+                        });
+                        rfClosePopup(activePopups[0].id, e);
+                    }
+                }
+            });
 
             // Prevenir scroll de la página de fondo al interactuar directamente con el backdrop
             ['popup-privacidad', 'popup-terminos', 'popup-reclamaciones'].forEach(function (id) {
