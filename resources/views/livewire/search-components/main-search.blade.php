@@ -3915,16 +3915,16 @@
     @if($showUserOrderDetailModal && $userSelectedOrder)
         <div class="modal fade show d-block"
             style="background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2500; position: fixed; top: 0; left: 0; width: 100%; height: 100%;">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg order-detail-dialog">
                 <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;" id="print-area-invoice">
-                    <div class="modal-header bg-light border-0 py-3 px-4" style="border-radius: 20px 20px 0 0;">
+                    <div class="modal-header bg-light border-0 py-3 px-3 px-md-4" style="border-radius: 20px 20px 0 0;">
                         <div>
-                            <h5 class="modal-title fw-bold text-dark">Detalle del Pedido #{{ $userSelectedOrder->id }}</h5>
-                            <div class="small text-muted">{{ $userSelectedOrder->created_at->format('d M, Y - H:i') }}</div>
+                            <h5 class="modal-title fw-bold text-dark" style="font-size: clamp(1rem, 4vw, 1.25rem);">Detalle del Pedido #{{ $userSelectedOrder->id }}</h5>
+                            <div class="small text-muted">{{ $userSelectedOrder->created_at->format('d/m/Y - H:i') }}</div>
                         </div>
                         <button type="button" class="btn-close shadow-none" wire:click="closeUserOrderDetail"></button>
                     </div>
-                    <div class="modal-body p-4">
+                    <div class="modal-body p-3 p-md-4">
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <h6 class="fw-bold text-dark mb-3"><i
@@ -3988,7 +3988,7 @@
 
                         <h6 class="fw-bold text-dark mb-3"><i class="fas fa-box-open me-2 text-primary"></i>Productos</h6>
                         <div class="table-responsive">
-                            <table class="table table-borderless align-middle">
+                            <table class="table table-borderless align-middle order-products-table">
                                 <thead class="bg-light">
                                     <tr>
                                         <th class="small text-muted fw-bold">Producto</th>
@@ -4038,9 +4038,9 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="text-center text-dark">{{ $item->cantidad }}</td>
-                                            <td class="text-end text-dark" style="white-space:nowrap;">S/ {{ number_format($item->precio_unitario, 2) }}</td>
-                                            <td class="text-end fw-bold text-dark" style="white-space:nowrap;">S/ {{ number_format($item->subtotal, 2) }}</td>
+                                            <td class="text-center text-dark" data-label="Cant">{{ $item->cantidad }}</td>
+                                            <td class="text-end text-dark" data-label="Precio" style="white-space:nowrap;">S/ {{ number_format($item->precio_unitario, 2) }}</td>
+                                            <td class="text-end fw-bold text-dark" data-label="Subtotal" style="white-space:nowrap;">S/ {{ number_format($item->subtotal, 2) }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -4075,7 +4075,8 @@
                             </table>
                         </div>
                     </div>
-                    <div class="modal-footer border-0 px-4 pb-4 pt-2 d-flex align-items-center gap-2 flex-wrap">
+                    {{-- ===== FOOTER DESKTOP (md+) ===== --}}
+                    <div class="modal-footer border-0 px-4 pb-4 pt-2 d-none d-md-flex align-items-center gap-2 flex-wrap">
 
                         {{-- Botón Principal CTA: Seguimiento --}}
                         <button type="button"
@@ -4130,47 +4131,125 @@
                         </button>
 
                     </div>
+
+                    {{-- ===== FOOTER MÓVIL (< md) ===== --}}
+                    <div class="modal-footer border-0 px-3 pb-4 pt-2 d-flex d-md-none flex-column gap-2">
+
+                        {{-- Seguimiento: full-width, negro --}}
+                        <button type="button"
+                            class="btn fw-semibold w-100 py-2"
+                            style="background:#0f172a; color:#fff; border:none; border-radius:12px; font-size:1rem;"
+                            wire:click="openOrderTracking({{ $userSelectedOrder->id }})">
+                            🚚 Ver Seguimiento
+                        </button>
+
+                        {{-- Comprobante SUNAT: full-width, outline azul --}}
+                        @if($userSelectedOrder->isPaid() && floatval($userSelectedOrder->total) > 0)
+                            @if(!empty($userSelectedOrder->invoice_url) && $userSelectedOrder->invoice_url !== '#')
+                                <a href="{{ $userSelectedOrder->invoice_url }}" target="_blank"
+                                    class="btn fw-semibold w-100 py-2"
+                                    style="border:1.5px solid #2563eb; color:#2563eb; background:transparent; border-radius:12px; font-size:0.95rem;">
+                                    📄 Ver PDF SUNAT (Con QR)
+                                </a>
+                            @else
+                                <button type="button"
+                                    class="btn fw-semibold w-100 py-2"
+                                    style="border:1.5px solid #2563eb; color:#2563eb; background:transparent; border-radius:12px; font-size:0.95rem;"
+                                    wire:click="downloadInvoice({{ $userSelectedOrder->id }})">
+                                    <i class="fas fa-spinner fa-spin me-1" wire:loading wire:target="downloadInvoice"></i>
+                                    <span wire:loading.remove wire:target="downloadInvoice">📄</span>
+                                    Generar Comprobante SUNAT
+                                </button>
+                            @endif
+                        @else
+                            <span class="d-flex justify-content-center align-items-center text-muted small bg-light py-2 w-100" style="border-radius:12px; border:1px solid #e2e8f0;">
+                                <i class="fas fa-lock me-2 text-warning"></i>
+                                Comprobante disponible al confirmar el pago
+                            </span>
+                        @endif
+
+                        {{-- Fila: Reportar + Cerrar en 2 columnas --}}
+                        <div class="d-flex gap-2 w-100">
+                            <button type="button"
+                                class="btn fw-semibold flex-fill py-2"
+                                style="border:1.5px solid #fca5a5; background:#fef2f2; color:#dc2626; border-radius:12px; font-size:0.9rem;"
+                                wire:click="reportIncident({{ $userSelectedOrder->id }})"
+                                @if($userSelectedOrder->status === 'cancelado') disabled @endif>
+                                ⚠️ Reportar
+                            </button>
+                            <button type="button"
+                                class="btn fw-semibold flex-fill py-2"
+                                style="background:#1f2937; color:#fff; border:none; border-radius:12px; font-size:0.9rem;"
+                                wire:click="closeUserOrderDetail">
+                                Cerrar
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Print-specific styles so only the invoice modal prints beautifully as a real physical invoice sheet -->
+        <!-- Estilos responsive + print para el modal de detalle de pedido -->
         <style>
+            /* ── Responsive: tabla de productos en móvil ── */
+            @media (max-width: 575.98px) {
+                .order-detail-dialog {
+                    margin: 0 !important;
+                    max-width: 100% !important;
+                    height: 100% !important;
+                }
+                .order-detail-dialog .modal-content {
+                    border-radius: 0 !important;
+                    height: 100% !important;
+                }
+                /* Ocultar cabecera de tabla y mostrar como tarjetas */
+                .order-products-table thead {
+                    display: none;
+                }
+                .order-products-table tbody tr {
+                    display: block;
+                    background: #f8fafc;
+                    border-radius: 12px;
+                    margin-bottom: 10px;
+                    padding: 10px 12px;
+                    border: 1px solid #e2e8f0;
+                }
+                .order-products-table tbody td {
+                    display: block;
+                    text-align: left !important;
+                    padding: 2px 0;
+                    border: none;
+                }
+                /* Celda de imagen: ocupa ancho completo arriba */
+                .order-products-table tbody td:first-child {
+                    margin-bottom: 6px;
+                }
+                /* Precio unitario: inline label */
+                .order-products-table tbody td[data-label]::before {
+                    content: attr(data-label) ": ";
+                    font-weight: 600;
+                    color: #64748b;
+                    font-size: 0.8rem;
+                }
+            }
+
+            /* ── Print ── */
             @media print {
-                body * {
-                    visibility: hidden;
-                }
-
+                body * { visibility: hidden; }
                 #print-area-invoice,
-                #print-area-invoice * {
-                    visibility: visible;
-                }
-
+                #print-area-invoice * { visibility: visible; }
                 #print-area-invoice {
                     position: absolute;
-                    left: 0;
-                    top: 0;
+                    left: 0; top: 0;
                     width: 100%;
                     background: #fff !important;
                     color: #000 !important;
                     padding: 20px !important;
                 }
-
-                .modal-footer,
-                .btn-close {
-                    display: none !important;
-                }
-
-                .modal-dialog {
-                    max-width: 100% !important;
-                    margin: 0 !important;
-                }
-
-                .modal-content {
-                    border: none !important;
-                    box-shadow: none !important;
-                }
-
+                .modal-footer, .btn-close { display: none !important; }
+                .modal-dialog { max-width: 100% !important; margin: 0 !important; }
+                .modal-content { border: none !important; box-shadow: none !important; }
                 .bg-light {
                     background-color: #f8f9fa !important;
                     -webkit-print-color-adjust: exact;
