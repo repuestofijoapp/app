@@ -3993,137 +3993,142 @@
                                     <tr>
                                         <th class="small text-muted fw-bold">Producto</th>
                                         <th class="small text-muted fw-bold text-center">Cant.</th>
-                                        <th class="small text-muted fw-bold text-end">Precio</th>
+                                        <th class="small text-muted fw-bold text-end">Precio Unitario</th>
                                         <th class="small text-muted fw-bold text-end">Subtotal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($userSelectedOrder->items as $item)
+                                        @php
+                                            $itemThumb = null;
+                                            if ($item->product && !empty($item->product->image_path)) {
+                                                $itemThumb = asset('storage/' . $item->product->image_path);
+                                            }
+                                            $itemOversize = $item->oversize;
+                                            if (empty($itemOversize) && $item->product) {
+                                                $itemOversize = $item->product->oversize;
+                                            }
+                                        @endphp
                                         <tr class="border-bottom border-light">
                                             <td>
-                                                <div>
-                                                    <div class="fw-bold small" style="color:#1d4ed8; margin-bottom: 2px;">
-                                                        {{ $item->product ? ($item->product->supplier_code ?? $item->product->oem_code) : 'N/A' }}
-                                                        @php
-                                                            $itemOversize = $item->oversize;
-                                                            if (empty($itemOversize) && $item->product) {
-                                                                $itemOversize = $item->product->oversize; // Fallback to base product oversize just in case
-                                                            }
-                                                        @endphp
-                                                        @if(!empty($itemOversize) && $itemOversize !== 'STD')
-                                                            <span style="color:#1d4ed8;">+{{ $itemOversize }}</span>
-                                                        @elseif(($itemOversize ?? '') === 'STD')
-                                                            <span style="color:#1d4ed8;">STD</span>
-                                                        @endif
-                                                    </div>
-                                                    <div class="text-muted" style="font-size:0.85rem; line-height: 1.3;">
-                                                        {{ $item->product ? $item->product->name : 'Producto #' . $item->product_id }}
+                                                <div class="d-flex align-items-center gap-3">
+                                                    {{-- Miniatura del producto --}}
+                                                    @if($itemThumb)
+                                                        <img src="{{ $itemThumb }}" alt="Imagen"
+                                                            style="width:52px; height:52px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0; flex-shrink:0;">
+                                                    @else
+                                                        <div class="d-flex align-items-center justify-content-center"
+                                                            style="width:52px; height:52px; border-radius:8px; border:1px solid #e2e8f0; background:#f1f5f9; flex-shrink:0;">
+                                                            <i class="fas fa-cog text-muted" style="font-size:1.2rem;"></i>
+                                                        </div>
+                                                    @endif
+                                                    {{-- SKU y nombre --}}
+                                                    <div>
+                                                        <div class="fw-bold small" style="color:#1d4ed8; margin-bottom:2px;">
+                                                            {{ $item->product ? ($item->product->supplier_code ?? $item->product->oem_code) : 'N/A' }}
+                                                            @if(!empty($itemOversize) && $itemOversize !== 'STD')
+                                                                <span style="color:#1d4ed8;">+{{ $itemOversize }}</span>
+                                                            @elseif(($itemOversize ?? '') === 'STD')
+                                                                <span style="color:#1d4ed8;">STD</span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="text-muted" style="font-size:0.83rem; line-height:1.3;">
+                                                            {{ $item->product ? $item->product->name : 'Producto #' . $item->product_id }}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="text-center text-dark">{{ $item->cantidad }}</td>
-                                            <td class="text-end text-dark">S/ {{ number_format($item->precio_unitario, 2) }}
-                                            </td>
-                                            <td class="text-end fw-bold text-dark">S/ {{ number_format($item->subtotal, 2) }}
-                                            </td>
+                                            <td class="text-end text-dark" style="white-space:nowrap;">S/ {{ number_format($item->precio_unitario, 2) }}</td>
+                                            <td class="text-end fw-bold text-dark" style="white-space:nowrap;">S/ {{ number_format($item->subtotal, 2) }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="3" class="text-end text-muted pt-3" style="font-size: 0.9rem;">Subtotal
-                                            productos:</td>
-                                        <td class="text-end text-dark pt-3" style="font-size: 0.9rem; font-weight: 500;">S/
-                                            {{ number_format($userSelectedOrder->subtotal, 2) }}
+                                        <td colspan="3" class="text-end text-muted pt-3" style="font-size:0.9rem;">Subtotal productos:</td>
+                                        <td class="text-end text-dark pt-3" style="font-size:0.9rem; font-weight:500; white-space:nowrap;">S/ {{ number_format($userSelectedOrder->subtotal, 2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-end text-muted py-1" style="font-size:0.9rem;">Comisión de servicio:</td>
+                                        <td class="text-end py-1" style="font-size:0.9rem; white-space:nowrap;">
+                                            <span class="text-success fw-bold">Gratis (S/ 0.00)</span>
+                                            <span class="d-block text-success" style="font-size:0.72rem; font-weight:400; margin-top:1px;">No cobramos comisión por ahora</span>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3" class="text-end text-muted py-1" style="font-size: 0.9rem;">Comisión
-                                            de servicio:</td>
-                                        <td class="text-end py-1" style="font-size: 0.9rem; font-weight: 500;">
-                                            <span class="text-muted"
-                                                style="text-decoration: line-through; font-size: 0.8rem; margin-right: 5px;">S/
-                                                15.00</span>
-                                            <span class="text-success fw-bold">S/ 0.00</span>
-                                            <span class="d-block text-success"
-                                                style="font-size: 0.7rem; font-weight: 400; margin-top:-2px;">¡No cobramos
-                                                comisión por ahora!</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3" class="text-end text-muted py-1" style="font-size: 0.9rem;">Costo de
-                                            envío:</td>
-                                        <td class="text-end text-dark py-1" style="font-size: 0.9rem; font-weight: 500;">S/
-                                            {{ number_format($userSelectedOrder->costo_envio, 2) }}
-                                        </td>
+                                        <td colspan="3" class="text-end text-muted py-1" style="font-size:0.9rem;">Costo de envío:</td>
+                                        <td class="text-end text-dark py-1" style="font-size:0.9rem; font-weight:500; white-space:nowrap;">S/ {{ number_format($userSelectedOrder->costo_envio, 2) }}</td>
                                     </tr>
                                     @php
                                         $orderTotal = $userSelectedOrder->total;
-                                        $subtotalGravado = round($orderTotal / 1.18, 2);
-                                        $igvAmount = round($orderTotal - $subtotalGravado, 2);
+                                        $igvAmount = round($orderTotal - round($orderTotal / 1.18, 2), 2);
                                     @endphp
                                     <tr>
-                                        <td colspan="3" class="text-end text-muted py-1" style="font-size: 0.85rem;">Op.
-                                            Gravada (Base):</td>
-                                        <td class="text-end text-dark py-1" style="font-size: 0.85rem;">S/
-                                            {{ number_format($subtotalGravado, 2) }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3" class="text-end text-muted py-1" style="font-size: 0.85rem;">IGV
-                                            (18%):</td>
-                                        <td class="text-end text-dark py-1" style="font-size: 0.85rem;">S/
-                                            {{ number_format($igvAmount, 2) }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3" class="text-end fw-bold pt-2 border-top border-light">Total a pagar:
-                                        </td>
-                                        <td class="text-end fw-bold text-primary pt-2 fs-5 border-top border-light">S/
-                                            {{ number_format($userSelectedOrder->total, 2) }}
+                                        <td colspan="3" class="text-end fw-bold pt-2 border-top border-light">Total a pagar:</td>
+                                        <td class="text-end pt-2 border-top border-light" style="white-space:nowrap;">
+                                            <div class="fw-bold text-dark fs-5">S/ {{ number_format($userSelectedOrder->total, 2) }}</div>
+                                            <div class="text-muted" style="font-size:0.75rem; font-weight:400; margin-top:2px;">(Incluye IGV 18%: S/ {{ number_format($igvAmount, 2) }})</div>
                                         </td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
                     </div>
-                    <div class="modal-footer border-0 p-4 pt-0 d-flex justify-content-between align-items-center">
-                        <div>
-                            @if($userSelectedOrder->isPaid() && floatval($userSelectedOrder->total) > 0)
-                                @if(!empty($userSelectedOrder->invoice_url) && $userSelectedOrder->invoice_url !== '#')
-                                    <a href="{{ $userSelectedOrder->invoice_url }}" target="_blank"
-                                        class="btn btn-success rounded-pill px-4 fw-bold">
-                                        <i class="fas fa-external-link-alt me-2"></i>Ver PDF Oficial SUNAT (Con QR)
-                                    </a>
-                                @else
-                                    <button type="button" class="btn btn-outline-primary rounded-pill px-4 fw-bold"
-                                        wire:click="downloadInvoice({{ $userSelectedOrder->id }})">
-                                        <i class="fas fa-spinner fa-spin me-2" wire:loading wire:target="downloadInvoice"></i>
-                                        <i class="fas fa-file-pdf me-2" wire:loading.remove wire:target="downloadInvoice"></i>
-                                        <span>Generar Comprobante SUNAT (PDF)</span>
-                                    </button>
-                                @endif
+                    <div class="modal-footer border-0 px-4 pb-4 pt-2 d-flex align-items-center gap-2 flex-wrap">
+
+                        {{-- Botón Principal CTA: Seguimiento --}}
+                        <button type="button"
+                            class="btn rounded-pill px-4 py-2 fw-semibold"
+                            style="background:#0f172a; color:#fff; border:none;"
+                            wire:click="openOrderTracking({{ $userSelectedOrder->id }})"
+                            onmouseover="this.style.background='#1e293b'" onmouseout="this.style.background='#0f172a'">
+                            🚚 Seguimiento
+                        </button>
+
+                        {{-- Botón Secundario: Comprobante SUNAT --}}
+                        @if($userSelectedOrder->isPaid() && floatval($userSelectedOrder->total) > 0)
+                            @if(!empty($userSelectedOrder->invoice_url) && $userSelectedOrder->invoice_url !== '#')
+                                <a href="{{ $userSelectedOrder->invoice_url }}" target="_blank"
+                                    class="btn rounded-pill px-3 py-2 fw-semibold"
+                                    style="border:1.5px solid #2563eb; color:#2563eb; background:transparent;">
+                                    📄 Ver PDF Oficial SUNAT (Con QR)
+                                </a>
                             @else
-                                <span class="d-inline-flex align-items-center text-muted small bg-light px-3 py-2 rounded-pill border">
-                                    <i class="fas fa-lock me-2 text-warning"></i>
-                                    Comprobante disponible al confirmar el pago
-                                </span>
+                                <button type="button"
+                                    class="btn rounded-pill px-3 py-2 fw-semibold"
+                                    style="border:1.5px solid #2563eb; color:#2563eb; background:transparent;"
+                                    wire:click="downloadInvoice({{ $userSelectedOrder->id }})">
+                                    <i class="fas fa-spinner fa-spin me-1" wire:loading wire:target="downloadInvoice"></i>
+                                    <span wire:loading.remove wire:target="downloadInvoice">📄</span>
+                                    Generar Comprobante SUNAT (PDF)
+                                </button>
                             @endif
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-outline-dark rounded-pill px-3"
-                                wire:click="openOrderTracking({{ $userSelectedOrder->id }})">
-                                <i class="fas fa-truck me-1"></i> Seguimiento
-                            </button>
-                            <button type="button" class="btn btn-light rounded-pill px-4"
-                                wire:click="closeUserOrderDetail">Cerrar</button>
-                            <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold"
-                                wire:click="reportIncident({{ $userSelectedOrder->id }})"
-                                @if($userSelectedOrder->status === 'cancelado') disabled
-                                style="opacity: 0.5; cursor: not-allowed;" @endif>
-                                <i class="fas fa-exclamation-triangle me-2"></i>Reportar problema
-                            </button>
-                        </div>
+                        @else
+                            <span class="d-inline-flex align-items-center text-muted small bg-light px-3 py-2 rounded-pill border">
+                                <i class="fas fa-lock me-2 text-warning"></i>
+                                Comprobante disponible al confirmar el pago
+                            </span>
+                        @endif
+
+                        {{-- Botón Reportar problema: rojo suave --}}
+                        <button type="button"
+                            class="btn rounded-pill px-3 py-2 fw-semibold"
+                            style="border:1.5px solid #fca5a5; background:#fef2f2; color:#dc2626;"
+                            wire:click="reportIncident({{ $userSelectedOrder->id }})"
+                            @if($userSelectedOrder->status === 'cancelado') disabled @endif>
+                            ⚠️ Reportar problema
+                        </button>
+
+                        {{-- Botón Cerrar: pastilla oscura a la derecha --}}
+                        <button type="button"
+                            class="btn rounded-pill px-4 py-2 fw-semibold ms-auto"
+                            style="background:#1f2937; color:#fff; border:none;"
+                            wire:click="closeUserOrderDetail"
+                            onmouseover="this.style.background='#374151'" onmouseout="this.style.background='#1f2937'">
+                            Cerrar
+                        </button>
+
                     </div>
                 </div>
             </div>
