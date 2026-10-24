@@ -11,8 +11,10 @@
 
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -40,6 +42,7 @@
             --sidebar-mini: 68px;
             --topbar-h: 56px;
             --transition: 0.3s cubic-bezier(.4, 0, .2, 1);
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         *,
@@ -53,7 +56,7 @@
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: 'DM Sans', sans-serif;
+            font-family: var(--font-main);
             overflow-x: hidden;
             background-image:
                 radial-gradient(ellipse at 15% 15%, rgba(59, 130, 246, .08) 0%, transparent 55%),

@@ -4211,95 +4211,139 @@
 
     {{-- USER ORDER TRACKING MODAL --}}
     @if($showTrackingModal && $trackingOrder)
+        @php
+            $recipientName = $trackingOrder->customer?->name ?? 'Cliente';
+            $recipientPhone = $trackingOrder->telefono_contacto ?? $trackingOrder->customer?->phone ?? '+51 987 654 321';
+            
+            // Formato estándar único de fecha y hora: dd/mm/yyyy hh:mm
+            $dtFormat = 'd/m/Y H:i';
+            $step1Time = $trackingOrder->created_at ? $trackingOrder->created_at->format($dtFormat) : now()->format($dtFormat);
+            $step2Time = $trackingOrder->payment_confirmed_at 
+                ? $trackingOrder->payment_confirmed_at->format($dtFormat) 
+                : ($trackingOrder->created_at ? $trackingOrder->created_at->addMinutes(1)->format($dtFormat) : now()->format($dtFormat));
+            $step3Time = $trackingOrder->updated_at ? $trackingOrder->updated_at->format($dtFormat) : now()->addMinutes(5)->format($dtFormat);
+
+            // Estimación de entrega (ej. dom., 25 oct. 2026 – 06:36 a. m.)
+            $estDateObj = $trackingOrder->estimated_delivery 
+                ?: ($trackingOrder->created_at ? $trackingOrder->created_at->addDay() : now()->addDay());
+            $estimatedDeliveryFormatted = $estDateObj->translatedFormat('D, d M. Y – h:i a');
+
+            $st = $trackingOrder->status;
+            // Estado de cada paso
+            $step1Done = true;
+            $step2Done = in_array($st, ['pagado', 'en_preparacion', 'en_camino', 'entregado']);
+            $step3Active = in_array($st, ['pagado', 'en_preparacion']);
+            $step3Done = in_array($st, ['en_camino', 'entregado']);
+            $step4Done = in_array($st, ['en_camino', 'entregado']);
+            $step5Active = ($st === 'en_camino');
+            $step5Done = ($st === 'entregado');
+            $step6Done = ($st === 'entregado');
+        @endphp
+
         <div class="modal fade show d-block"
             style="background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2600; position: fixed; top: 0; left: 0; width: 100%; height: 100%;">
             <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden; background: #fff;">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden; background: #ffffff;">
                     
                     {{-- Modal Header --}}
-                    <div class="modal-header bg-light border-0 py-3 px-4" style="border-radius: 20px 20px 0 0;">
+                    <div class="modal-header border-0 py-3 px-4 d-flex align-items-center justify-content-between" style="background: #ffffff; border-radius: 20px 20px 0 0;">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="rounded-circle bg-danger bg-opacity-10 d-flex align-items-center justify-content-center"
-                                 style="width: 36px; height: 36px;">
-                                <i class="fas fa-truck text-danger"></i>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width: 36px; height: 36px; background: #fee2e2; color: #ef4444; flex-shrink: 0;">
+                                <i class="fas fa-truck" style="font-size: 0.9rem;"></i>
                             </div>
-                            <div>
-                                <h5 class="modal-title fw-bold text-dark mb-0">Seguimiento de Pedido #{{ $trackingOrder->id }}</h5>
-                                <div class="text-muted" style="font-size: 0.78rem;">
-                                    Realizado el {{ $trackingOrder->created_at->format('d M, Y - H:i') }}
-                                </div>
-                            </div>
+                            <h5 class="modal-title fw-bold text-dark mb-0 ms-1" style="font-size: 1.15rem; letter-spacing: -0.2px;">
+                                Seguimiento de Pedido #{{ $trackingOrder->id }} - {{ $recipientName }}
+                            </h5>
                         </div>
                         <button type="button" class="btn-close shadow-none" wire:click="closeOrderTracking"></button>
                     </div>
 
                     {{-- Modal Body --}}
-                    <div class="modal-body p-4">
+                    <div class="modal-body p-4 pt-2">
                         <div class="row g-4">
                             
-                            {{-- Columna Izquierda: Datos de tu paquete --}}
+                            {{-- Columna Izquierda: Datos de tu paquete y Destinatario --}}
                             <div class="col-md-5">
-                                <h6 class="fw-bold text-dark mb-3">Datos de tu paquete</h6>
+                                <h6 class="fw-bold text-dark mb-3" style="font-size: 1rem;">Datos de tu paquete</h6>
                                 
-                                {{-- Card 1: Número de pedido --}}
-                                <div class="card border border-light shadow-none p-3 mb-3" style="background: #f8fafc; border-radius: 12px;">
-                                    <div class="text-muted small mb-1" style="font-size: 0.75rem;">Número de pedido:</div>
-                                    <div class="fw-bold text-dark fs-5"># {{ $trackingOrder->id }}</div>
-                                </div>
-
-                                {{-- Card 2: Origen y Destino --}}
-                                <div class="card border border-light shadow-none p-3 mb-3" style="background: #f8fafc; border-radius: 12px;">
+                                {{-- Tarjeta 1: Origen y Destino (Fondo gris claro plano) --}}
+                                <div class="p-3 mb-3" style="background: #eaedf1; border-radius: 14px;">
+                                    {{-- ORIGEN --}}
                                     <div class="d-flex align-items-start gap-3">
-                                        <div class="d-flex flex-column align-items-center pt-1">
-                                            <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center"
-                                                 style="width: 22px; height: 22px; font-size: 0.65rem;">
-                                                <i class="fas fa-store"></i>
+                                        <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center mt-1"
+                                             style="width: 24px; height: 24px; font-size: 0.7rem; flex-shrink: 0;">
+                                            <i class="fas fa-store"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 0.68rem; letter-spacing: 0.6px; font-weight: 700; color: #64748b; text-transform: uppercase;">
+                                                ORIGEN
                                             </div>
-                                            <div style="width: 2px; height: 38px; background: #cbd5e1; margin: 4px 0;"></div>
-                                            <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center"
-                                                 style="width: 22px; height: 22px; font-size: 0.65rem;">
-                                                <i class="fas fa-map-marker-alt"></i>
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem; line-height: 1.2;">
+                                                Hub RepuestoFijo
+                                            </div>
+                                            <div style="font-size: 0.82rem; color: #64748b;">
+                                                Centro Logístico Lima
                                             </div>
                                         </div>
-                                        <div class="flex-grow-1">
-                                            <div class="mb-3">
-                                                <div class="text-muted" style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600;">Origen</div>
-                                                <div class="fw-bold text-dark small">Hub RepuestoFijo</div>
-                                                <div class="text-muted" style="font-size: 0.75rem;">Centro Logístico Lima</div>
+                                    </div>
+
+                                    {{-- LÍNEA CONECTORA --}}
+                                    <div style="width: 2px; height: 24px; background: #cbd5e1; margin: 4px 0 4px 11px;"></div>
+
+                                    {{-- DESTINO --}}
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center mt-1"
+                                             style="width: 24px; height: 24px; background: #dc2626; color: #fff; font-size: 0.7rem; flex-shrink: 0;">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 0.68rem; letter-spacing: 0.6px; font-weight: 700; color: #64748b; text-transform: uppercase;">
+                                                DESTINO
                                             </div>
-                                            <div>
-                                                <div class="text-muted" style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600;">Destino</div>
-                                                <div class="fw-bold text-dark small">{{ $trackingOrder->direccion ?: 'Dirección del cliente' }}</div>
-                                                <div class="text-muted" style="font-size: 0.75rem;">{{ $trackingOrder->distrito ? $trackingOrder->distrito . ', Lima' : 'Lima, Perú' }}</div>
-                                                @if($trackingOrder->referencia)
-                                                    <div class="text-muted" style="font-size: 0.72rem;">Ref: {{ $trackingOrder->referencia }}</div>
-                                                @endif
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem; line-height: 1.2;">
+                                                {{ $trackingOrder->direccion ?: 'Dirección del cliente' }}
                                             </div>
+                                            <div style="font-size: 0.82rem; color: #64748b;">
+                                                {{ $trackingOrder->distrito ? $trackingOrder->distrito . ', Lima' : 'Lima, Perú' }}
+                                            </div>
+                                            @if($trackingOrder->referencia)
+                                                <div style="font-size: 0.75rem; color: #64748b;" class="mt-1">
+                                                    Ref: {{ $trackingOrder->referencia }}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
 
-                                {{-- Card 3: Estimación de entrega --}}
-                                <div class="card border border-light shadow-none p-3" style="background: #f8fafc; border-radius: 12px;">
-                                    <div class="text-muted small mb-2" style="font-size: 0.75rem;">Estimación de entrega</div>
-                                    <div>
-                                        <span class="badge rounded-pill px-3 py-1 mb-2" 
-                                              style="background: {{ $trackingOrder->status_color }}; color: #fff; font-size: 0.8rem; font-weight: 600;">
-                                            {{ $trackingOrder->status_label }}
-                                        </span>
+                                {{-- Tarjetas 2 y 3: Detalles del Destinatario y Estimación de entrega --}}
+                                <div class="p-3" style="background: #f1f5f9; border-radius: 14px;">
+                                    <div class="fw-bold text-dark mb-3" style="font-size: 1rem;">
+                                        Detalles del Destinatario
                                     </div>
-                                    <div class="text-muted small" style="font-size: 0.8rem;">
-                                        @if($trackingOrder->estimated_delivery)
-                                            {{ $trackingOrder->estimated_delivery->translatedFormat('D, d M Y - h:i a') }}
-                                        @elseif($trackingOrder->created_at)
-                                            {{ $trackingOrder->created_at->addDay()->translatedFormat('D, d M Y - h:i a') }}
-                                        @else
-                                            Próximas 24 a 48 horas
-                                        @endif
+                                    
+                                    <div class="mb-2" style="font-size: 0.95rem;">
+                                        <span class="text-secondary">Recibe:</span> 
+                                        <strong class="text-dark">{{ $recipientName }}</strong>
+                                    </div>
+
+                                    <div class="mb-3" style="font-size: 0.95rem;">
+                                        <span class="text-secondary">Teléfono:</span> 
+                                        <strong class="text-dark">{{ $recipientPhone }}</strong>
+                                    </div>
+
+                                    <hr class="my-3" style="border-color: #cbd5e1; opacity: 0.5;">
+
+                                    {{-- Estimación de entrega (sin badge de pagado) --}}
+                                    <div class="mb-1" style="font-size: 0.88rem; font-weight: 600; color: #1e293b;">
+                                        Estimación de entrega:
+                                    </div>
+                                    <div style="font-size: 0.88rem; color: #334155; font-weight: 500;">
+                                        {{ $estimatedDeliveryFormatted }}
                                     </div>
 
                                     @if($trackingOrder->carrier || $trackingOrder->tracking_number)
-                                        <div class="mt-2 pt-2 border-top border-light">
+                                        <div class="mt-3 pt-2 border-top border-light">
                                             @if($trackingOrder->carrier)
                                                 <div class="small text-muted"><strong class="text-dark">Transporte:</strong> {{ $trackingOrder->carrier }}</div>
                                             @endif
@@ -4316,129 +4360,159 @@
                                 </div>
                             </div>
 
-                            {{-- Columna Derecha: Seguimiento (Timeline) --}}
-                            <div class="col-md-7 ps-md-4 border-start-md border-light">
-                                <h6 class="fw-bold text-dark mb-3">Seguimiento</h6>
+                            {{-- Columna Derecha: Historial de Seguimiento --}}
+                            <div class="col-md-7 ps-md-4">
+                                <h6 class="fw-bold text-dark mb-3" style="font-size: 1rem;">Seguimiento</h6>
 
-                                @php
-                                    $st = $trackingOrder->status;
-                                    $step1Done = true;
-                                    $step2Done = in_array($st, ['pagado', 'en_preparacion', 'en_camino', 'entregado']);
-                                    $step3Done = in_array($st, ['en_preparacion', 'en_camino', 'entregado']);
-                                    $step4Done = in_array($st, ['en_camino', 'entregado']);
-                                    $step5Active = ($st === 'en_camino');
-                                    $step5Done = ($st === 'entregado');
-                                    $step6Done = ($st === 'entregado');
-                                @endphp
-
-                                <div class="tracking-timeline position-relative ps-4 py-2">
-                                    {{-- Línea vertical de fondo --}}
-                                    <div class="position-absolute" 
-                                         style="top: 15px; bottom: 25px; left: 13px; width: 3px; background: #e2e8f0; z-index: 1;"></div>
+                                <div class="tracking-timeline position-relative ps-4 py-1">
 
                                     {{-- Step 1: Pedido recibido --}}
-                                    <div class="d-flex align-items-start gap-3 mb-4 position-relative" style="z-index: 2;">
+                                    <div class="d-flex align-items-start gap-3 position-relative" style="z-index: 2; margin-bottom: 22px;">
                                         <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                                             style="width: 28px; height: 28px; background: #10b981; color: #fff; margin-left: -27px;">
-                                            <i class="fas fa-check" style="font-size: 0.7rem;"></i>
+                                             style="width: 26px; height: 26px; background: #10b981; color: #fff; margin-left: -27px; flex-shrink: 0;">
+                                            <i class="fas fa-check" style="font-size: 0.65rem;"></i>
                                         </div>
                                         <div class="flex-grow-1">
-                                            <div class="fw-bold text-dark" style="font-size: 0.9rem;">Pedido recibido</div>
-                                            <div class="text-muted" style="font-size: 0.78rem;">
-                                                Hemos recibido tu pedido en el sistema.
-                                                <span class="d-block text-secondary">{{ $trackingOrder->created_at->format('d/m/Y H:i') }}</span>
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem; line-height: 1.3;">
+                                                Pedido recibido
+                                            </div>
+                                            <div style="color: #334155; font-size: 0.86rem; line-height: 1.35;">
+                                                Hemos confirmado tu pedido.
+                                                <span class="d-inline text-secondary">({{ $step1Time }})</span>
                                             </div>
                                         </div>
                                     </div>
+                                    {{-- Línea conector 1->2 --}}
+                                    <div class="position-absolute" style="top: 20px; height: 38px; left: 13px; width: 3px; background: #10b981; z-index: 1;"></div>
 
-                                    {{-- Step 2: En punto de recolección / Pago confirmado --}}
-                                    <div class="d-flex align-items-start gap-3 mb-4 position-relative" style="z-index: 2;">
+                                    {{-- Step 2: En punto de recolección --}}
+                                    <div class="d-flex align-items-start gap-3 position-relative" style="z-index: 2; margin-bottom: 22px;">
                                         <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                                             style="width: 28px; height: 28px; background: {{ $step2Done ? '#10b981' : '#cbd5e1' }}; color: #fff; margin-left: -27px;">
-                                            <i class="fas {{ $step2Done ? 'fa-check' : 'fa-circle' }}" style="font-size: {{ $step2Done ? '0.7rem' : '0.45rem' }};"></i>
+                                             style="width: 26px; height: 26px; background: {{ $step2Done ? '#10b981' : '#cbd5e1' }}; color: #fff; margin-left: -27px; flex-shrink: 0;">
+                                            <i class="fas {{ $step2Done ? 'fa-check' : 'fa-circle' }}" style="font-size: {{ $step2Done ? '0.65rem' : '0.4rem' }};"></i>
                                         </div>
                                         <div class="flex-grow-1">
-                                            <div class="fw-bold {{ $step2Done ? 'text-dark' : 'text-muted' }}" style="font-size: 0.9rem;">
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem; line-height: 1.3;">
                                                 En punto de recolección
                                             </div>
-                                            <div class="text-muted" style="font-size: 0.78rem;">
+                                            <div style="color: #334155; font-size: 0.86rem; line-height: 1.35;">
+                                                Tu pedido está listo y verificado.
                                                 @if($step2Done)
-                                                    Pago confirmado y proveedores notificados para preparación.
-                                                    @if($trackingOrder->payment_confirmed_at)
-                                                        <span class="d-block text-secondary">{{ $trackingOrder->payment_confirmed_at->format('d/m/Y H:i') }}</span>
-                                                    @endif
-                                                @else
-                                                    Pendiente de confirmación de pago o stock.
+                                                    <span class="d-inline text-secondary">({{ $step2Time }})</span>
                                                 @endif
                                             </div>
                                         </div>
                                     </div>
+                                    {{-- Línea conector 2->3 --}}
+                                    <div class="position-absolute" style="top: 78px; height: 38px; left: 13px; width: 3px; background: {{ ($step3Done || $step3Active) ? '#10b981' : '#e2e8f0' }}; z-index: 1;"></div>
 
-                                    {{-- Step 3: Recogido de punto de recolección --}}
-                                    <div class="d-flex align-items-start gap-3 mb-4 position-relative" style="z-index: 2;">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                                             style="width: 28px; height: 28px; background: {{ $step3Done ? '#10b981' : '#cbd5e1' }}; color: #fff; margin-left: -27px;">
-                                            <i class="fas {{ $step3Done ? 'fa-check' : 'fa-circle' }}" style="font-size: {{ $step3Done ? '0.7rem' : '0.45rem' }};"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="fw-bold {{ $step3Done ? 'text-dark' : 'text-muted' }}" style="font-size: 0.9rem;">
-                                                Recogido de punto de recolección
+                                    {{-- Step 3: En tránsito --}}
+                                    <div class="d-flex align-items-start gap-3 position-relative" style="z-index: 2; margin-bottom: 22px;">
+                                        @if($step3Done)
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                 style="width: 26px; height: 26px; background: #10b981; color: #fff; margin-left: -27px; flex-shrink: 0;">
+                                                <i class="fas fa-check" style="font-size: 0.65rem;"></i>
                                             </div>
-                                            <div class="text-muted" style="font-size: 0.78rem;">
-                                                {{ $step3Done ? 'Repuestos recogidos y consolidados en almacén central.' : 'En espera de recojo en almacén del proveedor.' }}
+                                        @elseif($step3Active)
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                 style="width: 26px; height: 26px; background: #10b981; color: #fff; margin-left: -27px; flex-shrink: 0;">
+                                                <span class="rounded-circle bg-white" style="width: 8px; height: 8px;"></span>
+                                            </div>
+                                        @else
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                 style="width: 26px; height: 26px; background: #e2e8f0; margin-left: -27px; flex-shrink: 0;">
+                                                <span class="rounded-circle" style="width: 8px; height: 8px; background: #94a3b8;"></span>
+                                            </div>
+                                        @endif
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem; line-height: 1.3;">
+                                                En tránsito
+                                            </div>
+                                            <div style="color: #334155; font-size: 0.86rem; line-height: 1.35;">
+                                                El pedido se encuentra actualmente en camino desde el punto de recolección hacia tu dirección.
+                                                @if($step3Done || $step3Active)
+                                                    <span class="d-inline text-secondary">({{ $step3Time }})</span>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
+                                    {{-- Línea conector 3->4 --}}
+                                    <div class="position-absolute" style="top: 154px; height: 38px; left: 13px; width: 3px; background: {{ $step4Done ? '#10b981' : '#e2e8f0' }}; z-index: 1;"></div>
 
                                     {{-- Step 4: Paquete en punto de entrega --}}
-                                    <div class="d-flex align-items-start gap-3 mb-4 position-relative" style="z-index: 2;">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                                             style="width: 28px; height: 28px; background: {{ $step4Done ? '#10b981' : '#cbd5e1' }}; color: #fff; margin-left: -27px;">
-                                            <i class="fas {{ $step4Done ? 'fa-check' : 'fa-circle' }}" style="font-size: {{ $step4Done ? '0.7rem' : '0.45rem' }};"></i>
-                                        </div>
+                                    <div class="d-flex align-items-start gap-3 position-relative" style="z-index: 2; margin-bottom: 22px;">
+                                        @if($step4Done)
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                 style="width: 26px; height: 26px; background: #10b981; color: #fff; margin-left: -27px; flex-shrink: 0;">
+                                                <i class="fas fa-check" style="font-size: 0.65rem;"></i>
+                                            </div>
+                                        @else
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                 style="width: 26px; height: 26px; background: #e2e8f0; margin-left: -27px; flex-shrink: 0;">
+                                                <span class="rounded-circle" style="width: 8px; height: 8px; background: #94a3b8;"></span>
+                                            </div>
+                                        @endif
                                         <div class="flex-grow-1">
-                                            <div class="fw-bold {{ $step4Done ? 'text-dark' : 'text-muted' }}" style="font-size: 0.9rem;">
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem; line-height: 1.3;">
                                                 Paquete en punto de entrega
                                             </div>
-                                            <div class="text-muted" style="font-size: 0.78rem;">
-                                                {{ $step4Done ? 'Paquete verificado y asignado al repartidor.' : 'Clasificación logística en curso.' }}
+                                            <div style="color: #475569; font-size: 0.86rem; line-height: 1.35;">
+                                                Clasificación logística en curso.
                                             </div>
                                         </div>
                                     </div>
+                                    {{-- Línea conector 4->5 --}}
+                                    <div class="position-absolute" style="top: 228px; height: 38px; left: 13px; width: 3px; background: {{ $step5Done ? '#10b981' : '#e2e8f0' }}; z-index: 1;"></div>
 
                                     {{-- Step 5: En camino a ser entregado --}}
-                                    <div class="d-flex align-items-start gap-3 mb-4 position-relative" style="z-index: 2;">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                                             style="width: 28px; height: 28px; background: {{ $step5Done ? '#10b981' : ($step5Active ? '#3b82f6' : '#cbd5e1') }}; color: #fff; margin-left: -27px;">
-                                            <i class="fas {{ $step5Done ? 'fa-check' : ($step5Active ? 'fa-motorcycle' : 'fa-circle') }}" 
-                                               style="font-size: {{ $step5Done ? '0.7rem' : ($step5Active ? '0.8rem' : '0.45rem') }};"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="fw-bold {{ ($step5Done || $step5Active) ? 'text-dark' : 'text-muted' }}" style="font-size: 0.9rem;">
-                                                En camino a ser entregado
-                                                @if($step5Active)
-                                                    <span class="badge bg-primary rounded-pill ms-2 px-2" style="font-size: 0.65rem;">¡En ruta!</span>
-                                                @endif
+                                    <div class="d-flex align-items-start gap-3 position-relative" style="z-index: 2; margin-bottom: 22px;">
+                                        @if($step5Done)
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                 style="width: 26px; height: 26px; background: #10b981; color: #fff; margin-left: -27px; flex-shrink: 0;">
+                                                <i class="fas fa-check" style="font-size: 0.65rem;"></i>
                                             </div>
-                                            <div class="text-muted" style="font-size: 0.78rem;">
-                                                {{ $step5Active ? 'El motorizado está en camino a tu dirección.' : ($step5Done ? 'Completado.' : 'El repartidor saldrá una vez listo el paquete.') }}
+                                        @elseif($step5Active)
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                 style="width: 26px; height: 26px; background: #10b981; color: #fff; margin-left: -27px; flex-shrink: 0;">
+                                                <span class="rounded-circle bg-white" style="width: 8px; height: 8px;"></span>
+                                            </div>
+                                        @else
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                 style="width: 26px; height: 26px; background: #e2e8f0; margin-left: -27px; flex-shrink: 0;">
+                                                <span class="rounded-circle" style="width: 8px; height: 8px; background: #94a3b8;"></span>
+                                            </div>
+                                        @endif
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem; line-height: 1.3;">
+                                                En camino a ser entregado
+                                            </div>
+                                            <div style="color: #475569; font-size: 0.86rem; line-height: 1.35;">
+                                                El repartidor está en ruta con tu paquete.
                                             </div>
                                         </div>
                                     </div>
+                                    {{-- Línea conector 5->6 --}}
+                                    <div class="position-absolute" style="top: 300px; height: 38px; left: 13px; width: 3px; background: {{ $step6Done ? '#10b981' : '#e2e8f0' }}; z-index: 1;"></div>
 
                                     {{-- Step 6: Entregado --}}
                                     <div class="d-flex align-items-start gap-3 position-relative" style="z-index: 2;">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                                             style="width: 28px; height: 28px; background: {{ $step6Done ? '#10b981' : '#cbd5e1' }}; color: #fff; margin-left: -27px;">
-                                            <i class="fas {{ $step6Done ? 'fa-check-double' : 'fa-circle' }}" 
-                                               style="font-size: {{ $step6Done ? '0.75rem' : '0.45rem' }};"></i>
-                                        </div>
+                                        @if($step6Done)
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                 style="width: 26px; height: 26px; background: #10b981; color: #fff; margin-left: -27px; flex-shrink: 0;">
+                                                <i class="fas fa-check" style="font-size: 0.65rem;"></i>
+                                            </div>
+                                        @else
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                 style="width: 26px; height: 26px; background: #e2e8f0; margin-left: -27px; flex-shrink: 0;">
+                                                <span class="rounded-circle" style="width: 8px; height: 8px; background: #94a3b8;"></span>
+                                            </div>
+                                        @endif
                                         <div class="flex-grow-1">
-                                            <div class="fw-bold {{ $step6Done ? 'text-success' : 'text-muted' }}" style="font-size: 0.9rem;">
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem; line-height: 1.3;">
                                                 Entregado
                                             </div>
-                                            <div class="text-muted" style="font-size: 0.78rem;">
-                                                {{ $step6Done ? '¡Pedido entregado con éxito!' : 'Se marcará como entregado al recibir los repuestos.' }}
+                                            <div style="color: #475569; font-size: 0.86rem; line-height: 1.35;">
+                                                Se confirmará al recibir los repuestos.
                                             </div>
                                         </div>
                                     </div>
@@ -4448,13 +4522,9 @@
                         </div>
                     </div>
 
-                    {{-- Modal Footer --}}
-                    <div class="modal-footer border-0 p-3 px-4 bg-light d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-outline-dark rounded-pill px-4 btn-sm"
-                                wire:click="viewUserOrderDetail({{ $trackingOrder->id }})">
-                            <i class="fas fa-file-invoice me-1"></i> Ver detalles del pedido
-                        </button>
-                        <button type="button" class="btn btn-dark rounded-pill px-4 btn-sm"
+                    {{-- Modal Footer: Botón Cerrar en el extremo derecho --}}
+                    <div class="modal-footer border-0 p-3 px-4 bg-white d-flex justify-content-end">
+                        <button type="button" class="btn btn-dark rounded-pill px-4 py-2 fw-semibold"
                                 wire:click="closeOrderTracking">
                             Cerrar
                         </button>
