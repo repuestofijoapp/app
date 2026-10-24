@@ -3987,8 +3987,9 @@
                         </div>
 
                         <h6 class="fw-bold text-dark mb-3"><i class="fas fa-box-open me-2 text-primary"></i>Productos</h6>
-                        <div class="table-responsive">
-                            <table class="table table-borderless align-middle order-products-table">
+                        {{-- ===== DESKTOP: tabla con imagen + columnas ===== --}}
+                        <div class="table-responsive d-none d-md-block">
+                            <table class="table table-borderless align-middle">
                                 <thead class="bg-light">
                                     <tr>
                                         <th class="small text-muted fw-bold">Producto</th>
@@ -4012,7 +4013,6 @@
                                         <tr class="border-bottom border-light">
                                             <td>
                                                 <div class="d-flex align-items-center gap-3">
-                                                    {{-- Miniatura del producto --}}
                                                     @if($itemThumb)
                                                         <img src="{{ $itemThumb }}" alt="Imagen"
                                                             style="width:52px; height:52px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0; flex-shrink:0;">
@@ -4022,7 +4022,6 @@
                                                             <i class="fas fa-cog text-muted" style="font-size:1.2rem;"></i>
                                                         </div>
                                                     @endif
-                                                    {{-- SKU y nombre --}}
                                                     <div>
                                                         <div class="fw-bold small" style="color:#1d4ed8; margin-bottom:2px;">
                                                             {{ $item->product ? ($item->product->supplier_code ?? $item->product->oem_code) : 'N/A' }}
@@ -4038,9 +4037,9 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="text-center text-dark" data-label="Cant">{{ $item->cantidad }}</td>
-                                            <td class="text-end text-dark" data-label="Precio" style="white-space:nowrap;">S/ {{ number_format($item->precio_unitario, 2) }}</td>
-                                            <td class="text-end fw-bold text-dark" data-label="Subtotal" style="white-space:nowrap;">S/ {{ number_format($item->subtotal, 2) }}</td>
+                                            <td class="text-center text-dark">{{ $item->cantidad }}</td>
+                                            <td class="text-end text-dark" style="white-space:nowrap;">S/ {{ number_format($item->precio_unitario, 2) }}</td>
+                                            <td class="text-end fw-bold text-dark" style="white-space:nowrap;">S/ {{ number_format($item->subtotal, 2) }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -4074,7 +4073,88 @@
                                 </tfoot>
                             </table>
                         </div>
-                    </div>
+
+                        {{-- ===== MÓVIL: tarjetas de producto ===== --}}
+                        <div class="d-md-none">
+                            @foreach($userSelectedOrder->items as $item)
+                                @php
+                                    $itemThumbMob = null;
+                                    if ($item->product && !empty($item->product->image_path)) {
+                                        $itemThumbMob = asset('storage/' . $item->product->image_path);
+                                    }
+                                    $itemOvMob = $item->oversize;
+                                    if (empty($itemOvMob) && $item->product) {
+                                        $itemOvMob = $item->product->oversize;
+                                    }
+                                @endphp
+                                <div class="d-flex gap-3 p-3 mb-2" style="background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
+                                    {{-- Imagen 68x68 --}}
+                                    <div style="flex-shrink:0;">
+                                        @if($itemThumbMob)
+                                            <img src="{{ $itemThumbMob }}" alt="Producto"
+                                                style="width:68px; height:68px; object-fit:cover; border-radius:10px; border:1px solid #e2e8f0;">
+                                        @else
+                                            <div class="d-flex align-items-center justify-content-center"
+                                                style="width:68px; height:68px; border-radius:10px; border:1px solid #e2e8f0; background:#f1f5f9;">
+                                                <i class="fas fa-cog text-muted" style="font-size:1.4rem;"></i>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    {{-- Info: SKU, nombre, fila cant/precio/subtotal --}}
+                                    <div style="flex:1; min-width:0;">
+                                        <div class="fw-bold" style="color:#1d4ed8; font-size:0.82rem; margin-bottom:2px;">
+                                            {{ $item->product ? ($item->product->supplier_code ?? $item->product->oem_code) : 'N/A' }}
+                                            @if(!empty($itemOvMob) && $itemOvMob !== 'STD')
+                                                <span>+{{ $itemOvMob }}</span>
+                                            @elseif(($itemOvMob ?? '') === 'STD')
+                                                <span>STD</span>
+                                            @endif
+                                        </div>
+                                        <div style="font-size:0.88rem; color:#1e293b; font-weight:500; line-height:1.3;">
+                                            {{ $item->product ? $item->product->name : 'Producto #' . $item->product_id }}
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2"
+                                            style="border-top:1px solid #e2e8f0;">
+                                            <span class="text-muted" style="font-size:0.79rem;">Cant: <strong class="text-dark">{{ $item->cantidad }}</strong></span>
+                                            <span class="text-muted" style="font-size:0.79rem;">S/ {{ number_format($item->precio_unitario, 2) }}/u</span>
+                                            <strong style="font-size:0.9rem; color:#0f172a;">S/ {{ number_format($item->subtotal, 2) }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+
+                            {{-- Resumen de costos en móvil --}}
+                            @php
+                                $totalMob = $userSelectedOrder->total;
+                                $igvMob   = round($totalMob - round($totalMob / 1.18, 2), 2);
+                            @endphp
+                            <div class="rounded-3 p-3 mt-1" style="background:#f8fafc; border:1px solid #e2e8f0;">
+                                <div class="d-flex justify-content-between py-1" style="font-size:0.86rem; border-bottom:1px solid #e2e8f0;">
+                                    <span class="text-muted">Subtotal productos:</span>
+                                    <span class="fw-medium text-dark">S/ {{ number_format($userSelectedOrder->subtotal, 2) }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-start py-1" style="font-size:0.86rem; border-bottom:1px solid #e2e8f0;">
+                                    <span class="text-muted">Comisión de servicio:</span>
+                                    <div class="text-end">
+                                        <span class="text-success fw-bold">Gratis (S/ 0.00)</span>
+                                        <span class="d-block text-success" style="font-size:0.72rem; line-height:1.2;">No cobramos comisión por ahora</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between py-1" style="font-size:0.86rem; border-bottom:1px solid #e2e8f0;">
+                                    <span class="text-muted">Costo de envío:</span>
+                                    <span class="fw-medium text-dark">S/ {{ number_format($userSelectedOrder->costo_envio, 2) }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-start pt-2 mt-1">
+                                    <span class="fw-bold" style="font-size:0.95rem;">Total a pagar:</span>
+                                    <div class="text-end">
+                                        <div class="fw-bold" style="font-size:1.2rem; color:#0f172a;">S/ {{ number_format($userSelectedOrder->total, 2) }}</div>
+                                        <div class="text-muted" style="font-size:0.72rem;">(Incluye IGV 18%: S/ {{ number_format($igvMob, 2) }})</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>{{-- /modal-body --}}
                     {{-- ===== FOOTER DESKTOP (md+) ===== --}}
                     <div class="modal-footer border-0 px-4 pb-4 pt-2 d-none d-md-flex align-items-center gap-2 flex-wrap">
 
@@ -4192,45 +4272,18 @@
 
         <!-- Estilos responsive + print para el modal de detalle de pedido -->
         <style>
-            /* ── Responsive: tabla de productos en móvil ── */
-            @media (max-width: 575.98px) {
+            /* ── Móvil (< 768px): modal full-width y tarjetas nativas ── */
+            @media (max-width: 767.98px) {
                 .order-detail-dialog {
                     margin: 0 !important;
+                    width: 100% !important;
                     max-width: 100% !important;
                     height: 100% !important;
+                    align-items: flex-end !important;
                 }
                 .order-detail-dialog .modal-content {
-                    border-radius: 0 !important;
-                    height: 100% !important;
-                }
-                /* Ocultar cabecera de tabla y mostrar como tarjetas */
-                .order-products-table thead {
-                    display: none;
-                }
-                .order-products-table tbody tr {
-                    display: block;
-                    background: #f8fafc;
-                    border-radius: 12px;
-                    margin-bottom: 10px;
-                    padding: 10px 12px;
-                    border: 1px solid #e2e8f0;
-                }
-                .order-products-table tbody td {
-                    display: block;
-                    text-align: left !important;
-                    padding: 2px 0;
-                    border: none;
-                }
-                /* Celda de imagen: ocupa ancho completo arriba */
-                .order-products-table tbody td:first-child {
-                    margin-bottom: 6px;
-                }
-                /* Precio unitario: inline label */
-                .order-products-table tbody td[data-label]::before {
-                    content: attr(data-label) ": ";
-                    font-weight: 600;
-                    color: #64748b;
-                    font-size: 0.8rem;
+                    border-radius: 20px 20px 0 0 !important;
+                    max-height: 100dvh;
                 }
             }
 
