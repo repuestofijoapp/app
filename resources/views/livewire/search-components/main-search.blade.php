@@ -4089,7 +4089,7 @@
                     </div>
                     <div class="modal-footer border-0 p-4 pt-0 d-flex justify-content-between align-items-center">
                         <div>
-                            @if($userSelectedOrder->status === 'pagado' && floatval($userSelectedOrder->total) > 0)
+                            @if($userSelectedOrder->isPaid() && floatval($userSelectedOrder->total) > 0)
                                 @if(!empty($userSelectedOrder->invoice_url) && $userSelectedOrder->invoice_url !== '#')
                                     <a href="{{ $userSelectedOrder->invoice_url }}" target="_blank"
                                         class="btn btn-success rounded-pill px-4 fw-bold">

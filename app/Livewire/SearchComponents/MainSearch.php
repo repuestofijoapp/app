@@ -3251,8 +3251,8 @@ class MainSearch extends Component
         $pedido = Pedido::with(['items.product'])->find($orderId);
         if (!$pedido) return;
 
-        // Validación fiscal: Solo pedidos pagados y con monto mayor a cero
-        if ($pedido->status !== 'pagado' || floatval($pedido->total) <= 0) {
+        // Validación fiscal: Solo pedidos pagados o en proceso de entrega con monto mayor a cero
+        if (!$pedido->isPaid() || floatval($pedido->total) <= 0) {
             $this->dispatch('notify', [
                 'type' => 'error',
                 'message' => 'Solo se pueden emitir comprobantes electrónicos de pedidos confirmados y pagados.'

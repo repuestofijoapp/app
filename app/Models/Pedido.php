@@ -68,10 +68,11 @@ class Pedido extends Model
 
     // ── Helpers ──────────────────────────────────────────────────
 
-    /** ¿El pago fue confirmado por Culqi? */
+    /** ¿El pago fue confirmado por Culqi o está en preparación/envío/entregado? */
     public function isPaid(): bool
     {
-        return $this->status === 'pagado' && $this->payment_confirmed_at !== null;
+        return in_array($this->status, ['pagado', 'en_preparacion', 'en_camino', 'entregado'])
+            || $this->payment_confirmed_at !== null;
     }
 
     /** ¿Está esperando respuesta de algún proveedor? */
