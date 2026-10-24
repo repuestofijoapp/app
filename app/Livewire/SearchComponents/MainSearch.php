@@ -580,6 +580,9 @@ class MainSearch extends Component
     public $loginBlockMessage = '';
     public $showUserOrderDetailModal = false;
     public $userSelectedOrder = null;
+    public $confirmedOrder = null;
+    public $showTrackingModal = false;
+    public $trackingOrder = null;
     public $showOrdersDrawer = false;
     public $showPrivacyModal = false;
     public $showIncidentModal = false;
@@ -2686,10 +2689,13 @@ class MainSearch extends Component
             return;
         }
 
-        // Si el pedido ya fue pagado, omitir para evitar cobro duplicado
+        // Si el pedido ya fue pagado, omitir para evitar cobro duplicado y mostrar confirmación
         if ($pedido->status === 'pagado') {
             \Illuminate\Support\Facades\Log::info("Pedido #{$pedido->id} ya se encuentra pagado. Omitiendo cobro duplicado.");
+            $this->confirmedOrder = Pedido::with(['items.product', 'customer'])->find($pedido->id);
+            $this->viewState = 'order_confirmed';
             $this->dispatch('payment-finished');
+            $this->js("window.dispatchEvent(new CustomEvent('payment-finished'));");
             return;
         }
 
@@ -2743,12 +2749,15 @@ class MainSearch extends Component
                 $ws->sendPaymentConfirmation($q->chat_id);
             }
 
-            // 3. Clear state
+            // 3. Set confirmation screen & clear state
+            $pedido->refresh();
+            $this->confirmedOrder = Pedido::with(['items.product', 'customer'])->find($pedido->id);
+
             $this->repairList = [];
             $this->saveCartToDb();
             $this->confirmedOverrides = [];
             $this->isSearching = false;
-            $this->viewState = 'initial';
+            $this->viewState = 'order_confirmed';
             $this->oemSearch = '';
             $this->plateSearch = '';
             $this->vehicle = null;
@@ -3211,6 +3220,30 @@ class MainSearch extends Component
     {
         $this->showUserOrderDetailModal = false;
         $this->userSelectedOrder = null;
+    }
+
+    public function openOrderTracking($orderId = null)
+    {
+        $id = $orderId ?: $this->confirmedOrder?->id;
+        if (!$id && $this->userSelectedOrder) {
+            $id = $this->userSelectedOrder->id;
+        }
+        if ($id) {
+            $this->trackingOrder = Pedido::with(['items.product', 'customer'])->find($id);
+            $this->showTrackingModal = true;
+        }
+    }
+
+    public function closeOrderTracking()
+    {
+        $this->showTrackingModal = false;
+        $this->trackingOrder = null;
+    }
+
+    public function closeOrderConfirmation()
+    {
+        $this->confirmedOrder = null;
+        $this->viewState = 'initial';
     }
 
     public function downloadInvoice($orderId)

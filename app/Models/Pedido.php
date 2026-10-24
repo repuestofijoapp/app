@@ -30,6 +30,10 @@ class Pedido extends Model
         'billing_type',
         'invoice_url',
         'invoice_xml',
+        'carrier',
+        'tracking_number',
+        'tracking_url',
+        'estimated_delivery',
     ];
 
     protected $casts = [
@@ -37,6 +41,7 @@ class Pedido extends Model
         'costo_envio' => 'decimal:2',
         'total' => 'decimal:2',
         'payment_confirmed_at' => 'datetime',
+        'estimated_delivery' => 'datetime',
     ];
 
     // ── Relaciones ──────────────────────────────────────────────
