@@ -108,18 +108,22 @@ class UserManagement extends Component
             if (!empty($this->password)) {
                 $this->editingUser->password = Hash::make($this->password);
             }
+            if (in_array($this->role, ['operario', 'transporte']) && empty($this->editingUser->onboarding_completed_at)) {
+                $this->editingUser->onboarding_completed_at = now();
+            }
             $this->editingUser->save();
             $this->dispatch('notify', ['type' => 'success', 'message' => 'Usuario actualizado correctamente.']);
         } else {
             User::create([
-                'name'          => $this->name,
-                'email'         => $this->email,
-                'password'      => Hash::make($this->password),
-                'phone'         => $this->phone ?: null,
-                'role'          => $this->role,
-                'ruc_dni'       => $this->ruc_dni,
-                'business_name' => $this->business_name,
-                'is_active'     => true,
+                'name'                    => $this->name,
+                'email'                   => $this->email,
+                'password'                => Hash::make($this->password),
+                'phone'                   => $this->phone ?: null,
+                'role'                    => $this->role,
+                'ruc_dni'                 => $this->ruc_dni,
+                'business_name'           => $this->business_name,
+                'is_active'               => true,
+                'onboarding_completed_at' => in_array($this->role, ['operario', 'transporte']) ? now() : null,
             ]);
             $this->dispatch('notify', ['type' => 'success', 'message' => 'Usuario creado correctamente.']);
         }

@@ -19,7 +19,12 @@ class CheckOnboarding
 
         if ($user && 
             !$user->onboarding_completed_at && 
-            !in_array($user->role, [\App\Enums\UserRole::Admin, \App\Enums\UserRole::Manager]) &&
+            !in_array($user->role, [
+                \App\Enums\UserRole::Admin,
+                \App\Enums\UserRole::Manager,
+                \App\Enums\UserRole::Operario,
+                \App\Enums\UserRole::Transporte,
+            ]) &&
             !$request->routeIs('onboarding') && 
             !$request->is('logout') && 
             !$request->ajax() &&
