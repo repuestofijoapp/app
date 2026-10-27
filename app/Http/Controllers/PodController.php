@@ -99,7 +99,9 @@ class PodController extends Controller
             }
         }
 
-        $operadorNombre = trim($request->input('operador_nombre')) ?: (auth()->user()?->name ?? 'Motorizado');
+        $operadorNombre = (auth()->check() && auth()->user()->role === \App\Enums\UserRole::Transporte)
+            ? auth()->user()->name
+            : 'Motorizado';
 
         PedidoHito::create([
             'pedido_id' => $pedido->id,

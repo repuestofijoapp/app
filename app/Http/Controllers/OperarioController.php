@@ -85,13 +85,18 @@ class OperarioController extends Controller
         $lat = $request->filled('lat') ? floatval($request->lat) : null;
         $lng = $request->filled('lng') ? floatval($request->lng) : null;
 
+        // Asignar 'Operario' como responsable (o nombre real solo si tiene rol operario)
+        $operadorNombre = (auth()->check() && auth()->user()->role === \App\Enums\UserRole::Operario)
+            ? auth()->user()->name
+            : 'Operario';
+
         PedidoHito::updateOrCreate(
             ['pedido_id' => $pedido->id, 'tipo_hito' => $request->tipo_hito],
             [
                 'foto_url'         => $fotoUrl,
                 'lat'              => $lat,
                 'lng'              => $lng,
-                'operador_nombre'  => trim($request->operador_nombre),
+                'operador_nombre'  => $operadorNombre,
                 'operador_user_id' => auth()->id(),
                 'observaciones'    => $request->observaciones,
             ]
