@@ -186,5 +186,54 @@ class WhatsAppService
         $msg = "🚫 *Búsqueda Cancelada{$orderStr}*\nEl cliente ha cancelado la búsqueda de este pedido. Ya no es necesario que verifiques el stock. ¡Gracias!";
         return $this->sendMessage($chatId, $msg);
     }
+
+    /**
+     * Notificar al operario interno que hay un nuevo pedido pagado para recoger.
+     */
+    public function sendOperarioNewOrderNotification($phone, $pedidoId, $token, $providerInfo = 'Proveedor La Victoria')
+    {
+        $url = url("/operario/{$token}");
+        $msg = "📦 *¡NUEVO PEDIDO PAGADO! · Orden #{$pedidoId}*\n\n"
+             . "📍 *Recojo:* {$providerInfo}\n"
+             . "⏱️ *Estado:* Listo para recojo inmediato.\n\n"
+             . "Toca aquí para ver los ítems y registrar las fotos de inspección y empaque:\n"
+             . "👉 {$url}";
+        return $this->sendMessage($phone, $msg);
+    }
+
+    /**
+     * Notificar al motorizado de confianza que el paquete está listo en el Hub.
+     */
+    public function sendMotorizadoReadyNotification($phone, $pedidoOrId, $token, $destination = '')
+    {
+        $url = url("/pod/{$token}");
+
+        if ($pedidoOrId instanceof \App\Models\Pedido) {
+            $pedido   = $pedidoOrId;
+            $pedidoId = $pedido->id;
+            $cliente  = $pedido->customer?->name ?? 'Cliente';
+            $dir      = trim(($pedido->distrito ? "{$pedido->distrito}: " : "") . $pedido->direccion);
+            $tel      = $pedido->telefono_contacto ?: ($pedido->customer?->phone ?: 'No especificado');
+            $ref      = $pedido->referencia ? "\n📝 *Instrucciones:* {$pedido->referencia}" : "";
+
+            $msg = "🛵 *¡PAQUETE LISTO EN HUB! · Pedido #{$pedidoId}*\n\n"
+                 . "Acércate al Hub Central a recoger la caja lista para despacho.\n\n"
+                 . "📦 *DATOS DE ENTREGA:*\n"
+                 . "👤 *Destinatario:* {$cliente}\n"
+                 . "📍 *Dirección:* {$dir}\n"
+                 . "📞 *Contacto:* {$tel}{$ref}\n\n"
+                 . "📲 *Enlace de seguimiento y entrega (PoD):*\n"
+                 . "👉 {$url}";
+        } else {
+            $pedidoId = $pedidoOrId;
+            $destStr  = !empty($destination) ? "\n📍 *Destino Cliente:* {$destination}" : "";
+            $msg = "🛵 *¡PAQUETE LISTO EN HUB! · Orden #{$pedidoId}*{$destStr}\n\n"
+                 . "Pasa a recoger la caja embalada en el Hub Central para llevarla a destino.\n\n"
+                 . "Toca aquí para ver los datos del cliente, Waze y registrar la foto de entrega:\n"
+                 . "👉 {$url}";
+        }
+
+        return $this->sendMessage($phone, $msg);
+    }
 }
 

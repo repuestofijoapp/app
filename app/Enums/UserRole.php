@@ -8,6 +8,7 @@ enum UserRole: string
     case Workshop = 'workshop';
     case Store = 'store';
     case Transporte = 'transporte';
+    case Operario = 'operario';
     // 'provider' eliminado — los proveedores son entidades propias (tabla providers, no users)
     // 'pro' eliminado — sin funcionalidad definida aún
 }

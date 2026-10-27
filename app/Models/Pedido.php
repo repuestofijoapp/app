@@ -15,13 +15,19 @@ class Pedido extends Model
         'transporte_id',
         'tipo_envio',
         'distrito',
+        'departamento',
+        'provincia',
+        'ubigeo_code',
         'direccion',
+        'lat',
+        'lng',
         'referencia',
         'telefono_contacto',
         'metodo_pago',
         'culqi_charge_id',
         'payment_confirmed_at',
         'clave_secreta',
+        'delivery_token',
         'subtotal',
         'costo_envio',
         'total',
@@ -40,6 +46,8 @@ class Pedido extends Model
         'subtotal' => 'decimal:2',
         'costo_envio' => 'decimal:2',
         'total' => 'decimal:2',
+        'lat' => 'decimal:7',
+        'lng' => 'decimal:7',
         'payment_confirmed_at' => 'datetime',
         'estimated_delivery' => 'datetime',
     ];
@@ -64,6 +72,11 @@ class Pedido extends Model
     public function zbotQueries()
     {
         return $this->hasMany(ZbotQuery::class);
+    }
+
+    public function hitos()
+    {
+        return $this->hasMany(PedidoHito::class)->orderBy('id', 'asc');
     }
 
     // ── Helpers ──────────────────────────────────────────────────

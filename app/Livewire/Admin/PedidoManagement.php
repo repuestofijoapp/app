@@ -15,6 +15,8 @@ class PedidoManagement extends Component
     public $perPage = 25;
     public $selectedPedido = null;
     public $showDetailModal = false;
+    public $showControlRutaModal = false;
+    public $selectedControlRutaPedido = null;
 
     protected $updatesQueryString = ['search', 'statusFilter'];
 
@@ -33,6 +35,23 @@ class PedidoManagement extends Component
     {
         $this->showDetailModal = false;
         $this->selectedPedido = null;
+    }
+
+    public function openControlRuta($pedidoId)
+    {
+        $this->selectedControlRutaPedido = Pedido::with(['customer', 'items.product', 'hitos'])->find($pedidoId);
+        if ($this->selectedControlRutaPedido && empty($this->selectedControlRutaPedido->delivery_token)) {
+            $this->selectedControlRutaPedido->update([
+                'delivery_token' => \Illuminate\Support\Str::random(40)
+            ]);
+        }
+        $this->showControlRutaModal = true;
+    }
+
+    public function closeControlRuta()
+    {
+        $this->showControlRutaModal = false;
+        $this->selectedControlRutaPedido = null;
     }
 
     public function updateStatus($pedidoId, $newStatus)

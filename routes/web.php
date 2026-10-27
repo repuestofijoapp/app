@@ -201,6 +201,16 @@ Route::middleware(['throttle:10,1'])->post('/libro-de-reclamaciones', function (
     return response()->json(['code' => $code, 'status' => 'ok']);
 })->name('reclamaciones.store');
 
+// ── Vista Operario Interno (token de 1 uso enviado por WhatsApp) ──
+Route::get('/operario/{token}', [\App\Http\Controllers\OperarioController::class, 'show'])->name('operario.show');
+Route::post('/operario/{token}/hito', [\App\Http\Controllers\OperarioController::class, 'storeHito'])->name('operario.hito');
+Route::get('/operario/{token}/etiqueta', [\App\Http\Controllers\OperarioController::class, 'printLabel'])->name('operario.label');
+
+// ── Proof of Delivery (PoD) Web Móvil y Etiquetado Logístico ──
+Route::get('/pod/{token}', [\App\Http\Controllers\PodController::class, 'show'])->name('pod.show');
+Route::post('/pod/{token}/hito', [\App\Http\Controllers\PodController::class, 'storeHito'])->name('pod.store');
+Route::get('/admin/pedidos/{id}/etiqueta-qr', [\App\Http\Controllers\PodController::class, 'printLabel'])->name('pod.label');
+
 // Fallback route para capturar páginas no encontradas manteniendo la sesión y el usuario autenticado
 Route::fallback(function () {
     return response()->view('errors.404', [], 404);

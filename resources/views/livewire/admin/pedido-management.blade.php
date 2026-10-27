@@ -123,6 +123,14 @@
         .btn-green:hover {
             border-color: #10b981;
         }
+
+        .btn-orange {
+            background: rgba(249, 115, 22, 0.45);
+        }
+
+        .btn-orange:hover {
+            border-color: #f97316;
+        }
     </style>
 
     {{-- Header --}}
@@ -288,6 +296,10 @@
                             </td>
                             <td class="text-end">
                                 <div class="d-flex justify-content-end gap-2">
+                                    <button wire:click="openControlRuta({{ $pedido->id }})" class="btn-action btn-orange"
+                                        title="🚚 Control de Ruta">
+                                        <i class="fas fa-truck-moving"></i>
+                                    </button>
                                     <button wire:click="openDetail({{ $pedido->id }})" class="btn-action btn-blue"
                                         title="Ver Detalle">
                                         <i class="fas fa-eye"></i>
@@ -498,6 +510,208 @@
                 @endif
                     </div>
                 </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Control de Ruta / Modal de Auditoría Interna --}}
+    @if($showControlRutaModal && $selectedControlRutaPedido)
+        <div class="modal-overlay" wire:click.self="closeControlRuta">
+            <div class="modal-content-custom" style="max-width: 960px;">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-white border-opacity-10">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 44px; height: 44px; background: rgba(249, 115, 22, 0.2); color: #f97316;">
+                            <i class="fas fa-truck-fast fs-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold text-white mb-0">Control de Ruta & Auditoría PoD #{{ $selectedControlRutaPedido->id }}</h4>
+                            <div class="extra-small opacity-50 text-white">Trazabilidad en tiempo real · 4 hitos operativos</div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="{{ route('pod.label', $selectedControlRutaPedido->id) }}" target="_blank"
+                           class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1 fw-bold" style="font-size: 0.78rem;">
+                            <i class="fas fa-qrcode me-1"></i> Etiqueta QR
+                        </a>
+                        <a href="{{ route('pod.show', $selectedControlRutaPedido->delivery_token) }}" target="_blank"
+                           class="btn btn-sm btn-outline-info rounded-pill px-3 py-1 fw-bold" style="font-size: 0.78rem;">
+                            <i class="fas fa-mobile-alt me-1"></i> Web Móvil PoD
+                        </a>
+                        <button type="button" class="btn btn-link text-white p-0 text-decoration-none ms-2" wire:click="closeControlRuta">
+                            <i class="fas fa-times fs-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Fila superior: Destino pactado & Coordenadas Base --}}
+                <div class="row g-3 mb-4">
+                    <div class="col-md-7">
+                        <div class="info-box h-100">
+                            <div class="text-white extra-small text-uppercase ls-1 mb-2 fw-bold" style="color: #60a5fa !important;">
+                                <i class="fas fa-location-dot me-1"></i> Destino Pactado del Pedido
+                            </div>
+                            <div class="fw-bold fs-6 text-white">{{ $selectedControlRutaPedido->customer?->name ?? 'Cliente' }}</div>
+                            <div class="small opacity-75 mb-1">{{ $selectedControlRutaPedido->distrito }}, {{ $selectedControlRutaPedido->direccion }}</div>
+                            @if($selectedControlRutaPedido->referencia)
+                                <div class="extra-small opacity-50 mb-1">Ref: {{ $selectedControlRutaPedido->referencia }}</div>
+                            @endif
+                            <div class="extra-small text-white-50"><i class="fas fa-phone me-1"></i> {{ $selectedControlRutaPedido->telefono_contacto }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="info-box h-100">
+                            <div class="text-white extra-small text-uppercase ls-1 mb-2 fw-bold" style="color: #34d399 !important;">
+                                <i class="fas fa-satellite me-1"></i> Geocodificación Base (Google Places)
+                            </div>
+                            @if($selectedControlRutaPedido->lat && $selectedControlRutaPedido->lng)
+                                <div class="fw-bold text-white small mb-1">
+                                    Lat: {{ number_format($selectedControlRutaPedido->lat, 5) }} · Lng: {{ number_format($selectedControlRutaPedido->lng, 5) }}
+                                </div>
+                                @if($selectedControlRutaPedido->ubigeo_code)
+                                    <div class="badge bg-success bg-opacity-25 text-success mb-2" style="font-size: 0.7rem;">
+                                        UBIGEO INEI: {{ $selectedControlRutaPedido->ubigeo_code }}
+                                    </div>
+                                @endif
+                                <div>
+                                    <a href="https://maps.google.com/?q={{ $selectedControlRutaPedido->lat }},{{ $selectedControlRutaPedido->lng }}"
+                                       target="_blank" class="btn btn-sm btn-dark text-white border-secondary rounded-pill py-1 px-3" style="font-size: 0.72rem;">
+                                        <i class="fas fa-external-link-alt me-1"></i> Ver en Google Maps
+                                    </a>
+                                </div>
+                            @else
+                                <div class="small text-warning">
+                                    <i class="fas fa-exclamation-triangle me-1"></i> Coordenadas no registradas al crear pedido.
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Los 4 Hitos de Auditoría --}}
+                <div class="mb-2">
+                    <h5 class="text-white fw-bold mb-3" style="font-size: 0.95rem; letter-spacing: 0.3px;">
+                        <i class="fas fa-clipboard-check text-warning me-2"></i> Auditoría de Evidencias de los 4 Hitos
+                    </h5>
+
+                    @php
+                        $auditHitos = $selectedControlRutaPedido->hitos->keyBy('tipo_hito');
+                        $hitosConfig = [
+                            'recojo_proveedor' => [
+                                'titulo' => '1. Recojo en Proveedor',
+                                'sub' => 'Foto inicial del estado del repuesto en el proveedor',
+                                'icon' => 'fa-store',
+                                'color' => '#3b82f6',
+                            ],
+                            'embalaje_hub' => [
+                                'titulo' => '2. Embalaje en Hub Central',
+                                'sub' => 'Empaque con sello distintivo y etiqueta QR generada',
+                                'icon' => 'fa-box-open',
+                                'color' => '#a855f7',
+                            ],
+                            'entrega_motorizado' => [
+                                'titulo' => '3. Entrega a Motorizado',
+                                'sub' => 'Escaneo del QR del paquete y registro de recepción',
+                                'icon' => 'fa-motorcycle',
+                                'color' => '#f97316',
+                            ],
+                            'entrega_cliente' => [
+                                'titulo' => '4. Entrega Final al Cliente',
+                                'sub' => 'Foto en puerta con validación de geocerca GPS',
+                                'icon' => 'fa-house-circle-check',
+                                'color' => '#10b981',
+                            ],
+                        ];
+                    @endphp
+
+                    <div class="row g-3">
+                        @foreach($hitosConfig as $tipo => $cfg)
+                            @php $evidencia = $auditHitos->get($tipo); @endphp
+                            <div class="col-md-6">
+                                <div class="p-3 rounded-4" style="background: var(--surface2); border: 1px solid {{ $evidencia ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)' }};">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="rounded-circle d-flex align-items-center justify-content-center"
+                                                  style="width: 28px; height: 28px; background: {{ $cfg['color'] }}22; color: {{ $cfg['color'] }};">
+                                                <i class="fas {{ $cfg['icon'] }}" style="font-size: 0.8rem;"></i>
+                                            </span>
+                                            <span class="fw-bold text-white small">{{ $cfg['titulo'] }}</span>
+                                        </div>
+                                        @if($evidencia)
+                                            <span class="badge bg-success bg-opacity-25 text-success" style="font-size: 0.68rem;">
+                                                <i class="fas fa-check me-1"></i> VALIDADO
+                                            </span>
+                                        @else
+                                            <span class="badge bg-secondary bg-opacity-25 text-white-50" style="font-size: 0.68rem;">
+                                                PENDIENTE
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    @if($evidencia)
+                                        <div class="d-flex gap-3 align-items-center mt-3">
+                                            @if($evidencia->foto_url)
+                                                <a href="{{ $evidencia->foto_url }}" target="_blank" title="Clic para ampliar foto de evidencia">
+                                                    <img src="{{ $evidencia->foto_url }}" alt="Evidencia"
+                                                         class="rounded-3 border border-white border-opacity-10"
+                                                         style="width: 80px; height: 80px; object-fit: cover; transition: transform .2s;"
+                                                         onmouseover="this.style.transform='scale(1.05)'"
+                                                         onmouseout="this.style.transform='scale(1)'">
+                                                </a>
+                                            @endif
+                                            <div class="flex-grow-1" style="font-size: 0.78rem;">
+                                                <div class="text-white-50 mb-1">
+                                                    <strong class="text-white">Timestamp:</strong> {{ $evidencia->created_at->format('d/m/Y H:i:s') }}
+                                                </div>
+                                                <div class="text-white-50 mb-1">
+                                                    <strong class="text-white">Responsable:</strong> {{ $evidencia->operador_nombre }}
+                                                </div>
+                                                @if($evidencia->lat && $evidencia->lng)
+                                                    <div class="text-white-50 mb-1">
+                                                        <strong class="text-white">GPS:</strong>
+                                                        <a href="https://maps.google.com/?q={{ $evidencia->lat }},{{ $evidencia->lng }}" target="_blank" class="text-info text-decoration-none">
+                                                            {{ number_format($evidencia->lat, 4) }}, {{ number_format($evidencia->lng, 4) }} <i class="fas fa-external-link-alt extra-small"></i>
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                                @if($evidencia->distancia_metros !== null)
+                                                    <div class="mt-1">
+                                                        @if($evidencia->dentro_de_rango)
+                                                            <span class="badge bg-success bg-opacity-25 text-success py-1 px-2" style="font-size: 0.7rem;">
+                                                                <i class="fas fa-shield-check me-1"></i> En rango: {{ round($evidencia->distancia_metros) }}m
+                                                            </span>
+                                                        @else
+                                                            <span class="badge bg-danger bg-opacity-25 text-danger py-1 px-2" style="font-size: 0.7rem;">
+                                                                <i class="fas fa-triangle-exclamation me-1"></i> Alerta: {{ round($evidencia->distancia_metros) }}m fuera de rango
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                                @if($evidencia->observaciones)
+                                                    <div class="text-white-50 extra-small mt-1 fst-italic">
+                                                        "{{ $evidencia->observaciones }}"
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="text-white-50 extra-small py-3 opacity-60">
+                                            {{ $cfg['sub'] }}
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Botón de cierre --}}
+                <div class="mt-4 pt-3 border-top border-white border-opacity-10 text-end">
+                    <button type="button" class="btn btn-secondary px-4 py-2 rounded-pill fw-semibold" style="font-size: 0.85rem;" wire:click="closeControlRuta">
+                        Cerrar Auditoría
+                    </button>
+                </div>
+
             </div>
         </div>
     @endif

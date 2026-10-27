@@ -153,6 +153,99 @@
             position: relative;
         }
 
+        .modal-user-lg {
+            max-width: 820px !important;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            padding: 2.25rem 2.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        .modal-user-lg::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal-user-lg::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .modal-grid-2col {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem 1.5rem;
+        }
+
+        .modal-col-span-2 {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 768px) {
+            .modal-grid-2col {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .modal-col-span-2 {
+                grid-column: span 1;
+            }
+            .modal-user-lg {
+                padding: 1.5rem 1.25rem;
+            }
+        }
+
+        .form-section-divider {
+            grid-column: span 2;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .form-section-divider span {
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+        }
+
+        .form-section-divider::before,
+        .form-section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .password-input-wrap {
+            position: relative;
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .password-toggle-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         .form-input {
             width: 100%;
             background: var(--surface2);
@@ -510,6 +603,8 @@
                                     <span class="role-badge role-manager">Gestor</span>
                                 @elseif($user->isTransporte())
                                     <span class="role-badge" style="background: rgba(147, 51, 234, 0.2); color: #a855f7; border: 1px solid rgba(147, 51, 234, 0.3);">Transporte</span>
+                                @elseif($user->isOperario())
+                                    <span class="role-badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);">Operario Interno</span>
                                 @else
                                     <div class="d-flex flex-column gap-1">
                                         <span class="role-badge role-user">{{ $user->getRoleLabel() }}</span>
@@ -596,67 +691,150 @@
     {{-- Create/Edit Modal --}}
     @if($showModal)
         <div class="modal-overlay">
-            <div class="modal-content-custom">
-                <h2 class="h4 fw-bold mb-6 text-white" style="font-family: 'Syne', sans-serif;">
-                    {{ $editingUser ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}
-                </h2>
+            <div class="modal-content-custom modal-user-lg">
+                {{-- Header with Close button --}}
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h2 class="h4 fw-bold mb-1 text-white" style="font-family: 'Syne', sans-serif;">
+                            {{ $editingUser ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}
+                        </h2>
+                        <p class="text-white-50 small mb-0">
+                            {{ $editingUser ? 'Actualiza los accesos, rol y datos fiscales del usuario.' : 'Completa los datos de acceso, rol y facturación del nuevo usuario.' }}
+                        </p>
+                    </div>
+                    <button type="button" wire:click="closeModal" class="btn p-0 text-white-50 text-hover-white"
+                            style="font-size: 1.75rem; line-height: 1; border: none; background: transparent; cursor: pointer;"
+                            title="Cerrar modal">&times;</button>
+                </div>
 
                 <form wire:submit.prevent="saveUser">
-                    <div class="mb-4">
-                        <label class="form-label">Nombre Completo</label>
-                        <input type="text" wire:model="name" class="form-input" placeholder="Nombre del usuario">
-                        @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label">Correo Electrónico</label>
-                        <input type="email" wire:model="email" class="form-input" placeholder="email@ejemplo.com">
-                        @error('email') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label">{{ $editingUser ? 'Nueva Contraseña (Opcional)' : 'Contraseña' }}</label>
-                        <input type="password" wire:model="password" class="form-input" placeholder="••••••••">
-                        @error('password') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div class="pt-2 border-top border-white border-opacity-5 mt-4 mb-4">
-                        <h6 class="text-white-50 small fw-bold text-uppercase ls-1 mb-3">Datos Fiscales</h6>
-                        
-                        <div class="mb-4">
-                            <label class="form-label">Número de Documento (RUC/DNI)</label>
-                            <input type="text" wire:model="ruc_dni" class="form-input" placeholder="8 o 11 dígitos">
-                            @error('ruc_dni') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <div class="modal-grid-2col">
+                        {{-- 1. Nombre Completo --}}
+                        <div>
+                            <label class="form-label">Nombre Completo <span class="text-danger">*</span></label>
+                            <input type="text" wire:model="name" class="form-input mb-0" placeholder="Nombre y apellidos del usuario">
+                            @error('name') <span class="text-red-500 text-xs d-block mt-1">{{ $message }}</span> @enderror
                         </div>
 
-                        <div class="mb-2">
+                        {{-- 2. Rol del Usuario (Al lado de Nombre para definir el perfil inmediatamente) --}}
+                        <div>
+                            <label class="form-label">Rol del Usuario <span class="text-danger">*</span></label>
+                            <select wire:model="role" class="form-input mb-0" style="cursor: pointer;">
+                                @if(auth()->user()->isAdmin())
+                                    <option value="admin">Administrador</option>
+                                    <option value="manager">Gestor</option>
+                                    <option value="operario">Operario Interno (Almacén)</option>
+                                @endif
+                                <option value="transporte">Motorizado / Transporte</option>
+                                <option value="mechanic">Mecánico Particular</option>
+                                <option value="workshop">Taller Automotriz</option>
+                                <option value="store">Tienda de Repuestos</option>
+                            </select>
+                            @error('role') <span class="text-red-500 text-xs d-block mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- 3. Correo Electrónico --}}
+                        <div>
+                            <label class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
+                            <input type="email" wire:model="email" class="form-input mb-0" placeholder="email@ejemplo.com">
+                            @error('email') <span class="text-red-500 text-xs d-block mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- 4. Celular / WhatsApp --}}
+                        <div>
+                            <label class="form-label">
+                                📱 Celular / WhatsApp
+                                <span style="font-size:0.68rem; color:#94a3b8; font-weight:400; margin-left:4px;">(obligatorio Operario / Motorizado)</span>
+                            </label>
+                            <input type="tel"
+                                   wire:model="phone"
+                                   class="form-input mb-0"
+                                   placeholder="Ej: 51987654321 (con código de país)"
+                                   inputmode="numeric">
+                            @error('phone') <span class="text-red-500 text-xs d-block mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- 5. Contraseña con Ojo para mostrar/ocultar --}}
+                        <div x-data="{ showPass: false }">
+                            <label class="form-label d-flex justify-content-between align-items-center">
+                                <span>
+                                    {{ $editingUser ? 'Nueva Contraseña' : 'Contraseña' }}
+                                    @if(!$editingUser) <span class="text-danger">*</span> @endif
+                                </span>
+                                @if($editingUser)
+                                    <span style="font-size:0.68rem; color:var(--muted); font-weight:400;">(Dejar vacío para mantener)</span>
+                                @endif
+                            </label>
+                            <div class="password-input-wrap">
+                                <input :type="showPass ? 'text' : 'password'"
+                                       wire:model="password"
+                                       class="form-input mb-0"
+                                       placeholder="••••••••"
+                                       style="padding-right: 42px;">
+                                <button type="button"
+                                        @click="showPass = !showPass"
+                                        class="password-toggle-btn"
+                                        :title="showPass ? 'Ocultar contraseña' : 'Ver contraseña'">
+                                    <template x-if="!showPass">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </template>
+                                    <template x-if="showPass">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-red);">
+                                            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                                            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                                            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                                            <line x1="2" x2="22" y1="2" y2="22"/>
+                                        </svg>
+                                    </template>
+                                </button>
+                            </div>
+                            @error('password') <span class="text-red-500 text-xs d-block mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- 6. Tarjeta informativa de ayuda UX --}}
+                        <div class="d-flex align-items-center">
+                            <div style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.12); border-radius: 12px; padding: 0.85rem 1rem; display: flex; align-items: center; gap: 10px; width: 100%;">
+                                <span style="font-size: 1.2rem; flex-shrink: 0;">⚡</span>
+                                <div style="font-size: 0.72rem; color: var(--muted); line-height: 1.4;">
+                                    Los <strong style="color: #fff;">Operarios</strong> y <strong style="color: #fff;">Motorizados</strong> reciben sus hojas de ruta y alertas automáticas mediante el número de WhatsApp registrado.
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Divider: DATOS FISCALES --}}
+                        <div class="form-section-divider">
+                            <span>Datos Fiscales (Opcional)</span>
+                        </div>
+
+                        {{-- 7. RUC/DNI --}}
+                        <div>
+                            <label class="form-label">Número de Documento (RUC / DNI)</label>
+                            <input type="text" wire:model="ruc_dni" class="form-input mb-0" placeholder="8 u 11 dígitos" maxlength="11">
+                            @error('ruc_dni') <span class="text-red-500 text-xs d-block mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- 8. Razón Social --}}
+                        <div>
                             <label class="form-label">Razón Social</label>
-                            <input type="text" wire:model="business_name" class="form-input" placeholder="Nombre legal de la empresa">
-                            @error('business_name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            <input type="text" wire:model="business_name" class="form-input mb-0" placeholder="Nombre legal de la empresa o taller">
+                            @error('business_name') <span class="text-red-500 text-xs d-block mt-1">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
-                    <div class="mb-8">
-                        <label class="form-label">Rol del Usuario</label>
-                        <select wire:model="role" class="form-input">
-                            @if(auth()->user()->isAdmin())
-                                <option value="admin">Administrador</option>
-                                <option value="manager">Gestor</option>
-                            @endif
-                            <option value="mechanic">Mecánico Particular</option>
-                            <option value="workshop">Taller Automotriz</option>
-                            <option value="store">Tienda de Repuestos</option>
-                            <option value="transporte">Transporte</option>
-                        </select>
-                        @error('role') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center gap-3">
+                    {{-- Actions --}}
+                    <div class="d-flex justify-content-end align-items-center gap-3 mt-4 pt-3 border-top border-white border-opacity-10">
                         <button type="button" wire:click="closeModal"
-                            class="btn btn-outline-secondary flex-1 rounded-xl w-50"
-                            style="height: 50px; border-radius: 12px; font-weight: 700; color: #fff; border: 1px solid var(--border);">Cancelar</button>
-                        <button type="submit" class="btn-add flex-1 w-50"
-                            style="height: 50px;">{{ $editingUser ? 'Guardar Cambios' : 'Crear Usuario' }}</button>
+                            class="btn btn-outline-secondary"
+                            style="height: 46px; padding: 0 1.5rem; border-radius: 12px; font-weight: 700; color: #fff; border: 1px solid var(--border);">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-add"
+                            style="height: 46px; padding: 0 2rem;">
+                            {{ $editingUser ? 'Guardar Cambios' : 'Crear Usuario' }}
+                        </button>
                     </div>
                 </form>
             </div>

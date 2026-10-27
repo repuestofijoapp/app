@@ -13,7 +13,9 @@ use App\Models\Pedido;
 use App\Models\PedidoItem;
 use App\Models\ZbotQuery;
 use App\Services\WhatsAppService;
+use App\Services\UbigeoService;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -640,8 +642,18 @@ class MainSearch extends Component
     // ── Delivery Address Modal ──────────────────────────────────────────
     public $showDeliveryModal = false;
     public $deliveryType = 'lima';        // 'lima' | 'province'
-    public $deliveryAddress = '';         // calle / referencia (Lima)
-    public $deliveryDistrict = '';        // distrito (Lima)
+    public $deliveryAddress = '';         // calle / referencia (capturada de Google Places o escrita)
+    public $deliveryNotes = '';           // Nota de entrega / Instrucciones para el motorizado
+    public $deliveryDistrict = '';        // distrito
+    public $deliveryDepartmentCode = '15';// Código INEI Departamento (15 = Lima)
+    public $deliveryProvinceCode = '1501';// Código INEI Provincia (1501 = Lima)
+    public $deliveryDistrictCode = '';    // Código INEI Distrito (ej. 150134)
+    public $deliveryDepartment = 'LIMA';
+    public $deliveryProvince = 'LIMA';
+    public $deliveryUbigeo = '';          // Código oficial de 6 dígitos
+    public $deliveryLat = null;           // Latitud geográfica capturada automáticamente
+    public $deliveryLng = null;           // Longitud geográfica capturada automáticamente
+    public $deliveryPlaceSelected = false;// Booleano que confirma selección por Google Places
     public $deliveryAgency = '';          // agencia (provincia)
     public $deliveryCity = '';            // ciudad destino (provincia)
     public $estimatedDeliveryCost = 0;
@@ -2120,6 +2132,105 @@ class MainSearch extends Component
         }
     }
 
+    public function getDepartamentosProperty(): array
+    {
+        return UbigeoService::getDepartamentos();
+    }
+
+    public function getProvinciasProperty(): array
+    {
+        if (empty($this->deliveryDepartmentCode)) return [];
+        return UbigeoService::getProvincias($this->deliveryDepartmentCode);
+    }
+
+    public function getDistritosProperty(): array
+    {
+        if (empty($this->deliveryProvinceCode)) return [];
+        return UbigeoService::getDistritos($this->deliveryProvinceCode);
+    }
+
+    public function updatedDeliveryDepartmentCode($value)
+    {
+        $deps = UbigeoService::getDepartamentos();
+        $this->deliveryDepartment = $deps[$value] ?? 'LIMA';
+        $provs = UbigeoService::getProvincias($value);
+        $this->deliveryProvinceCode = array_key_first($provs) ?? '';
+        $this->deliveryProvince = $provs[$this->deliveryProvinceCode] ?? '';
+        $this->deliveryDistrictCode = '';
+        $this->deliveryDistrict = '';
+        $this->deliveryUbigeo = '';
+    }
+
+    public function updatedDeliveryProvinceCode($value)
+    {
+        $provs = UbigeoService::getProvincias($this->deliveryDepartmentCode);
+        $this->deliveryProvince = $provs[$value] ?? '';
+        $this->deliveryDistrictCode = '';
+        $this->deliveryDistrict = '';
+        $this->deliveryUbigeo = '';
+    }
+
+    public function updatedDeliveryDistrictCode($value)
+    {
+        $dists = UbigeoService::getDistritos($this->deliveryProvinceCode);
+        $this->deliveryDistrict = $dists[$value] ?? '';
+        $this->deliveryUbigeo = $value;
+        $this->estimatedDeliveryCost = $this->costForDistrict($this->deliveryDistrict);
+    }
+
+    /**
+     * Callback invocado desde el frontend cuando el cliente selecciona una dirección sugerida por Google Places API.
+     */
+    public function setPlaceDetails($formattedAddress, $lat, $lng, $detectedDistrict = '', $detectedDepartment = 'LIMA', $detectedProvince = 'LIMA'): void
+    {
+        $this->deliveryAddress = $formattedAddress;
+        $this->deliveryLat = round(floatval($lat), 7);
+        $this->deliveryLng = round(floatval($lng), 7);
+        $this->deliveryPlaceSelected = true;
+
+        // Intentar correlacionar con Ubigeo INEI
+        $matched = !empty($detectedDistrict) ? UbigeoService::matchDistrict($detectedDistrict, $detectedDepartment) : null;
+        if (!$matched && !empty($formattedAddress)) {
+            // Fallback: extraer el distrito buscando dentro de la dirección completa devuelta por Google
+            $matched = UbigeoService::matchDistrict($formattedAddress, $detectedDepartment);
+        }
+
+        if ($matched) {
+            $this->deliveryDepartmentCode = (string)$matched['departamento_codigo'];
+            $this->deliveryDepartment = $matched['departamento'];
+            $this->deliveryProvinceCode = (string)$matched['provincia_codigo'];
+            $this->deliveryProvince = $matched['provincia'];
+            $this->deliveryDistrictCode = (string)$matched['ubigeo'];
+            $this->deliveryDistrict = $matched['distrito'];
+            $this->deliveryUbigeo = (string)$matched['ubigeo'];
+        } elseif (!empty($detectedDistrict)) {
+            $this->deliveryDistrict = $detectedDistrict;
+        }
+
+        if ($this->deliveryDistrict) {
+            $this->estimatedDeliveryCost = $this->costForDistrict($this->deliveryDistrict);
+        }
+    }
+
+    /**
+     * Callback para fijar la ubicación manualmente mediante el pin en el mapa
+     */
+    public function setManualLocation($lat, $lng, $address = null): void
+    {
+        $this->deliveryLat = round(floatval($lat), 7);
+        $this->deliveryLng = round(floatval($lng), 7);
+        $this->deliveryPlaceSelected = true;
+
+        if (!empty($address) && empty($this->deliveryAddress)) {
+            $this->deliveryAddress = $address;
+        }
+
+        $this->dispatch('notify', [
+            'type' => 'success',
+            'message' => 'Ubicación fijada en el mapa con éxito.'
+        ]);
+    }
+
     public function updatedDeliveryDistrict($value)
     {
         $this->estimatedDeliveryCost = $this->costForDistrict($value);
@@ -2147,7 +2258,7 @@ class MainSearch extends Component
                 'deliveryAddress' => 'required|min:5',
                 'deliveryDistrict' => 'required',
             ], [
-                'deliveryAddress.required' => 'Ingresa tu dirección.',
+                'deliveryAddress.required' => 'Ingresa tu dirección y selecciónala de las sugerencias.',
                 'deliveryDistrict.required' => 'Selecciona el distrito.',
             ]);
         } else {
@@ -2176,6 +2287,9 @@ class MainSearch extends Component
                     'type' => 'lima',
                     'address' => $this->deliveryAddress,
                     'district' => $this->deliveryDistrict,
+                    'lat' => $this->deliveryLat,
+                    'lng' => $this->deliveryLng,
+                    'ubigeo' => $this->deliveryUbigeo,
                 ]);
             } else {
                 auth()->user()->saveAddress([
@@ -2225,6 +2339,9 @@ class MainSearch extends Component
             $claveSecreta = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
         }
 
+        // Generar token criptográfico único para PoD
+        $deliveryToken = Str::random(40);
+
         // 1. Create the Pedido record
         // Status 'por_confirmar': el pedido existe pero aún no hay proveedor confirmado
         // ni cobro real. Pasa a 'pagado' solo cuando Culqi confirme el webhook.
@@ -2232,7 +2349,14 @@ class MainSearch extends Component
             'customer_id' => auth()->id(),
             'tipo_envio' => $this->deliveryType === 'lima' ? 'Lima' : 'Provincia',
             'distrito' => $this->deliveryDistrict ?: $this->deliveryCity,
+            'departamento' => $this->deliveryDepartment,
+            'provincia' => $this->deliveryProvince,
+            'ubigeo_code' => $this->deliveryUbigeo ?: $this->deliveryDistrictCode,
             'direccion' => $this->deliveryAddress ?: $this->recipientAddress,
+            'lat' => $this->deliveryLat,
+            'lng' => $this->deliveryLng,
+            'referencia' => $this->deliveryNotes,
+            'delivery_token' => $deliveryToken,
             'telefono_contacto' => $this->recipientPhone ?: $this->phone,
             'metodo_pago' => 'Culqi',
             'clave_secreta' => $claveSecreta,
@@ -2749,7 +2873,44 @@ class MainSearch extends Component
                 $ws->sendPaymentConfirmation($q->chat_id);
             }
 
-            // 3. Set confirmation screen & clear state
+            // 3. Asegurar delivery_token y notificar al Operario Interno
+            $pedido->refresh();
+            if (empty($pedido->delivery_token)) {
+                $pedido->update(['delivery_token' => \Illuminate\Support\Str::random(40)]);
+                $pedido->refresh();
+            }
+
+            try {
+                $operario = \App\Models\User::where('role', \App\Enums\UserRole::Operario)
+                    ->where('is_active', true)
+                    ->first();
+
+                if ($operario && !empty($operario->phone)) {
+                    // Información del proveedor: usamos el primer proveedor confirmado
+                    $firstQuery = $queries->first();
+                    $providerInfo = 'Proveedor La Victoria';
+                    if ($firstQuery) {
+                        $prov = \App\Models\Provider::find($firstQuery->provider_id);
+                        if ($prov) {
+                            $providerInfo = $prov->name . ($prov->direccion ? ' · ' . $prov->direccion : '');
+                        }
+                    }
+
+                    $ws->sendOperarioNewOrderNotification(
+                        $operario->phone,
+                        $pedido->id,
+                        $pedido->delivery_token,
+                        $providerInfo
+                    );
+                    \Illuminate\Support\Facades\Log::info("Operario notificado para pedido #{$pedido->id} → {$operario->phone}");
+                } else {
+                    \Illuminate\Support\Facades\Log::warning("processCulqiPayment: No hay operario activo con teléfono registrado.");
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Error notificando operario pedido #{$pedido->id}: " . $e->getMessage());
+            }
+
+            // 4. Set confirmation screen & clear state
             $pedido->refresh();
             $this->confirmedOrder = Pedido::with(['items.product', 'customer'])->find($pedido->id);
 

@@ -21,6 +21,7 @@ class UserManagement extends Component
     public $name;
     public $email;
     public $password;
+    public $phone;
     public $role = 'mechanic';
     public $ruc_dni;
     public $business_name;
@@ -37,11 +38,12 @@ class UserManagement extends Component
     protected function rules()
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . ($this->editingUser ? $this->editingUser->id : 'NULL'),
-            'password' => $this->editingUser ? 'nullable|min:8' : 'required|min:8',
-            'role' => 'required',
-            'ruc_dni' => 'nullable|string|max:11',
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|email|unique:users,email,' . ($this->editingUser ? $this->editingUser->id : 'NULL'),
+            'password'      => $this->editingUser ? 'nullable|min:8' : 'required|min:8',
+            'phone'         => 'nullable|string|max:20',
+            'role'          => 'required',
+            'ruc_dni'       => 'nullable|string|max:11',
             'business_name' => 'nullable|string|max:255',
         ];
     }
@@ -53,7 +55,7 @@ class UserManagement extends Component
 
     public function openModal()
     {
-        $this->reset(['name', 'email', 'password', 'role', 'ruc_dni', 'business_name', 'editingUser', 'showModal']);
+        $this->reset(['name', 'email', 'password', 'phone', 'role', 'ruc_dni', 'business_name', 'editingUser', 'showModal']);
         $this->role = auth()->user()->isAdmin() ? 'manager' : 'mechanic';
         $this->showModal = true;
     }
@@ -73,13 +75,14 @@ class UserManagement extends Component
 
         if ($user && $canEdit) {
             $this->editingUser = $user;
-            $this->name = $user->name;
-            $this->email = $user->email;
-            $this->role = $user->role->value;
-            $this->ruc_dni = $user->ruc_dni;
+            $this->name          = $user->name;
+            $this->email         = $user->email;
+            $this->phone         = $user->phone;
+            $this->role          = $user->role->value;
+            $this->ruc_dni       = $user->ruc_dni;
             $this->business_name = $user->business_name;
-            $this->password = '';
-            $this->showModal = true;
+            $this->password      = '';
+            $this->showModal     = true;
         } else {
             $this->dispatch('notify', ['type' => 'error', 'message' => 'No tienes permiso para editar este usuario.']);
         }
@@ -89,17 +92,18 @@ class UserManagement extends Component
     {
         $this->validate();
 
-        // Security check for role assignment: Managers can't assign Admin or Manager roles
-        if (!auth()->user()->isAdmin() && in_array($this->role, ['admin', 'manager'])) {
+        // Security check for role assignment: Managers can't assign Admin, Manager or Operario roles
+        if (!auth()->user()->isAdmin() && in_array($this->role, ['admin', 'manager', 'operario'])) {
             $this->dispatch('notify', ['type' => 'error', 'message' => 'No tienes permiso para asignar este rol.']);
             return;
         }
 
         if ($this->editingUser) {
-            $this->editingUser->name = $this->name;
-            $this->editingUser->email = $this->email;
-            $this->editingUser->role = $this->role;
-            $this->editingUser->ruc_dni = $this->ruc_dni;
+            $this->editingUser->name          = $this->name;
+            $this->editingUser->email         = $this->email;
+            $this->editingUser->phone         = $this->phone ?: null;
+            $this->editingUser->role          = $this->role;
+            $this->editingUser->ruc_dni       = $this->ruc_dni;
             $this->editingUser->business_name = $this->business_name;
             if (!empty($this->password)) {
                 $this->editingUser->password = Hash::make($this->password);
@@ -108,13 +112,14 @@ class UserManagement extends Component
             $this->dispatch('notify', ['type' => 'success', 'message' => 'Usuario actualizado correctamente.']);
         } else {
             User::create([
-                'name' => $this->name,
-                'email' => $this->email,
-                'password' => Hash::make($this->password),
-                'role' => $this->role,
-                'ruc_dni' => $this->ruc_dni,
+                'name'          => $this->name,
+                'email'         => $this->email,
+                'password'      => Hash::make($this->password),
+                'phone'         => $this->phone ?: null,
+                'role'          => $this->role,
+                'ruc_dni'       => $this->ruc_dni,
                 'business_name' => $this->business_name,
-                'is_active' => true,
+                'is_active'     => true,
             ]);
             $this->dispatch('notify', ['type' => 'success', 'message' => 'Usuario creado correctamente.']);
         }

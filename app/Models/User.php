@@ -94,6 +94,11 @@ class User extends Authenticatable
         return $this->role === UserRole::Transporte;
     }
 
+    public function isOperario(): bool
+    {
+        return $this->role === UserRole::Operario;
+    }
+
     public function canAccessDashboard(): bool
     {
         return in_array($this->role, [UserRole::Admin, UserRole::Manager]);
@@ -188,6 +193,7 @@ class User extends Authenticatable
             UserRole::Workshop => 'Taller Automotriz',
             UserRole::Store => 'Tienda de Repuestos',
             UserRole::Transporte => 'Transporte',
+            UserRole::Operario => 'Operario Interno',
             default => 'Cliente',
         };
     }

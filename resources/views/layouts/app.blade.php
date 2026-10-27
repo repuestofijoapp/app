@@ -1151,6 +1151,11 @@
     </script>
     @livewireScripts
 
+    {{-- Google Maps & Places API --}}
+    @if(config('services.google.places_api_key'))
+        <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.places_api_key') }}&libraries=places&loading=async"></script>
+    @endif
+
     {{-- Culqi Checkout v4 - fuera del componente Livewire para que no se destruya con los polls --}}
     <script src="https://checkout.culqi.com/js/v4"></script>
     <script>

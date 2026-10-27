@@ -2604,44 +2604,129 @@
 
                     {{-- LIMA FIELDS --}}
                     @if($deliveryType === 'lima')
-                        <div class="px-4 pt-3 pb-2">
+                        <div class="px-4 pt-3 pb-2" wire:ignore.self>
+                            {{-- Autocompletado Google Places --}}
                             <div class="mb-3">
-                                <label class="text-white fw-bold mb-1"
-                                    style="font-size:0.75rem; letter-spacing:.5px;">DIRECCIÓN</label>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="text-white fw-bold mb-0"
+                                        style="font-size:0.75rem; letter-spacing:.5px;">DIRECCIÓN EXACTA (GOOGLE MAPS)</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <button type="button" 
+                                                class="btn btn-sm py-0 px-2 rounded-pill fw-semibold text-nowrap" 
+                                                style="font-size: 0.7rem; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.35);"
+                                                onclick="window.toggleRfMapPicker()">
+                                            <i class="fas fa-map-marker-alt me-1 text-danger"></i> Fijar en el mapa
+                                        </button>
+                                        <span class="text-white-50" style="font-size:0.68rem;">
+                                            <i class="fab fa-google text-primary me-1"></i>Perú
+                                        </span>
+                                    </div>
+                                </div>
                                 <div class="input-group rounded-3 overflow-hidden"
                                     style="background:#1A2235; border:1px solid rgba(255,255,255,0.08);">
                                     <span class="input-group-text border-0" style="background:transparent; color:#6B7A99;"><i
-                                            class="fas fa-home"></i></span>
-                                    <input type="text" wire:model="deliveryAddress"
+                                            class="fas fa-search-location"></i></span>
+                                    <input type="text" id="rf_places_address_input" wire:model="deliveryAddress"
                                         class="form-control border-0 py-3 text-white"
                                         style="background:transparent; font-size:0.9rem;"
-                                        placeholder="Av. Las Flores 123, interior 4B">
+                                        placeholder="Escribe tu calle, avenida, Mz, Lote o taller..."
+                                        autocomplete="off"
+                                        x-init="$nextTick(() => window.initRfPlacesAutocomplete && window.initRfPlacesAutocomplete())">
                                 </div>
                                 @error('deliveryAddress') <small class="text-danger">{{ $message }}</small> @enderror
+
+                                {{-- Contenedor del Mapa Interactivo para fijar ubicación con PIN manual --}}
+                                <div id="rf_map_picker_container" wire:ignore wire:key="rf-map-picker-box" class="mt-2 p-2 rounded-3" style="display:none; background: #0b1120; border: 1px solid rgba(59, 130, 246, 0.45);">
+                                    <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                                        <span class="text-white fw-semibold" style="font-size: 0.74rem;">
+                                            <i class="fas fa-hand-pointer text-primary me-1"></i> Arrastra el marcador o toca tu techo/puerta:
+                                        </span>
+                                        <button type="button" class="btn btn-sm py-0 px-2 rounded-pill text-white" style="font-size: 0.68rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);" onclick="window.useRfCurrentGps()">
+                                            <i class="fas fa-crosshairs text-warning me-1"></i> Mi GPS actual
+                                        </button>
+                                    </div>
+                                    <div id="rf_interactive_picker_map" style="height: 220px; width: 100%; border-radius: 8px; overflow: hidden; background: #1e293b;"></div>
+                                    <div class="d-flex justify-content-between align-items-center mt-2 px-1">
+                                        <span id="rf_map_coords_label" class="text-white-50" style="font-size: 0.7rem;">
+                                            Lat: -- | Lng: --
+                                        </span>
+                                        <button type="button" class="btn btn-primary btn-sm py-1 px-3 fw-semibold rounded-pill" style="font-size: 0.72rem;" onclick="window.toggleRfMapPicker(false)">
+                                            <i class="fas fa-check me-1"></i> Confirmar punto
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {{-- Badge de geocodificación exitosa --}}
+                                @if($deliveryLat && $deliveryLng)
+                                    <div class="mt-2 py-1 px-2 rounded-2 d-flex align-items-center justify-content-between" 
+                                         style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3);">
+                                        <span class="text-success extra-small fw-semibold" style="font-size: 0.72rem;">
+                                            <i class="fas fa-check-circle me-1"></i> Ubicación fijada (Lat: {{ number_format($deliveryLat, 4) }}, Lng: {{ number_format($deliveryLng, 4) }})
+                                        </span>
+                                        @if($deliveryUbigeo)
+                                            <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.65rem;">
+                                                INEI: {{ $deliveryUbigeo }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                @else
+                                    <small class="text-white-50 d-block mt-1" style="font-size: 0.7rem;">
+                                        <i class="fas fa-info-circle me-1"></i> Selecciona de las sugerencias o pulsa <strong>"Fijar en el mapa"</strong> si no figura en Google.
+                                    </small>
+                                @endif
                             </div>
 
-                            <div class="mb-3">
-                                <label class="text-white fw-bold mb-1"
-                                    style="font-size:0.75rem; letter-spacing:.5px;">DISTRITO</label>
-                                <div class="position-relative rounded-3 overflow-hidden"
-                                    style="background:#1A2235; border:1px solid rgba(255,255,255,0.08);">
-                                    <i class="fas fa-map-pin position-absolute"
-                                        style="left:14px; top:50%; transform:translateY(-50%); color:#6B7A99; z-index:1;"></i>
-                                    <select wire:model.live="deliveryDistrict" class="form-select border-0 py-3 text-white ps-5"
-                                        style="background:transparent; font-size:0.9rem; appearance:auto;">
-                                        <option value="" style="background:#1A2235;">— Selecciona tu distrito —</option>
-                                        @foreach($limaZones as $zoneName => $zone)
-                                            <optgroup label="Zona {{ $zoneName }} (S/. {{ $zone['cost'] }} aprox.)"
-                                                style="background:#0d1117; color:#6B7A99;">
-                                                @foreach($zone['districts'] as $dist)
-                                                    <option value="{{ $dist }}" style="background:#1A2235; color:#fff;">{{ $dist }}
-                                                    </option>
-                                                @endforeach
-                                            </optgroup>
-                                        @endforeach
-                                    </select>
+                            {{-- Selectores en cascada INEI: Provincia y Distrito --}}
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-5">
+                                    <label class="text-white fw-bold mb-1" style="font-size:0.75rem; letter-spacing:.5px;">PROVINCIA</label>
+                                    <div class="position-relative rounded-3 overflow-hidden"
+                                        style="background:#1A2235; border:1px solid rgba(255,255,255,0.08);">
+                                        <select wire:model.live="deliveryProvinceCode" class="form-select border-0 py-3 text-white ps-3"
+                                            style="background:transparent; font-size:0.88rem; appearance:auto;">
+                                            <option value="1501" style="background:#1A2235;">LIMA METROPOLITANA</option>
+                                            <option value="0701" style="background:#1A2235;">CALLAO</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                @error('deliveryDistrict') <small class="text-danger">{{ $message }}</small> @enderror
+
+                                <div class="col-md-7">
+                                    <label class="text-white fw-bold mb-1" style="font-size:0.75rem; letter-spacing:.5px;">DISTRITO (INEI)</label>
+                                    <div class="position-relative rounded-3 overflow-hidden"
+                                        style="background:#1A2235; border:1px solid rgba(255,255,255,0.08);">
+                                        <i class="fas fa-map-pin position-absolute"
+                                            style="left:14px; top:50%; transform:translateY(-50%); color:#6B7A99; z-index:1;"></i>
+                                        <select wire:model.live="deliveryDistrictCode" class="form-select border-0 py-3 text-white ps-5"
+                                            style="background:transparent; font-size:0.88rem; appearance:auto;">
+                                            <option value="" style="background:#1A2235;">— Selecciona distrito —</option>
+                                            @foreach($this->distritos as $ubigeo => $dist)
+                                                <option value="{{ $ubigeo }}" style="background:#1A2235; color:#fff;" {{ $deliveryDistrictCode == $ubigeo ? 'selected' : '' }}>
+                                                    {{ $dist }} ({{ $this->costForDistrict($dist) ? 'S/ ' . $this->costForDistrict($dist) : 'S/ 15' }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @error('deliveryDistrict') <small class="text-danger">{{ $message }}</small> @enderror
+                                </div>
+                            </div>
+
+                            {{-- Nota de entrega / Instrucciones para el motorizado --}}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="text-white fw-bold mb-0" style="font-size:0.75rem; letter-spacing:.5px;">
+                                        INSTRUCCIONES PARA EL MOTORIZADO
+                                    </label>
+                                    <span class="text-white-50" style="font-size:0.68rem;">(Nota de entrega)</span>
+                                </div>
+                                <small class="d-block text-white-50 mb-1" style="font-size:0.71rem; line-height: 1.3;">
+                                    Comenta con detalle cómo ubicar tu dirección (piso, color de fachada o portón, frente a qué negocio, etc.).
+                                </small>
+                                <div class="position-relative rounded-3 overflow-hidden" style="background:#1A2235; border:1px solid rgba(255,255,255,0.08);">
+                                    <i class="fas fa-comment-dots position-absolute" style="left:14px; top:12px; color:#6B7A99; z-index:1;"></i>
+                                    <textarea wire:model="deliveryNotes" rows="2" class="form-control border-0 py-2 text-white ps-5"
+                                        style="background:transparent; font-size:0.85rem; resize:none;"
+                                        placeholder="Ej: Portón negro, mz B lote 44, tocar timbre del 2do piso, frente a bodega..."></textarea>
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -2653,10 +2738,55 @@
                                 style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2);">
                                 <p class="mb-0 text-warning" style="font-size:0.78rem;">
                                     <i class="fas fa-info-circle me-1"></i>
-                                    El motorizado lleva tu pedido hasta la agencia en Lima.
-                                    El flete desde Lima a tu ciudad <strong>lo cobra la agencia al momento de
-                                        recoger</strong>.
+                                    El motorizado lleva tu paquete embalado hasta la agencia en Lima con guía y QR.
+                                    El flete Lima $\rightarrow$ Provincia <strong>lo cobra la agencia al recoger</strong>.
                                 </p>
+                            </div>
+
+                            {{-- Selectores en cascada oficiales INEI: Departamento -> Provincia -> Distrito --}}
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-4">
+                                    <label class="text-white fw-bold mb-1" style="font-size:0.75rem; letter-spacing:.5px;">DEPARTAMENTO</label>
+                                    <div class="position-relative rounded-3 overflow-hidden"
+                                        style="background:#1A2235; border:1px solid rgba(255,255,255,0.08);">
+                                        <select wire:model.live="deliveryDepartmentCode" class="form-select border-0 py-3 text-white ps-3"
+                                            style="background:transparent; font-size:0.85rem; appearance:auto;">
+                                            <option value="" style="background:#1A2235;">— Departamento —</option>
+                                            @foreach($this->departamentos as $code => $dep)
+                                                <option value="{{ $code }}" style="background:#1A2235; color:#fff;">{{ $dep }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="text-white fw-bold mb-1" style="font-size:0.75rem; letter-spacing:.5px;">PROVINCIA</label>
+                                    <div class="position-relative rounded-3 overflow-hidden"
+                                        style="background:#1A2235; border:1px solid rgba(255,255,255,0.08);">
+                                        <select wire:model.live="deliveryProvinceCode" class="form-select border-0 py-3 text-white ps-3"
+                                            style="background:transparent; font-size:0.85rem; appearance:auto;">
+                                            <option value="" style="background:#1A2235;">— Provincia —</option>
+                                            @foreach($this->provincias as $code => $prov)
+                                                <option value="{{ $code }}" style="background:#1A2235; color:#fff;">{{ $prov }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="text-white fw-bold mb-1" style="font-size:0.75rem; letter-spacing:.5px;">DISTRITO / CIUDAD</label>
+                                    <div class="position-relative rounded-3 overflow-hidden"
+                                        style="background:#1A2235; border:1px solid rgba(255,255,255,0.08);">
+                                        <select wire:model.live="deliveryDistrictCode" class="form-select border-0 py-3 text-white ps-3"
+                                            style="background:transparent; font-size:0.85rem; appearance:auto;">
+                                            <option value="" style="background:#1A2235;">— Distrito —</option>
+                                            @foreach($this->distritos as $code => $dist)
+                                                <option value="{{ $code }}" style="background:#1A2235; color:#fff;">{{ $dist }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @error('deliveryCity') <small class="text-danger">{{ $message }}</small> @enderror
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -2668,28 +2798,14 @@
                                         style="left:14px; top:50%; transform:translateY(-50%); color:#6B7A99; z-index:1;"></i>
                                     <select wire:model.live="deliveryAgency" class="form-select border-0 py-3 text-white ps-5"
                                         style="background:transparent; font-size:0.9rem; appearance:auto;">
-                                        <option value="" style="background:#1A2235;">— Elige la agencia —</option>
+                                        <option value="" style="background:#1A2235;">— Elige la agencia en Lima —</option>
                                         @foreach($shippingAgencies as $agency => $cost)
                                             <option value="{{ $agency }}" style="background:#1A2235; color:#fff;">{{ $agency }}
-                                                (costo a agencia: S/. {{ $cost }})</option>
+                                                (costo despacho a agencia: S/. {{ $cost }})</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 @error('deliveryAgency') <small class="text-danger">{{ $message }}</small> @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="text-white fw-bold mb-1" style="font-size:0.75rem; letter-spacing:.5px;">CIUDAD /
-                                    DEPARTAMENTO DE DESTINO</label>
-                                <div class="input-group rounded-3 overflow-hidden"
-                                    style="background:#1A2235; border:1px solid rgba(255,255,255,0.08);">
-                                    <span class="input-group-text border-0" style="background:transparent; color:#6B7A99;"><i
-                                            class="fas fa-city"></i></span>
-                                    <input type="text" wire:model="deliveryCity" class="form-control border-0 py-3 text-white"
-                                        style="background:transparent; font-size:0.9rem;"
-                                        placeholder="Ej: Arequipa, Cusco, Trujillo...">
-                                </div>
-                                @error('deliveryCity') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
 
                             {{-- Divider --}}
@@ -5463,6 +5579,305 @@
                 });
             });
         });
+
+        // ── Google Places Autocomplete para Direcciones (Perú) ──
+        window.initRfPlacesAutocomplete = function() {
+            const input = document.getElementById('rf_places_address_input');
+            if (!input) return;
+            if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+                setTimeout(window.initRfPlacesAutocomplete, 300);
+                return;
+            }
+            if (input.dataset.placesBound === 'true') return;
+
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                componentRestrictions: { country: 'pe' },
+                fields: ['address_components', 'geometry', 'formatted_address', 'name']
+            });
+
+            autocomplete.addListener('place_changed', function() {
+                const place = autocomplete.getPlace();
+                if (!place || !place.geometry) return;
+
+                const lat = place.geometry.location.lat();
+                const lng = place.geometry.location.lng();
+                let formatted = place.formatted_address || place.name || input.value;
+                const userTyped = (input.value || '').trim();
+
+                // Si Google devuelve un Plus Code (ej. "X5HG+JC7, Ate 15483, Perú" para zonas sin numeración postal formal)
+                const plusCodeMatch = formatted.match(/([A-Z0-9]{4,8}\+[A-Z0-9]{2,4})/i);
+                if (plusCodeMatch && userTyped) {
+                    const plusCode = plusCodeMatch[0];
+                    if (!userTyped.toUpperCase().startsWith(plusCode.toUpperCase())) {
+                        formatted = userTyped + ' (Ref Google: ' + formatted + ')';
+                    }
+                }
+                input.value = formatted;
+
+                let district = '';
+                let department = 'LIMA';
+                let province = 'LIMA';
+
+                if (place.address_components) {
+                    // 1° Prioridad para distrito: sublocalidad (Ate, Miraflores, etc.) o nivel 3
+                    const subloc = place.address_components.find(c => 
+                        c.types.includes('sublocality_level_1') || 
+                        c.types.includes('sublocality') ||
+                        c.types.includes('administrative_area_level_3')
+                    );
+                    if (subloc) {
+                        district = subloc.long_name;
+                    }
+
+                    // 2° Prioridad para provincia
+                    const prov = place.address_components.find(c => c.types.includes('administrative_area_level_2'));
+                    if (prov) {
+                        province = prov.long_name;
+                    }
+
+                    // 3° Si no se halló sublocalidad, usar locality (siempre que no sea igual a la provincia a menos que no haya otra)
+                    if (!district) {
+                        const loc = place.address_components.find(c => c.types.includes('locality'));
+                        if (loc) {
+                            district = loc.long_name;
+                        }
+                    }
+
+                    // 4° Departamento
+                    const dep = place.address_components.find(c => c.types.includes('administrative_area_level_1'));
+                    if (dep) {
+                        department = dep.long_name;
+                    }
+                }
+
+                const lwEl = input.closest('[wire\\:id]');
+                if (lwEl) {
+                    const comp = Livewire.find(lwEl.getAttribute('wire:id'));
+                    if (comp) {
+                        comp.call('setPlaceDetails', formatted, lat, lng, district, department, province);
+                    }
+                }
+
+                // Sincronizar el mapa interactivo si ya estaba inicializado
+                if (window.rfPickerMap && window.rfPickerMarker) {
+                    const searchedPos = new google.maps.LatLng(lat, lng);
+                    window.rfPickerMap.setCenter(searchedPos);
+                    window.rfPickerMap.setZoom(17);
+                    window.rfPickerMarker.setPosition(searchedPos);
+                    const coordsLabel = document.getElementById('rf_map_coords_label');
+                    if (coordsLabel) {
+                        coordsLabel.innerText = `Lat: ${lat.toFixed(5)} | Lng: ${lng.toFixed(5)}`;
+                    }
+                    setTimeout(function() {
+                        if (window.rfPickerMap) {
+                            google.maps.event.trigger(window.rfPickerMap, 'resize');
+                            window.rfPickerMap.setCenter(searchedPos);
+                        }
+                    }, 100);
+                }
+            });
+
+            input.dataset.placesBound = 'true';
+        };
+
+        // ── Fijar Ubicación Manualmente en el Mapa (Pin Drag & Drop) ──
+        window.rfPickerMap = null;
+        window.rfPickerMarker = null;
+
+        window.toggleRfMapPicker = function(forceOpen) {
+            const container = document.getElementById('rf_map_picker_container');
+            if (!container) return;
+
+            const isCurrentlyOpen = (container.style.display !== 'none');
+            const shouldOpen = (typeof forceOpen === 'boolean') ? forceOpen : !isCurrentlyOpen;
+            container.style.display = shouldOpen ? 'block' : 'none';
+
+            if (shouldOpen) {
+                setTimeout(function() {
+                    window.initRfPickerMap();
+                }, 150);
+            }
+        };
+
+        window.initRfPickerMap = function() {
+            if (typeof google === 'undefined' || !google.maps) {
+                setTimeout(window.initRfPickerMap, 300);
+                return;
+            }
+
+            const mapEl = document.getElementById('rf_interactive_picker_map');
+            if (!mapEl) return;
+
+            const input = document.getElementById('rf_places_address_input');
+            const lwEl = input ? input.closest('[wire\\:id]') : null;
+            let currentLat = -12.046374; // Centro de Lima por defecto
+            let currentLng = -77.042793;
+
+            if (lwEl) {
+                const comp = Livewire.find(lwEl.getAttribute('wire:id'));
+                if (comp) {
+                    const cLat = comp.get('deliveryLat');
+                    const cLng = comp.get('deliveryLng');
+                    if (cLat && cLng && !isNaN(parseFloat(cLat)) && !isNaN(parseFloat(cLng))) {
+                        currentLat = parseFloat(cLat);
+                        currentLng = parseFloat(cLng);
+                    }
+                }
+            }
+
+            const centerPos = new google.maps.LatLng(currentLat, currentLng);
+
+            // Si el contenedor se quedó sin hijos o el mapa no existe, reinicializar
+            const mapNeedsInit = !window.rfPickerMap || mapEl.childElementCount === 0;
+
+            if (mapNeedsInit) {
+                mapEl.innerHTML = '';
+                window.rfPickerMap = new google.maps.Map(mapEl, {
+                    center: centerPos,
+                    zoom: 16,
+                    mapTypeId: 'roadmap',
+                    streetViewControl: false,
+                    mapTypeControl: false,
+                    fullscreenControl: false,
+                    styles: [
+                        { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+                        { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+                        { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+                        { featureType: "road", elementType: "geometry", stylers: [{ color: "#38414e" }] },
+                        { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#212a37" }] },
+                        { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#9ca5b3" }] },
+                        { featureType: "water", elementType: "geometry", stylers: [{ color: "#17263c" }] }
+                    ]
+                });
+
+                window.rfPickerMarker = new google.maps.Marker({
+                    position: centerPos,
+                    map: window.rfPickerMap,
+                    draggable: true,
+                    title: "Arrastra para fijar tu entrega",
+                    animation: google.maps.Animation.DROP
+                });
+
+                function updateFromPosition(pos) {
+                    const lat = pos.lat();
+                    const lng = pos.lng();
+                    const coordsLabel = document.getElementById('rf_map_coords_label');
+                    if (coordsLabel) {
+                        coordsLabel.innerText = `Lat: ${lat.toFixed(5)} | Lng: ${lng.toFixed(5)}`;
+                    }
+
+                    if (lwEl) {
+                        const comp = Livewire.find(lwEl.getAttribute('wire:id'));
+                        if (comp) {
+                            comp.call('setManualLocation', lat, lng);
+                        }
+                    }
+                }
+
+                window.rfPickerMarker.addListener('dragend', function(e) {
+                    updateFromPosition(e.latLng);
+                });
+
+                window.rfPickerMap.addListener('click', function(e) {
+                    window.rfPickerMarker.setPosition(e.latLng);
+                    updateFromPosition(e.latLng);
+                });
+            } else {
+                window.rfPickerMap.setCenter(centerPos);
+                window.rfPickerMarker.setPosition(centerPos);
+            }
+
+            // Disparar resize diferido para garantizar que los tiles de Google Maps carguen sin cuadro gris
+            setTimeout(function() {
+                if (window.rfPickerMap) {
+                    google.maps.event.trigger(window.rfPickerMap, 'resize');
+                    window.rfPickerMap.setCenter(centerPos);
+                }
+            }, 120);
+
+            const coordsLabel = document.getElementById('rf_map_coords_label');
+            if (coordsLabel) {
+                coordsLabel.innerText = `Lat: ${currentLat.toFixed(5)} | Lng: ${currentLng.toFixed(5)}`;
+            }
+        };
+
+        window.useRfCurrentGps = function() {
+            if (!navigator.geolocation) {
+                alert("Tu navegador no soporta geolocalización.");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const pos = new google.maps.LatLng(lat, lng);
+
+                    if (window.rfPickerMap && window.rfPickerMarker) {
+                        window.rfPickerMap.setCenter(pos);
+                        window.rfPickerMap.setZoom(17);
+                        window.rfPickerMarker.setPosition(pos);
+                    }
+
+                    const coordsLabel = document.getElementById('rf_map_coords_label');
+                    if (coordsLabel) {
+                        coordsLabel.innerText = `Lat: ${lat.toFixed(5)} | Lng: ${lng.toFixed(5)}`;
+                    }
+
+                    const input = document.getElementById('rf_places_address_input');
+                    const lwEl = input ? input.closest('[wire\\:id]') : null;
+                    if (lwEl) {
+                        const comp = Livewire.find(lwEl.getAttribute('wire:id'));
+                        if (comp) {
+                            comp.call('setManualLocation', lat, lng);
+                        }
+                    }
+                },
+                function(err) {
+                    alert("No pudimos obtener tu ubicación GPS automática. Por favor arrastra el marcador manualmente.");
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        };
+
+        document.addEventListener('livewire:initialized', function () {
+            window.initRfPlacesAutocomplete();
+        });
     </script>
+
+    <style>
+        /* ── Estilo personalizado oscuro para sugerencias de Google Places ── */
+        .pac-container {
+            background-color: #1A2235 !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.8) !important;
+            z-index: 99999 !important;
+            font-family: 'Inter', sans-serif !important;
+            margin-top: 4px !important;
+        }
+        .pac-item {
+            padding: 10px 14px !important;
+            color: #cbd5e1 !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+            cursor: pointer !important;
+            font-size: 0.86rem !important;
+        }
+        .pac-item:hover, .pac-item-selected {
+            background-color: rgba(190, 60, 59, 0.18) !important;
+        }
+        .pac-item-query {
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            font-size: 0.9rem !important;
+        }
+        .pac-matched {
+            color: #ef4444 !important;
+            font-weight: 700 !important;
+        }
+        .pac-icon {
+            filter: invert(1) hue-rotate(180deg);
+        }
+    </style>
 
 </div>{{-- /main-container --}}
