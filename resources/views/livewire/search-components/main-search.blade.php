@@ -3964,7 +3964,7 @@
                     <div class="modal-body p-4 pt-2">
                         <div class="mb-4">
                             <h3 class="fw-bold mb-1" style="font-family: 'Syne', sans-serif;">¿Qué pasó con tu pedido?</h3>
-                            <p class="text-white text-opacity-50 small">Pedido #{{ $selectedOrderIdForIncident }} · Lo
+                            <p class="text-white text-opacity-50 small">Pedido #{{ $selectedOrderIdForIncident ?? '' }} · Lo
                                 resolvemos en el día</p>
                         </div>
 

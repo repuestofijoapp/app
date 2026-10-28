@@ -588,6 +588,7 @@ class MainSearch extends Component
     public $showOrdersDrawer = false;
     public $showPrivacyModal = false;
     public $showIncidentModal = false;
+    public $selectedOrderIdForIncident = null;
     public $drawerSubState = 'menu'; // 'menu' | 'orders' | 'addresses' | 'profile'
     public $paymentErrorMessage = '';
 
@@ -3338,19 +3339,26 @@ class MainSearch extends Component
             return;
         }
 
-        if ($type === 'not_received') {
-            // Logic for "No llegó mi pedido" - System check
-            $this->dispatch('notify', [
-                'type' => 'info',
-                'message' => 'Consultando estado con motorizado para el pedido #' . $order->id
-            ]);
-        } else {
-            // General support via WhatsApp
-            $message = "Hola, tengo un problema con mi pedido #{$order->id} de ZettaBot. Tipo: {$type}";
-            $url = "https://wa.me/519XXXXXXXX?text=" . urlencode($message);
-            $this->dispatch('open-url', ['url' => $url]);
-        }
+        $typeLabels = [
+            'wrong_product'  => 'No era el producto que pedí (llegó un producto diferente)',
+            'wrong_quantity' => 'Me llegó menos cantidad de la solicitada',
+            'not_received'   => 'No llegó mi pedido (el motorizado no se presentó)',
+            'other'          => 'Otro problema con la entrega o producto',
+        ];
 
+        $label = $typeLabels[$type] ?? $type;
+        $message = "Hola RepuestoFijo 👋, necesito ayuda con mi Pedido #{$order->id}.\n⚠️ *Motivo del reporte:* {$label}";
+        
+        $phone = env('SUPPORT_WHATSAPP_PHONE', '51926639534');
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+        $url = "https://wa.me/{$cleanPhone}?text=" . urlencode($message);
+
+        $this->dispatch('notify', [
+            'type'    => 'info',
+            'message' => 'Redirigiendo a soporte para resolver el reporte del pedido #' . $order->id . '...'
+        ]);
+
+        $this->dispatch('open-url', ['url' => $url]);
         $this->showIncidentModal = false;
     }
 
