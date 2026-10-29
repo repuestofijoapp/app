@@ -3368,6 +3368,7 @@ class MainSearch extends Component
             return collect();
         return Pedido::where('customer_id', auth()->id())
             ->where('status', '!=', 'pendiente')
+            ->with(['hitos', 'incidencia'])
             ->latest()
             ->limit(10)
             ->get();

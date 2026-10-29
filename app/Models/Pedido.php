@@ -79,6 +79,11 @@ class Pedido extends Model
         return $this->hasMany(PedidoHito::class)->orderBy('id', 'asc');
     }
 
+    public function incidencia()
+    {
+        return $this->hasOne(Incidencia::class);
+    }
+
     // ── Helpers ──────────────────────────────────────────────────
 
     /** ¿El pago fue confirmado por Culqi o está en preparación/envío/entregado? */

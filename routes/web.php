@@ -81,7 +81,19 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/Ayoro-sape-{secret}/configuracion', \App\Livewire\Admin\SystemSettings::class)->name('admin.system-settings');
         Route::get('/Ayoro-sape-{secret}/logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->name('admin.logs');
         Route::get('/Ayoro-sape-{secret}/reclamaciones', \App\Livewire\Admin\ReclamacionManagement::class)->name('admin.reclamaciones');
+
+        // Evidencia fotográfica privada de incidencias (solo admin/manager)
+        Route::get('/admin/incidencias/{id}/evidencia', function ($id) {
+            $inc = \App\Models\Incidencia::findOrFail($id);
+            abort_if(!$inc->foto_path, 404);
+            return \Illuminate\Support\Facades\Storage::disk('local')->response($inc->foto_path);
+        })->name('admin.incidencias.evidencia');
     });
+
+    // OTP para reclamos — usuario autenticado (cliente)
+    Route::post('/reclamos/otp/enviar', [\App\Http\Controllers\ReclamoOtpController::class, 'enviar'])
+        ->middleware('throttle:10,1')
+        ->name('reclamos.otp.enviar');
 });
 
 // B2B Portal Routes

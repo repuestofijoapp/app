@@ -3397,12 +3397,8 @@
                                                 <span class="badge {{ $s['class'] }} mb-2"
                                                     style="font-size: 0.75rem; border-radius: 6px; padding: 0.5em 1em;">{{ $s['label'] }}</span>
                                                 <div class="mt-1">
-                                                    <button wire:click.stop="reportIncident({{ $order->id }})"
-                                                        class="btn btn-outline-danger btn-sm rounded-pill fw-bold px-3 py-1 shadow-none"
-                                                        style="font-size: 0.65rem; border-width: 1.5px;">
-                                                        <i class="fas fa-exclamation-triangle me-1" style="font-size: 0.6rem;"></i>
-                                                        Reportar un problema
-                                                    </button>
+                                                    {{-- ReclamoCliente renderiza el botón correcto (reportar / ver reclamo / nada) --}}
+                                                    <livewire:reclamo-cliente :pedido-id="$order->id" :key="'rc-'.$order->id" />
                                                 </div>
                                             </div>
                                         </div>
@@ -3951,81 +3947,8 @@
             background: #BE3C3B;
         }
     </style>
-    {{-- INCIDENT MODAL (Moved to end for top-level rendering) --}}
-    @if($showIncidentModal)
-        <div class="modal fade show d-block"
-            style="background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10000; position: fixed; top: 0; left: 0; width: 100%; height: 100%;">
-            <div class="modal-dialog modal-dialog-centered" style="max-width: 450px; z-index: 10001;">
-                <div class="modal-content border-0 shadow-lg text-white"
-                    style="border-radius: 20px; background-color: #1a1e2e; border: 1px solid rgba(255,255,255,0.05);">
-                    <div class="p-2 d-flex justify-content-center">
-                        <div style="width: 40px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px;"></div>
-                    </div>
-                    <div class="modal-body p-4 pt-2">
-                        <div class="mb-4">
-                            <h3 class="fw-bold mb-1" style="font-family: 'Syne', sans-serif;">¿Qué pasó con tu pedido?</h3>
-                            <p class="text-white text-opacity-50 small">Pedido #{{ $selectedOrderIdForIncident ?? '' }} · Lo
-                                resolvemos en el día</p>
-                        </div>
-
-                        <div class="d-grid gap-3">
-                            <button wire:click="sendIncident('wrong_product')"
-                                class="btn p-3 text-start hover-bg-white transition-all rounded-4 d-flex align-items-center gap-3 border-0"
-                                style="background-color: rgba(255,255,255,0.05);">
-                                <div class="fs-2" style="filter: drop-shadow(0 0 8px rgba(255,107,43,0.2));">📦</div>
-                                <div>
-                                    <div class="fw-bold text-white mb-0" style="font-size: 0.95rem;">No era el producto que
-                                        pedí</div>
-                                    <div class="text-white text-opacity-50" style="font-size: 0.8rem;">Llegó un producto
-                                        diferente al solicitado</div>
-                                </div>
-                            </button>
-
-                            <button wire:click="sendIncident('wrong_quantity')"
-                                class="btn p-3 text-start hover-bg-white transition-all rounded-4 d-flex align-items-center gap-3 border-0"
-                                style="background-color: rgba(255,255,255,0.05);">
-                                <div class="fs-2" style="filter: drop-shadow(0 0 8px rgba(59,130,246,0.2));">🔢</div>
-                                <div>
-                                    <div class="fw-bold text-white mb-0" style="font-size: 0.95rem;">Me llegó menos cantidad
-                                    </div>
-                                    <div class="text-white text-opacity-50" style="font-size: 0.8rem;">La cantidad recibida
-                                        no coincide con el pedido</div>
-                                </div>
-                            </button>
-
-                            <button wire:click="sendIncident('not_received')"
-                                class="btn p-3 text-start hover-bg-white transition-all rounded-4 d-flex align-items-center gap-3 border-0"
-                                style="background-color: rgba(255,255,255,0.05);">
-                                <div class="fs-2" style="filter: drop-shadow(0 0 8px rgba(255,59,92,0.2));">🚫</div>
-                                <div>
-                                    <div class="fw-bold text-white mb-0" style="font-size: 0.95rem;">No llegó mi pedido
-                                    </div>
-                                    <div class="text-white text-opacity-50" style="font-size: 0.8rem;">El motorizado no se
-                                        presentó o llegó al lugar incorrecto</div>
-                                </div>
-                            </button>
-
-                            <button wire:click="sendIncident('other')"
-                                class="btn p-3 text-start hover-bg-white transition-all rounded-4 d-flex align-items-center gap-3 border-0"
-                                style="background-color: rgba(255,255,255,0.05);">
-                                <div class="fs-2" style="filter: drop-shadow(0 0 8px rgba(255,255,255,0.1));">💬</div>
-                                <div>
-                                    <div class="fw-bold text-white mb-0" style="font-size: 0.95rem;">Otro problema</div>
-                                    <div class="text-white text-opacity-50" style="font-size: 0.8rem;">Describir situación
-                                        al equipo de soporte</div>
-                                </div>
-                            </button>
-                        </div>
-
-                        <button type="button" class="btn btn-outline-light border-0 w-100 mt-4 rounded-pill py-3 fw-bold"
-                            style="background: rgba(255,255,255,0.05);" wire:click="$set('showIncidentModal', false)">
-                            Cancelar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
+    {{-- INCIDENT MODAL — reemplazado por livewire:reclamo-cliente (v2) --}}
+    {{-- El componente ReclamoCliente se renderiza inline en el loop de pedidos --}}
 
     {{-- USER ORDER DETAIL MODAL --}}
     @if($showUserOrderDetailModal && $userSelectedOrder)

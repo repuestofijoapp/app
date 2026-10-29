@@ -235,5 +235,57 @@ class WhatsAppService
 
         return $this->sendMessage($phone, $msg);
     }
-}
+    /**
+     * Envía un código OTP de 4 dígitos por WhatsApp para verificar un reclamo.
+     */
+    public function sendIncidentOtp(string $phone, string $code, int $pedidoId): bool
+    {
+        $msg = "🔐 *Código de verificación RepuestoFijo*\n\n"
+             . "Tu código para confirmar el reclamo del *Pedido #{$pedidoId}* es:\n\n"
+             . "*{$code}*\n\n"
+             . "⏱️ Válido por 10 minutos. No lo compartas con nadie.";
 
+        try {
+            return (bool) $this->sendMessage($phone, $msg);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('WhatsApp OTP incidencia falló', [
+                'phone'     => $phone,
+                'pedido_id' => $pedidoId,
+                'error'     => $e->getMessage(),
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Notifica al gestor cuando se crea una nueva incidencia.
+     * Retorna false si falla (la incidencia ya fue creada, no se revierte).
+     */
+    public function sendIncidentManagerAlert(\App\Models\Incidencia $inc): bool
+    {
+        $managerPhone = env('SUPPORT_WHATSAPP_PHONE', '51926639534');
+        $pedido       = $inc->pedido;
+        $cliente      = $inc->customer?->name ?? 'Cliente';
+        $adminSecret  = env('ADMIN_SECRET', 'Repuesto-Sape-2026');
+        $link         = url("/Ayoro-sape-{$adminSecret}/soporte");
+
+        $msg = "🚨 *NUEVO RECLAMO · {$inc->codigo}*\n\n"
+             . "📦 *Pedido:* #{$pedido?->id}\n"
+             . "👤 *Cliente:* {$cliente}\n"
+             . "📋 *Motivo:* {$inc->tipo_label}"
+             . ($inc->submotivo ? " › {$inc->submotivo_label}" : '') . "\n"
+             . ($inc->descripcion ? "💬 *Comentario:* {$inc->descripcion}\n" : '')
+             . "\n🔗 Ver incidencia:\n{$link}";
+
+        try {
+            return (bool) $this->sendMessage($managerPhone, $msg);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('WhatsApp gestor incidencia falló', [
+                'incidencia_id' => $inc->id,
+                'codigo'        => $inc->codigo,
+                'error'         => $e->getMessage(),
+            ]);
+            return false;
+        }
+    }
+}
