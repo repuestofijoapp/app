@@ -237,23 +237,53 @@ class WhatsAppService
     }
     /**
      * Envía un código OTP de 4 dígitos por WhatsApp para verificar un reclamo.
+     * Retorna array con status y detección de cuota Green API (466).
      */
-    public function sendIncidentOtp(string $phone, string $code, int $pedidoId): bool
+    public function sendIncidentOtp(string $phone, string $code, int $pedidoId): array
     {
         $msg = "🔐 *Código de verificación RepuestoFijo*\n\n"
              . "Tu código para confirmar el reclamo del *Pedido #{$pedidoId}* es:\n\n"
              . "*{$code}*\n\n"
              . "⏱️ Válido por 10 minutos. No lo compartas con nadie.";
 
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+        $chatId = $cleanPhone . '@c.us';
+
+        $url = "{$this->baseUrl}/sendMessage/{$this->apiToken}";
+
         try {
-            return (bool) $this->sendMessage($phone, $msg);
+            $response = \Illuminate\Support\Facades\Http::post($url, [
+                'chatId' => $chatId,
+                'message' => $msg,
+                'linkPreview' => true,
+            ]);
+
+            if ($response->successful()) {
+                return ['success' => true, 'is_quota_error' => false, 'error' => null];
+            }
+
+            $body = $response->body();
+            $status = $response->status();
+            $isQuota = ($status === 466) || str_contains($body, 'quota has been exceeded') || str_contains($body, 'CORRESPONDENTS_QUOTE_EXCEEDED');
+
+            \Illuminate\Support\Facades\Log::error("Green API OTP Error: Status {$status} | " . $body);
+
+            return [
+                'success' => false,
+                'is_quota_error' => $isQuota,
+                'error' => "HTTP {$status}",
+            ];
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('WhatsApp OTP incidencia falló', [
                 'phone'     => $phone,
                 'pedido_id' => $pedidoId,
                 'error'     => $e->getMessage(),
             ]);
-            return false;
+            return [
+                'success' => false,
+                'is_quota_error' => false,
+                'error' => $e->getMessage(),
+            ];
         }
     }
 

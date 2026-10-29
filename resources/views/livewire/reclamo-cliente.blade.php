@@ -136,30 +136,34 @@
                                     @endswitch
                                 </div>
 
-                                {{-- Foto (compacto) --}}
+                                {{-- Foto (compacto con vista previa local instantánea y confiable) --}}
                                 @if ($submotivo !== 'no_llego_nada')
-                                    <div>
+                                    <div x-data="{ localPreview: null }" x-init="$watch('$wire.foto', val => { if (!val) localPreview = null; })">
                                         <label class="form-label text-white text-opacity-80 small fw-bold mb-1" style="font-size: 0.8rem;">
                                             Foto de evidencia {{ $tipo !== 'otro' ? '*' : '(opcional)' }}
                                         </label>
 
-                                        @if ($foto)
+                                        <template x-if="localPreview">
                                             <div class="position-relative mb-2">
-                                                <img src="{{ $foto->temporaryUrl() }}" class="img-fluid rounded-3 w-100" style="max-height: 120px; object-fit: cover; border: 1px solid rgba(255,255,255,0.15);" alt="Evidencia">
-                                                <button type="button" wire:click="$set('foto', null)" class="btn btn-dark btn-sm rounded-circle position-absolute" style="top: 6px; right: 6px; width: 24px; height: 24px; padding: 0; font-size: 0.7rem; background: rgba(0,0,0,0.7);">
+                                                <img :src="localPreview" class="img-fluid rounded-3 w-100" style="max-height: 140px; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" alt="Evidencia">
+                                                <button type="button" @click="localPreview = null; $wire.set('foto', null)" class="btn btn-dark btn-sm rounded-circle position-absolute d-flex align-items-center justify-content-center" style="top: 6px; right: 6px; width: 26px; height: 26px; padding: 0; font-size: 0.75rem; background: rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.2);">
                                                     ✕
                                                 </button>
                                             </div>
-                                        @endif
+                                        </template>
 
                                         <label class="w-100 p-2 px-3 rounded-3 text-center d-flex align-items-center justify-content-center gap-2"
-                                            style="cursor: pointer; background: rgba(255,255,255,0.04); border: 1.5px dashed rgba(255,255,255,0.2); min-height: 48px;">
+                                            style="cursor: pointer; background: rgba(255,255,255,0.04); border: 1.5px dashed rgba(255,255,255,0.25); min-height: 48px;">
                                             <i class="fas fa-camera text-warning fs-5"></i>
                                             <div class="text-start">
-                                                <span class="text-white small fw-semibold d-block" style="font-size: 0.82rem; line-height: 1.1;">{{ $foto ? 'Cambiar foto' : 'Tomar foto o subir de galería' }}</span>
+                                                <span class="text-white small fw-semibold d-block" style="font-size: 0.82rem; line-height: 1.1;" x-text="localPreview ? 'Cambiar foto seleccionada' : 'Tomar foto o subir de galería'">
+                                                    Tomar foto o subir de galería
+                                                </span>
                                                 <span class="text-white text-opacity-40" style="font-size: 0.68rem;">JPG, PNG, WEBP · máx. 5 MB</span>
                                             </div>
-                                            <input type="file" wire:model="foto" accept="image/jpeg,image/png,image/webp" capture="environment" style="display: none;">
+                                            <input type="file" wire:model="foto"
+                                                @change="localPreview = $event.target.files.length ? URL.createObjectURL($event.target.files[0]) : null"
+                                                accept="image/jpeg,image/png,image/webp" capture="environment" style="display: none;">
                                         </label>
                                         @error('foto')
                                             <div class="text-danger small mt-1" style="font-size: 0.72rem;">{{ $message }}</div>
@@ -248,8 +252,12 @@
                     {{-- Barra de acciones fija (Footer) --}}
                     <div class="reclamo-modal-footer border-top d-flex gap-2" style="border-color: rgba(255,255,255,0.08) !important;">
                         @if ($step > 1)
-                            <button type="button" wire:click="back" class="btn btn-outline-light border-0 rounded-pill py-2 px-3 fw-semibold" style="background: rgba(255,255,255,0.06); font-size: 0.85rem; height: 42px;">
-                                ←
+                            <button type="button" wire:click="back"
+                                class="btn rounded-pill d-flex align-items-center justify-content-center shadow-none fw-semibold"
+                                style="background: rgba(255,255,255,0.12); color: #ffffff; border: 1px solid rgba(255,255,255,0.25); height: 42px; min-width: 54px; font-size: 0.9rem;"
+                                title="Volver al paso anterior"
+                            >
+                                <i class="fas fa-arrow-left"></i>
                             </button>
                         @endif
 

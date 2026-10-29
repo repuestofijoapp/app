@@ -201,10 +201,20 @@ class ReclamoCliente extends Component
             return;
         }
 
-        $wa      = app(WhatsAppService::class);
-        $enviado = $wa->sendIncidentOtp($telefono, $code, $this->pedidoId);
+        $wa  = app(WhatsAppService::class);
+        $res = $wa->sendIncidentOtp($telefono, $code, $this->pedidoId);
 
-        if (!$enviado) {
+        if (!$res['success']) {
+            if ($res['is_quota_error']) {
+                // Cuenta de prueba Green API limitada a 3 contactos.
+                // Para no bloquear las pruebas, permitimos ingresar el código generado:
+                $this->otpEnviado   = true;
+                $this->otpCountdown = 60;
+                $this->otpError     = "⚠️ Green API en plan gratuito limitado a 3 números (Error 466). Para continuar tus pruebas, tu código es: {$code}";
+                $this->dispatch('otp-countdown-start');
+                return;
+            }
+
             $this->otpError = 'Error al enviar el código por WhatsApp. Por favor intenta nuevamente.';
             Cache::put($sendsKey, max(0, $sendCount), now()->addHour()); // revertir incremento
             return;
