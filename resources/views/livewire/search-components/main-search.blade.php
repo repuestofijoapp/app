@@ -3393,13 +3393,33 @@
                                                     'class' => !empty($order->cancellation_reason) ? 'bg-danger text-white' : 'bg-warning text-dark'
                                                 ];
                                             @endphp
+                                            @php
+                                                $orderStatusVal = is_object($order->status) ? $order->status->value : $order->status;
+                                                $orderHitosKeys = $order->relationLoaded('hitos') && $order->hitos ? $order->hitos->pluck('tipo_hito')->toArray() : [];
+                                                $tieneHito3     = in_array('entrega_motorizado', $orderHitosKeys);
+                                                $tieneHito4     = in_array('entrega_cliente', $orderHitosKeys);
+                                                $esEntregado    = $orderStatusVal === 'entregado';
+                                                $puedeReclamar  = ($tieneHito3 || $tieneHito4 || $esEntregado)
+                                                                && !in_array($orderStatusVal, ['pendiente','por_confirmar','pagado']);
+                                                $yaReclamado    = $order->relationLoaded('incidencia')
+                                                                ? $order->incidencia !== null
+                                                                : $order->incidencia()->exists();
+                                            @endphp
                                             <div class="text-end">
                                                 <span class="badge {{ $s['class'] }} mb-2"
                                                     style="font-size: 0.75rem; border-radius: 6px; padding: 0.5em 1em;">{{ $s['label'] }}</span>
-                                                <div class="mt-1">
-                                                    {{-- ReclamoCliente renderiza el botón correcto (reportar / ver reclamo / nada) --}}
-                                                    <livewire:reclamo-cliente :pedido-id="$order->id" :key="'rc-'.$order->id" />
-                                                </div>
+                                                @if ($puedeReclamar && !$yaReclamado)
+                                                    <div class="mt-1">
+                                                        <button
+                                                            type="button"
+                                                            wire:click.stop="reportIncident({{ $order->id }})"
+                                                            class="btn btn-outline-danger btn-sm rounded-pill fw-bold px-3 py-1 shadow-none"
+                                                            style="font-size: 0.65rem; border-width: 1.5px;">
+                                                            <i class="fas fa-exclamation-triangle me-1" style="font-size: 0.6rem;"></i>
+                                                            Reportar un problema
+                                                        </button>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
 
@@ -3420,6 +3440,16 @@
                                                     wire:click="openOrderTracking({{ $order->id }})">
                                                     <i class="fas fa-truck small"></i>
                                                 </button>
+                                                @if ($yaReclamado)
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-light border p-2 rounded-circle d-flex align-items-center justify-content-center btn-incidencia-warning"
+                                                        style="width: 32px; height: 32px; color: #f59e0b; border-color: #fde68a;"
+                                                        title="Ver Reclamo"
+                                                        wire:click.stop="reportIncident({{ $order->id }})">
+                                                        <i class="fas fa-exclamation-triangle small"></i>
+                                                    </button>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -3946,9 +3976,15 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #BE3C3B;
         }
+
+        .btn-incidencia-warning:hover {
+            background-color: #ffedd5 !important;
+            color: #ea580c !important;
+            border-color: #f97316 !important;
+        }
     </style>
-    {{-- INCIDENT MODAL — reemplazado por livewire:reclamo-cliente (v2) --}}
-    {{-- El componente ReclamoCliente se renderiza inline en el loop de pedidos --}}
+    {{-- MÓDULO RECLAMOS / INCIDENCIAS (Fase 1) --}}
+    <livewire:reclamo-cliente wire:key="reclamo-cliente-global" />
 
     {{-- USER ORDER DETAIL MODAL --}}
     @if($showUserOrderDetailModal && $userSelectedOrder)
@@ -4231,14 +4267,35 @@
                             </span>
                         @endif
 
-                        {{-- Botón Reportar problema: rojo suave --}}
-                        <button type="button"
-                            class="btn rounded-pill px-3 py-2 fw-semibold"
-                            style="border:1.5px solid #fca5a5; background:#fef2f2; color:#dc2626;"
-                            wire:click="reportIncident({{ $userSelectedOrder->id }})"
-                            @if($userSelectedOrder->status === 'cancelado') disabled @endif>
-                            ⚠️ Reportar problema
-                        </button>
+                        @php
+                            $modalOrderStatusVal = is_object($userSelectedOrder->status) ? $userSelectedOrder->status->value : $userSelectedOrder->status;
+                            $modalOrderHitosKeys = $userSelectedOrder->relationLoaded('hitos') && $userSelectedOrder->hitos ? $userSelectedOrder->hitos->pluck('tipo_hito')->toArray() : [];
+                            $modalTieneHito3     = in_array('entrega_motorizado', $modalOrderHitosKeys);
+                            $modalTieneHito4     = in_array('entrega_cliente', $modalOrderHitosKeys);
+                            $modalEsEntregado    = $modalOrderStatusVal === 'entregado';
+                            $modalPuedeReclamar  = ($modalTieneHito3 || $modalTieneHito4 || $modalEsEntregado)
+                                                && !in_array($modalOrderStatusVal, ['pendiente','por_confirmar','pagado']);
+                            $modalYaReclamado    = $userSelectedOrder->relationLoaded('incidencia')
+                                                ? $userSelectedOrder->incidencia !== null
+                                                : $userSelectedOrder->incidencia()->exists();
+                        @endphp
+
+                        {{-- Botón Reclamo / Incidencia --}}
+                        @if ($modalYaReclamado)
+                            <button type="button"
+                                class="btn rounded-pill px-3 py-2 fw-semibold"
+                                style="border:1.5px solid #fde68a; background:#fffbeb; color:#d97706;"
+                                wire:click="reportIncident({{ $userSelectedOrder->id }})">
+                                ⚠️ Ver reclamo
+                            </button>
+                        @elseif ($modalPuedeReclamar)
+                            <button type="button"
+                                class="btn rounded-pill px-3 py-2 fw-semibold"
+                                style="border:1.5px solid #fca5a5; background:#fef2f2; color:#dc2626;"
+                                wire:click="reportIncident({{ $userSelectedOrder->id }})">
+                                ⚠️ Reportar problema
+                            </button>
+                        @endif
 
                         {{-- Botón Cerrar: pastilla oscura a la derecha --}}
                         <button type="button"
@@ -4287,15 +4344,23 @@
                             </span>
                         @endif
 
-                        {{-- Fila: Reportar + Cerrar en 2 columnas --}}
+                        {{-- Fila: Reportar/Ver + Cerrar en 2 columnas --}}
                         <div class="d-flex gap-2 w-100">
-                            <button type="button"
-                                class="btn fw-semibold flex-fill py-2"
-                                style="border:1.5px solid #fca5a5; background:#fef2f2; color:#dc2626; border-radius:12px; font-size:0.9rem;"
-                                wire:click="reportIncident({{ $userSelectedOrder->id }})"
-                                @if($userSelectedOrder->status === 'cancelado') disabled @endif>
-                                ⚠️ Reportar
-                            </button>
+                            @if ($modalYaReclamado)
+                                <button type="button"
+                                    class="btn fw-semibold flex-fill py-2"
+                                    style="border:1.5px solid #fde68a; background:#fffbeb; color:#d97706; border-radius:12px; font-size:0.9rem;"
+                                    wire:click="reportIncident({{ $userSelectedOrder->id }})">
+                                    ⚠️ Ver reclamo
+                                </button>
+                            @elseif ($modalPuedeReclamar)
+                                <button type="button"
+                                    class="btn fw-semibold flex-fill py-2"
+                                    style="border:1.5px solid #fca5a5; background:#fef2f2; color:#dc2626; border-radius:12px; font-size:0.9rem;"
+                                    wire:click="reportIncident({{ $userSelectedOrder->id }})">
+                                    ⚠️ Reportar
+                                </button>
+                            @endif
                             <button type="button"
                                 class="btn fw-semibold flex-fill py-2"
                                 style="background:#1f2937; color:#fff; border:none; border-radius:12px; font-size:0.9rem;"

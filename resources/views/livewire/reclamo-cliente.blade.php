@@ -195,7 +195,7 @@
                             <div class="flex gap-3">
                                 <input
                                     type="text"
-                                    wire:model="otp"
+                                    wire:model.live="otp"
                                     inputmode="numeric"
                                     maxlength="4"
                                     placeholder="Código WhatsApp"

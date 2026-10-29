@@ -3325,10 +3325,7 @@ class MainSearch extends Component
 
     public function reportIncident($orderId)
     {
-        $this->selectedOrderIdForIncident = $orderId;
-        $this->showIncidentModal = true;
-        // Optional: keep orders drawer open in background or close it
-        // $this->showOrdersDrawer = false; 
+        $this->dispatch('open-reclamo', pedidoId: $orderId);
     }
 
     public function sendIncident($type)
@@ -3382,7 +3379,7 @@ class MainSearch extends Component
 
     public function viewUserOrderDetail($orderId)
     {
-        $this->userSelectedOrder = Pedido::with(['items.product', 'items.provider'])->find($orderId);
+        $this->userSelectedOrder = Pedido::with(['items.product', 'items.provider', 'hitos', 'incidencia'])->find($orderId);
         $this->showUserOrderDetailModal = true;
     }
 

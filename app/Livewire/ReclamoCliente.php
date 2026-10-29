@@ -26,8 +26,8 @@ class ReclamoCliente extends Component
     public ?int   $pedidoId         = null;
     public ?array $pedidoData       = null; // datos serializables para la vista
 
-    // ── Mount: recibir el pedidoId como prop ──────────────────────
-    public function mount(int $pedidoId): void
+    // ── Mount ─────────────────────────────────────────────────────
+    public function mount(?int $pedidoId = null): void
     {
         $this->pedidoId = $pedidoId;
     }
@@ -58,17 +58,15 @@ class ReclamoCliente extends Component
     // ── Abrir modal ───────────────────────────────────────────────
 
     /**
-     * Llamado por evento Alpine: @on('open-reclamo', { pedidoId })
-     * Cada instancia filtra por su propio pedidoId.
+     * Llamado por evento Alpine o Livewire: open-reclamo
      */
     #[\Livewire\Attributes\On('open-reclamo')]
-    public function openFromEvent(array $params): void
+    public function openFromEvent($params): void
     {
-        $pedidoId = (int) ($params['pedidoId'] ?? 0);
-        if ($pedidoId !== $this->pedidoId) {
-            return; // No es para esta instancia
+        $pedidoId = is_array($params) ? (int) ($params['pedidoId'] ?? 0) : (int) $params;
+        if ($pedidoId > 0) {
+            $this->open($pedidoId);
         }
-        $this->open($pedidoId);
     }
 
     public function open(int $pedidoId): void
@@ -92,9 +90,7 @@ class ReclamoCliente extends Component
                 'status_color'       => $inc->status_color,
                 'historial_estados'  => $inc->historial_estados ?? [],
                 'nota_resolucion'    => $inc->nota_resolucion_cliente,
-                'foto_url'           => $inc->foto_path
-                    ? route('admin.incidencias.evidencia', $inc->id)
-                    : null,
+                'foto_url'           => $inc->foto_signed_url,
                 'created_at'         => $inc->created_at?->format('d/m/Y H:i'),
             ];
             $this->showReadOnly = true;
@@ -113,7 +109,6 @@ class ReclamoCliente extends Component
         }
 
         $this->pedidoId = $pedidoId;
-        $hito4Time = $tieneHito4 ? $hitos['entrega_motorizado']->created_at : null;
 
         $this->pedidoData = [
             'id'            => $pedido->id,
@@ -375,8 +370,8 @@ class ReclamoCliente extends Component
             ];
         }
 
-        // No llegó: si hito4 validado o status=entregado
-        if ($hito4At || $entregado) {
+        // No llegó: solo primeras 24h si hito 4 validado o status=entregado
+        if ($horasHito4 < 24 && ($hito4At || $entregado)) {
             $tipos['no_llego'] = [
                 'label' => 'No llegó mi pedido',
                 'icon'  => '🚫',
