@@ -4,18 +4,18 @@
     {{-- ══════════════════════════════════════════════════════════════ --}}
     @if ($showModal)
     <div
-        class="modal fade show d-block"
+        class="modal fade show d-block reclamo-modal-overlay"
         tabindex="-1"
-        style="background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 10500; position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow-y: auto;"
+        style="background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 10500; position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow-x: hidden;"
         wire:keydown.escape="cancel"
     >
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 480px; margin: 1.75rem auto;">
-            <div class="modal-content border-0 shadow-2xl text-white"
-                style="border-radius: 22px; background: #131826; border: 1px solid rgba(255,255,255,0.08); overflow: hidden;">
+        <div class="modal-dialog reclamo-modal-dialog">
+            <div class="modal-content border-0 shadow-2xl text-white reclamo-modal-content"
+                style="background: #131826; border: 1px solid rgba(255,255,255,0.08);">
 
                 {{-- Drag Handle (Mobile aesthetic) --}}
-                <div class="d-flex justify-content-center pt-3 pb-1">
-                    <div style="width: 42px; height: 4px; background: rgba(255,255,255,0.25); border-radius: 2px;"></div>
+                <div class="d-flex justify-content-center pt-2 pb-1">
+                    <div style="width: 38px; height: 4px; background: rgba(255,255,255,0.25); border-radius: 2px;"></div>
                 </div>
 
                 {{-- ══════════════════════════════════════════════════════ --}}
@@ -35,10 +35,10 @@
                 {{-- ══════════════════════════════════════════════════════ --}}
                 @else
                     {{-- Cabecera --}}
-                    <div class="p-4 pb-3 border-bottom" style="border-color: rgba(255,255,255,0.08) !important;">
+                    <div class="reclamo-modal-header border-bottom" style="border-color: rgba(255,255,255,0.08) !important;">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <h4 class="fw-bold mb-1 text-white" style="font-family: 'Syne', sans-serif; font-size: 1.25rem;">
+                                <h4 class="fw-bold mb-1 text-white reclamo-title" style="font-family: 'Syne', sans-serif;">
                                     ¿Qué pasó con tu pedido?
                                 </h4>
                                 @if ($pedidoData)
@@ -51,10 +51,10 @@
                         </div>
 
                         {{-- Barra de progreso de 3 pasos --}}
-                        <div class="d-flex gap-2 mt-3">
-                            <div class="flex-grow-1" style="height: 4px; border-radius: 2px; background: {{ $step >= 1 ? '#ea580c' : 'rgba(255,255,255,0.1)' }}; transition: background 0.3s;"></div>
-                            <div class="flex-grow-1" style="height: 4px; border-radius: 2px; background: {{ $step >= 2 ? '#ea580c' : 'rgba(255,255,255,0.1)' }}; transition: background 0.3s;"></div>
-                            <div class="flex-grow-1" style="height: 4px; border-radius: 2px; background: {{ $step >= 3 ? '#ea580c' : 'rgba(255,255,255,0.1)' }}; transition: background 0.3s;"></div>
+                        <div class="d-flex gap-2 mt-2">
+                            <div class="flex-grow-1" style="height: 3px; border-radius: 2px; background: {{ $step >= 1 ? '#ea580c' : 'rgba(255,255,255,0.1)' }}; transition: background 0.3s;"></div>
+                            <div class="flex-grow-1" style="height: 3px; border-radius: 2px; background: {{ $step >= 2 ? '#ea580c' : 'rgba(255,255,255,0.1)' }}; transition: background 0.3s;"></div>
+                            <div class="flex-grow-1" style="height: 3px; border-radius: 2px; background: {{ $step >= 3 ? '#ea580c' : 'rgba(255,255,255,0.1)' }}; transition: background 0.3s;"></div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mt-1">
                             <span class="text-white text-opacity-40" style="font-size: 0.72rem;">
@@ -64,11 +64,11 @@
                     </div>
 
                     {{-- Contenido scrollable --}}
-                    <div class="p-4 py-3" style="max-height: 65vh; overflow-y: auto;">
+                    <div class="reclamo-modal-body">
 
                         {{-- Error general --}}
                         @if ($generalError)
-                            <div class="alert alert-danger py-2 px-3 rounded-3 small mb-3" style="background: rgba(220,38,38,0.15); border: 1px solid rgba(220,38,38,0.3); color: #fca5a5;">
+                            <div class="alert alert-danger py-2 px-3 rounded-3 small mb-2" style="background: rgba(220,38,38,0.15); border: 1px solid rgba(220,38,38,0.3); color: #fca5a5; font-size: 0.8rem;">
                                 <i class="fas fa-exclamation-circle me-1"></i> {{ $generalError }}
                             </div>
                         @endif
@@ -120,9 +120,9 @@
 
                         {{-- ── PASO 3: Evidencia + OTP ───────────────────── --}}
                         @if ($step === 3)
-                            <div class="d-flex flex-column gap-3">
-                                {{-- Instrucción contextual --}}
-                                <div class="p-3 rounded-3 small" style="background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.25); color: #93c5fd;">
+                            <div class="d-flex flex-column gap-2">
+                                {{-- Instrucción contextual compacta --}}
+                                <div class="p-2 px-3 rounded-3" style="background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.25); color: #93c5fd; font-size: 0.8rem;">
                                     @switch($submotivo ?: $tipo)
                                         @case('no_era_producto')    📸 Adjunta foto del producto recibido y de su etiqueta. @break
                                         @case('menos_cantidad')     📸 Adjunta foto de todo lo que llegó en el paquete. @break
@@ -136,64 +136,66 @@
                                     @endswitch
                                 </div>
 
-                                {{-- Foto --}}
+                                {{-- Foto (compacto) --}}
                                 @if ($submotivo !== 'no_llego_nada')
                                     <div>
-                                        <label class="form-label text-white text-opacity-80 small fw-bold mb-1">
+                                        <label class="form-label text-white text-opacity-80 small fw-bold mb-1" style="font-size: 0.8rem;">
                                             Foto de evidencia {{ $tipo !== 'otro' ? '*' : '(opcional)' }}
                                         </label>
 
                                         @if ($foto)
                                             <div class="position-relative mb-2">
-                                                <img src="{{ $foto->temporaryUrl() }}" class="img-fluid rounded-3 w-100" style="max-height: 160px; object-fit: cover; border: 1px solid rgba(255,255,255,0.15);" alt="Evidencia">
-                                                <button type="button" wire:click="$set('foto', null)" class="btn btn-dark btn-sm rounded-circle position-absolute" style="top: 8px; right: 8px; width: 28px; height: 28px; padding: 0; background: rgba(0,0,0,0.7);">
+                                                <img src="{{ $foto->temporaryUrl() }}" class="img-fluid rounded-3 w-100" style="max-height: 120px; object-fit: cover; border: 1px solid rgba(255,255,255,0.15);" alt="Evidencia">
+                                                <button type="button" wire:click="$set('foto', null)" class="btn btn-dark btn-sm rounded-circle position-absolute" style="top: 6px; right: 6px; width: 24px; height: 24px; padding: 0; font-size: 0.7rem; background: rgba(0,0,0,0.7);">
                                                     ✕
                                                 </button>
                                             </div>
                                         @endif
 
-                                        <label class="w-100 p-3 rounded-3 text-center d-flex align-items-center justify-content-center gap-2"
-                                            style="cursor: pointer; background: rgba(255,255,255,0.04); border: 1.5px dashed rgba(255,255,255,0.2);">
+                                        <label class="w-100 p-2 px-3 rounded-3 text-center d-flex align-items-center justify-content-center gap-2"
+                                            style="cursor: pointer; background: rgba(255,255,255,0.04); border: 1.5px dashed rgba(255,255,255,0.2); min-height: 48px;">
                                             <i class="fas fa-camera text-warning fs-5"></i>
-                                            <div>
-                                                <span class="text-white small fw-semibold">{{ $foto ? 'Cambiar foto' : 'Tomar foto o subir de galería' }}</span>
-                                                <span class="text-white text-opacity-40 d-block" style="font-size: 0.72rem;">JPG, PNG, WEBP · máx. 5 MB</span>
+                                            <div class="text-start">
+                                                <span class="text-white small fw-semibold d-block" style="font-size: 0.82rem; line-height: 1.1;">{{ $foto ? 'Cambiar foto' : 'Tomar foto o subir de galería' }}</span>
+                                                <span class="text-white text-opacity-40" style="font-size: 0.68rem;">JPG, PNG, WEBP · máx. 5 MB</span>
                                             </div>
                                             <input type="file" wire:model="foto" accept="image/jpeg,image/png,image/webp" capture="environment" style="display: none;">
                                         </label>
                                         @error('foto')
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                            <div class="text-danger small mt-1" style="font-size: 0.72rem;">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 @endif
 
-                                {{-- Comentario --}}
+                                {{-- Comentario (compacto rows="2") --}}
                                 <div>
-                                    <label class="form-label text-white text-opacity-80 small fw-bold mb-1">
-                                        Comentario {{ $tipo === 'otro' ? '*' : '(opcional)' }}
-                                    </label>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label text-white text-opacity-80 small fw-bold mb-0" style="font-size: 0.8rem;">
+                                            Comentario {{ $tipo === 'otro' ? '*' : '(opcional)' }}
+                                        </label>
+                                        <span class="text-white text-opacity-40" style="font-size: 0.68rem;">
+                                            {{ strlen($descripcion) }}/500
+                                        </span>
+                                    </div>
                                     <textarea
                                         wire:model.live="descripcion"
                                         maxlength="500"
-                                        rows="3"
+                                        rows="2"
                                         placeholder="{{ $tipo === 'otro' ? 'Describe el problema con detalle...' : 'Información adicional para agilizar tu caso (opcional)' }}"
-                                        class="form-control text-white border-0"
-                                        style="background: rgba(255,255,255,0.06); border-radius: 12px; font-size: 0.88rem;"
+                                        class="form-control text-white border-0 py-2 px-3"
+                                        style="background: rgba(255,255,255,0.06); border-radius: 10px; font-size: 0.84rem; min-height: 52px; max-height: 85px;"
                                     ></textarea>
-                                    <div class="text-end text-white text-opacity-40 mt-1" style="font-size: 0.72rem;">
-                                        {{ strlen($descripcion) }}/500
-                                    </div>
                                 </div>
 
-                                {{-- Verificación WhatsApp (OTP) --}}
-                                <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                                {{-- Verificación WhatsApp (OTP compacto) --}}
+                                <div class="p-2 px-3 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
                                     <div class="d-flex align-items-center justify-content-between mb-1">
-                                        <label class="text-white fw-bold small mb-0">
+                                        <label class="text-white fw-bold mb-0" style="font-size: 0.8rem;">
                                             Código de confirmación <span class="text-warning">*</span>
                                         </label>
-                                        <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30 small" style="font-size: 0.65rem;">WhatsApp</span>
+                                        <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30" style="font-size: 0.62rem; padding: 0.25em 0.5em;">WhatsApp</span>
                                     </div>
-                                    <p class="text-white text-opacity-50 mb-2" style="font-size: 0.75rem;">
+                                    <p class="text-white text-opacity-50 mb-2" style="font-size: 0.72rem;">
                                         Enviaremos el código al +{{ $telefonoMascarado }}
                                     </p>
 
@@ -204,16 +206,16 @@
                                             inputmode="numeric"
                                             maxlength="4"
                                             placeholder="••••"
-                                            class="form-control text-center text-white fw-bold border-0 shadow-none"
-                                            style="background: rgba(255,255,255,0.08); border-radius: 12px; font-size: 1.15rem; letter-spacing: 8px; max-width: 130px; {{ !$otpEnviado ? 'opacity: 0.5;' : '' }}"
+                                            class="form-control text-center text-white fw-bold border-0 shadow-none py-1"
+                                            style="background: rgba(255,255,255,0.08); border-radius: 10px; font-size: 1.1rem; letter-spacing: 6px; max-width: 110px; height: 38px; {{ !$otpEnviado ? 'opacity: 0.5;' : '' }}"
                                             @if(!$otpEnviado) readonly @endif
                                         >
                                         <button
                                             type="button"
                                             wire:click="enviarOtp"
                                             wire:loading.attr="disabled"
-                                            class="btn btn-warning fw-bold flex-grow-1 shadow-none rounded-3"
-                                            style="font-size: 0.82rem; border-radius: 12px !important;"
+                                            class="btn btn-warning fw-bold flex-grow-1 shadow-none py-1"
+                                            style="font-size: 0.8rem; border-radius: 10px !important; height: 38px;"
                                             x-bind:disabled="countdown > 0"
                                             x-text="countdown > 0 ? 'Reenviar en ' + countdown + 's' : 'Enviar código'"
                                         >
@@ -222,13 +224,13 @@
                                     </div>
 
                                     @if ($otpError)
-                                        <div class="text-danger small mt-2" style="font-size: 0.76rem;">
+                                        <div class="text-danger small mt-1" style="font-size: 0.74rem;">
                                             <i class="fas fa-exclamation-triangle me-1"></i> {{ $otpError }}
                                         </div>
                                     @endif
 
                                     @if ($otpEnviado && !$otpError)
-                                        <div class="text-success small mt-2" style="font-size: 0.76rem;">
+                                        <div class="text-success small mt-1" style="font-size: 0.74rem;">
                                             <i class="fas fa-check-circle me-1"></i> Código enviado por WhatsApp. Revisa tus mensajes.
                                         </div>
                                     @endif
@@ -244,10 +246,10 @@
                     </div>{{-- /scrollable --}}
 
                     {{-- Barra de acciones fija (Footer) --}}
-                    <div class="p-3 px-4 border-top d-flex gap-2" style="border-color: rgba(255,255,255,0.08) !important;">
+                    <div class="reclamo-modal-footer border-top d-flex gap-2" style="border-color: rgba(255,255,255,0.08) !important;">
                         @if ($step > 1)
-                            <button type="button" wire:click="back" class="btn btn-outline-light border-0 rounded-pill py-2 px-3 fw-semibold" style="background: rgba(255,255,255,0.06); font-size: 0.88rem;">
-                                ← Atrás
+                            <button type="button" wire:click="back" class="btn btn-outline-light border-0 rounded-pill py-2 px-3 fw-semibold" style="background: rgba(255,255,255,0.06); font-size: 0.85rem; height: 42px;">
+                                ←
                             </button>
                         @endif
 
@@ -257,15 +259,15 @@
                                 wire:click="submit"
                                 wire:loading.attr="disabled"
                                 @if (strlen($otp) < 4) disabled @endif
-                                class="btn btn-danger fw-bold rounded-pill py-2 px-4 flex-grow-1 shadow-none"
-                                style="font-size: 0.9rem; background: #dc2626;"
+                                class="btn btn-danger fw-bold rounded-pill py-2 px-3 flex-grow-1 shadow-none"
+                                style="font-size: 0.88rem; background: #dc2626; height: 42px;"
                             >
                                 <span wire:loading.remove wire:target="submit">Enviar reclamo</span>
                                 <span wire:loading wire:target="submit"><i class="fas fa-spinner fa-spin me-1"></i> Enviando…</span>
                             </button>
                         @endif
 
-                        <button type="button" wire:click="cancel" class="btn btn-outline-light border-0 rounded-pill py-2 px-3 {{ $step === 3 ? '' : 'flex-grow-1' }}" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); font-size: 0.88rem;">
+                        <button type="button" wire:click="cancel" class="btn btn-outline-light border-0 rounded-pill py-2 px-3 {{ $step === 3 ? '' : 'flex-grow-1' }}" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); font-size: 0.85rem; height: 42px;">
                             Cancelar
                         </button>
                     </div>
@@ -277,6 +279,78 @@
     @endif
 
     <style>
+        /* Desktop base */
+        .reclamo-modal-dialog {
+            max-width: 480px;
+            margin: 1.75rem auto;
+        }
+        .reclamo-modal-content {
+            border-radius: 22px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .reclamo-modal-header {
+            padding: 1rem 1.25rem 0.75rem;
+            flex-shrink: 0;
+        }
+        .reclamo-modal-body {
+            padding: 0.85rem 1.25rem;
+            max-height: 65vh;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .reclamo-modal-footer {
+            padding: 0.75rem 1.25rem 1rem;
+            flex-shrink: 0;
+            background: #131826;
+        }
+        .reclamo-title {
+            font-size: 1.25rem;
+        }
+
+        /* Mobile specific bottom sheet */
+        @media (max-width: 576px) {
+            .reclamo-modal-overlay {
+                display: flex !important;
+                align-items: flex-end !important;
+                padding: 0 !important;
+            }
+            .reclamo-modal-dialog {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+            }
+            .reclamo-modal-content {
+                border-radius: 20px 20px 0 0 !important;
+                max-height: 90vh !important;
+                max-height: 90dvh !important;
+                border-bottom: none !important;
+            }
+            .reclamo-modal-header {
+                padding: 0.65rem 1rem 0.5rem !important;
+            }
+            .reclamo-title {
+                font-size: 1.1rem !important;
+            }
+            .reclamo-modal-body {
+                padding: 0.6rem 1rem !important;
+                max-height: calc(90dvh - 145px) !important;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
+            .reclamo-modal-footer {
+                padding: 0.6rem 1rem calc(0.6rem + env(safe-area-inset-bottom, 0px)) !important;
+                position: sticky !important;
+                bottom: 0 !important;
+                z-index: 10 !important;
+            }
+        }
+
         .reclamo-option-card:hover {
             background: rgba(255, 255, 255, 0.1) !important;
             border-color: rgba(234, 88, 12, 0.4) !important;
