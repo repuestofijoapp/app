@@ -172,4 +172,62 @@ class Incidencia extends Model
             default          => 'badge-secondary',
         };
     }
+
+    /**
+     * SLA Timer y Métricas
+     */
+    public function getSlaAttribute(): array
+    {
+        $isClosed = in_array($this->status, ['resuelta', 'rechazada', 'cerrada']);
+        $end = ($isClosed && $this->resolved_at) ? $this->resolved_at : now();
+        $start = $this->created_at ?? now();
+
+        $diffMinutes = max(0, $start->diffInMinutes($end));
+        $hours = intdiv($diffMinutes, 60);
+        $mins = $diffMinutes % 60;
+
+        $timeString = $hours > 0 ? "{$hours}h {$mins}m" : "{$mins}m";
+
+        if ($isClosed) {
+            return [
+                'active'  => false,
+                'minutes' => $diffMinutes,
+                'label'   => "Resuelto en {$timeString}",
+                'color'   => '#10b981',
+                'bg'      => 'rgba(16,185,129,0.15)',
+                'level'   => 'closed',
+            ];
+        }
+
+        if ($diffMinutes < 60) {
+            return [
+                'active'  => true,
+                'minutes' => $diffMinutes,
+                'label'   => "SLA: {$timeString} (< 1h)",
+                'color'   => '#10b981',
+                'bg'      => 'rgba(16,185,129,0.15)',
+                'level'   => 'ok',
+            ];
+        }
+
+        if ($diffMinutes <= 120) {
+            return [
+                'active'  => true,
+                'minutes' => $diffMinutes,
+                'label'   => "SLA: {$timeString} (1-2h)",
+                'color'   => '#f59e0b',
+                'bg'      => 'rgba(245,158,11,0.15)',
+                'level'   => 'warning',
+            ];
+        }
+
+        return [
+            'active'  => true,
+            'minutes' => $diffMinutes,
+            'label'   => "SLA: {$timeString} (> 2h)",
+            'color'   => '#ef4444',
+            'bg'      => 'rgba(239,68,68,0.2)',
+            'level'   => 'danger',
+        ];
+    }
 }
