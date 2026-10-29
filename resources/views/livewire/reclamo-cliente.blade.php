@@ -197,7 +197,7 @@
                                         <label class="text-white fw-bold mb-0" style="font-size: 0.8rem;">
                                             Código de confirmación <span class="text-warning">*</span>
                                         </label>
-                                        <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30" style="font-size: 0.62rem; padding: 0.25em 0.5em;">WhatsApp</span>
+                                        <span class="badge bg-success bg-opacity-25 text-white border border-success border-opacity-40" style="font-size: 0.65rem; padding: 0.25em 0.55em;"><i class="fab fa-whatsapp me-1 text-success"></i>WhatsApp</span>
                                     </div>
                                     <p class="text-white text-opacity-50 mb-2" style="font-size: 0.72rem;">
                                         Enviaremos el código al +{{ $telefonoMascarado }}
