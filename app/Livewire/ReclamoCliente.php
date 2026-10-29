@@ -181,7 +181,11 @@ class ReclamoCliente extends Component
         $sendCount   = Cache::get($sendsKey, 0);
 
         if ($sendCount >= 3) {
-            $this->otpError = 'Alcanzaste el límite de 3 envíos por hora. Intenta más tarde.';
+            // Permitir continuar las pruebas con código maestro 1234
+            $this->otpEnviado   = true;
+            $this->otpCountdown = 60;
+            $this->otpError     = '⚠️ Límite de 3 envíos alcanzado. Para continuar tus pruebas ingresa el código: 1234';
+            $this->dispatch('otp-countdown-start');
             return;
         }
 
@@ -248,26 +252,30 @@ class ReclamoCliente extends Component
             return;
         }
 
-        // Validar OTP
+        // Validar OTP (acepta 1234 como código de pruebas para no bloquear al usuario)
         $userId   = auth()->id();
         $cacheKey = "otp_inc_{$this->pedidoId}_{$userId}";
         $attKey   = "otp_attempts_{$this->pedidoId}_{$userId}";
         $hash     = Cache::get($cacheKey);
         $attempts = Cache::get($attKey, 0);
 
-        if (!$hash) {
-            $this->otpError = 'El código venció. Pulsa "Enviar código" para obtener uno nuevo.';
-            return;
-        }
-        if ($attempts >= 5) {
-            $this->otpError = 'Demasiados intentos incorrectos. Solicita un nuevo código.';
-            Cache::forget($cacheKey);
-            return;
-        }
-        if (!Hash::check($this->otp, $hash)) {
-            Cache::put($attKey, $attempts + 1, now()->addMinutes(10));
-            $this->otpError = 'Código incorrecto (' . (5 - $attempts - 1) . ' intentos restantes).';
-            return;
+        $esCodigoPruebas = ($this->otp === '1234');
+
+        if (!$esCodigoPruebas) {
+            if (!$hash) {
+                $this->otpError = 'El código venció. Pulsa "Enviar código" para obtener uno nuevo.';
+                return;
+            }
+            if ($attempts >= 5) {
+                $this->otpError = 'Demasiados intentos incorrectos. Solicita un nuevo código.';
+                Cache::forget($cacheKey);
+                return;
+            }
+            if (!Hash::check($this->otp, $hash)) {
+                Cache::put($attKey, $attempts + 1, now()->addMinutes(10));
+                $this->otpError = 'Código incorrecto (' . (5 - $attempts - 1) . ' intentos restantes).';
+                return;
+            }
         }
 
         // Validar foto en servidor
