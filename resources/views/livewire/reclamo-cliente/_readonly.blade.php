@@ -1,55 +1,63 @@
-{{-- Vista de solo lectura de incidencia existente --}}
-<div class="px-5 py-5 flex flex-col gap-4 overflow-y-auto max-h-[75dvh]">
+{{-- Vista de solo lectura de incidencia existente (Bootstrap 5 Dark Mode) --}}
+<div class="p-4 d-flex flex-column gap-3" style="max-height: 75vh; overflow-y: auto;">
     {{-- Cabecera --}}
-    <div class="flex items-start justify-between">
+    <div class="d-flex justify-content-between align-items-start border-bottom pb-3" style="border-color: rgba(255,255,255,0.08) !important;">
         <div>
-            <h2 class="text-white font-bold text-base">Reclamo {{ $incidenciaData['codigo'] }}</h2>
-            <p class="text-gray-500 text-xs mt-0.5">{{ $incidenciaData['created_at'] }}</p>
+            <h5 class="fw-bold text-white mb-0" style="font-family: 'Syne', sans-serif;">
+                Reclamo #{{ $incidenciaData['codigo'] }}
+            </h5>
+            <div class="text-white text-opacity-50 small mt-1">
+                {{ $incidenciaData['created_at'] }}
+            </div>
         </div>
-        <button wire:click="cancel" class="text-gray-400 hover:text-white">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
+        <button type="button" wire:click="cancel" class="btn-close btn-close-white shadow-none" style="opacity: 0.6;"></button>
     </div>
 
     {{-- Estado actual --}}
-    <div class="flex items-center gap-2">
-        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-{{ $incidenciaData['status_color'] }}-500/20 text-{{ $incidenciaData['status_color'] }}-400 border border-{{ $incidenciaData['status_color'] }}-500/30">
+    <div>
+        <span class="badge px-3 py-2 rounded-pill fw-bold"
+            style="font-size: 0.78rem; background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3);">
             {{ $incidenciaData['status_label'] }}
         </span>
     </div>
 
     {{-- Motivo --}}
-    <div class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 space-y-1">
-        <p class="text-gray-400 text-xs">Motivo</p>
-        <p class="text-white text-sm font-medium">{{ $incidenciaData['tipo_label'] }}
+    <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+        <div class="text-white text-opacity-40 small mb-1" style="font-size: 0.75rem;">Motivo del reporte</div>
+        <div class="text-white fw-bold" style="font-size: 0.95rem;">
+            {{ $incidenciaData['tipo_label'] }}
             @if ($incidenciaData['submotivo_label'])
-                <span class="text-gray-400 font-normal"> › {{ $incidenciaData['submotivo_label'] }}</span>
+                <span class="text-white text-opacity-60 fw-normal"> › {{ $incidenciaData['submotivo_label'] }}</span>
             @endif
-        </p>
+        </div>
         @if ($incidenciaData['descripcion'])
-            <p class="text-gray-400 text-xs mt-1 pt-1 border-t border-white/10">{{ $incidenciaData['descripcion'] }}</p>
+            <div class="text-white text-opacity-70 small mt-2 pt-2 border-top" style="border-color: rgba(255,255,255,0.08) !important;">
+                {{ $incidenciaData['descripcion'] }}
+            </div>
         @endif
     </div>
 
     {{-- Foto adjunta --}}
     @if ($incidenciaData['foto_url'])
         <div>
-            <p class="text-gray-400 text-xs mb-2">Foto adjunta</p>
-            <img src="{{ $incidenciaData['foto_url'] }}" class="w-full max-h-48 object-cover rounded-xl border border-white/10" alt="Evidencia">
+            <div class="text-white text-opacity-50 small mb-2" style="font-size: 0.75rem;">Foto adjunta como evidencia</div>
+            <img src="{{ $incidenciaData['foto_url'] }}" class="img-fluid rounded-3 w-100" style="max-height: 200px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);" alt="Evidencia">
         </div>
     @endif
 
     {{-- Historial de estados --}}
     @if (!empty($incidenciaData['historial_estados']))
         <div>
-            <p class="text-gray-400 text-xs mb-2">Historial</p>
-            <div class="space-y-2">
+            <div class="text-white text-opacity-50 small mb-2" style="font-size: 0.75rem;">Historial de seguimiento</div>
+            <div class="d-flex flex-column gap-2">
                 @foreach (array_reverse($incidenciaData['historial_estados']) as $h)
-                    <div class="flex gap-3 items-start">
-                        <div class="w-1.5 h-1.5 rounded-full bg-orange-500 mt-1.5 flex-shrink-0"></div>
+                    <div class="d-flex align-items-start gap-2">
+                        <div class="rounded-circle mt-1" style="width: 8px; height: 8px; background: #f97316; flex-shrink: 0;"></div>
                         <div>
-                            <p class="text-white text-xs font-medium">{{ $h['estado'] ?? '' }}</p>
-                            <p class="text-gray-500 text-[11px]">{{ $h['fecha'] ?? '' }}{{ isset($h['por']) ? ' · ' . $h['por'] : '' }}</p>
+                            <div class="text-white small fw-semibold">{{ $h['estado'] ?? '' }}</div>
+                            <div class="text-white text-opacity-40" style="font-size: 0.7rem;">
+                                {{ $h['fecha'] ?? '' }}{{ isset($h['por']) ? ' · ' . $h['por'] : '' }}
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -59,14 +67,15 @@
 
     {{-- Nota de resolución --}}
     @if ($incidenciaData['nota_resolucion'])
-        <div class="bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3">
-            <p class="text-green-400 text-xs font-semibold mb-1">Nota del equipo de soporte</p>
-            <p class="text-gray-300 text-xs">{{ $incidenciaData['nota_resolucion'] }}</p>
+        <div class="p-3 rounded-4" style="background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25);">
+            <div class="text-success small fw-bold mb-1">Nota de resolución del soporte</div>
+            <div class="text-white small">{{ $incidenciaData['nota_resolucion'] }}</div>
         </div>
     @endif
 
-    <button wire:click="cancel" class="w-full bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-medium py-3 rounded-xl transition-colors mt-2">
-        Cerrar
-    </button>
+    <div class="pt-2">
+        <button type="button" wire:click="cancel" class="btn btn-outline-light border-0 rounded-pill w-100 py-2" style="background: rgba(255,255,255,0.06); font-size: 0.88rem;">
+            Cerrar
+        </button>
+    </div>
 </div>
-
