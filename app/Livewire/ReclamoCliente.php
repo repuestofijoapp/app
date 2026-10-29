@@ -61,11 +61,11 @@ class ReclamoCliente extends Component
      * Llamado por evento Alpine o Livewire: open-reclamo
      */
     #[\Livewire\Attributes\On('open-reclamo')]
-    public function openFromEvent($params): void
+    public function openFromEvent($pedidoId = null): void
     {
-        $pedidoId = is_array($params) ? (int) ($params['pedidoId'] ?? 0) : (int) $params;
-        if ($pedidoId > 0) {
-            $this->open($pedidoId);
+        $id = is_array($pedidoId) ? (int) ($pedidoId['pedidoId'] ?? reset($pedidoId)) : (int) $pedidoId;
+        if ($id > 0) {
+            $this->open($id);
         }
     }
 
