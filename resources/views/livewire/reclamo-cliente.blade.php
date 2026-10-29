@@ -165,6 +165,9 @@
                                                 @change="localPreview = $event.target.files.length ? URL.createObjectURL($event.target.files[0]) : null"
                                                 accept="image/jpeg,image/png,image/webp" capture="environment" style="display: none;">
                                         </label>
+                                        <div wire:loading wire:target="foto" class="text-warning small mt-1" style="font-size: 0.74rem;">
+                                            <i class="fas fa-spinner fa-spin me-1"></i> Subiendo imagen al servidor…
+                                        </div>
                                         @error('foto')
                                             <div class="text-danger small mt-1" style="font-size: 0.72rem;">{{ $message }}</div>
                                         @enderror
@@ -250,34 +253,44 @@
                     </div>{{-- /scrollable --}}
 
                     {{-- Barra de acciones fija (Footer) --}}
-                    <div class="reclamo-modal-footer border-top d-flex gap-2" style="border-color: rgba(255,255,255,0.08) !important;">
-                        @if ($step > 1)
-                            <button type="button" wire:click="back"
-                                class="btn rounded-pill d-flex align-items-center justify-content-center shadow-none fw-semibold"
-                                style="background: rgba(255,255,255,0.12); color: #ffffff; border: 1px solid rgba(255,255,255,0.25); height: 42px; min-width: 54px; font-size: 0.9rem;"
-                                title="Volver al paso anterior"
-                            >
-                                <i class="fas fa-arrow-left"></i>
-                            </button>
+                    <div class="reclamo-modal-footer border-top d-flex flex-column gap-2" style="border-color: rgba(255,255,255,0.08) !important;">
+                        @if ($generalError)
+                            <div class="alert alert-danger py-1 px-2 rounded-3 small mb-0 w-100" style="background: rgba(220,38,38,0.2); border: 1px solid rgba(220,38,38,0.4); color: #fca5a5; font-size: 0.78rem;">
+                                <i class="fas fa-exclamation-circle me-1"></i> {{ $generalError }}
+                            </div>
                         @endif
 
-                        @if ($step === 3)
-                            <button
-                                type="button"
-                                wire:click="submit"
-                                wire:loading.attr="disabled"
-                                @if (strlen($otp) < 4) disabled @endif
-                                class="btn btn-danger fw-bold rounded-pill py-2 px-3 flex-grow-1 shadow-none"
-                                style="font-size: 0.88rem; background: #dc2626; height: 42px;"
-                            >
-                                <span wire:loading.remove wire:target="submit">Enviar reclamo</span>
-                                <span wire:loading wire:target="submit"><i class="fas fa-spinner fa-spin me-1"></i> Enviando…</span>
-                            </button>
-                        @endif
+                        <div class="d-flex gap-2 w-100">
+                            @if ($step > 1)
+                                <button type="button" wire:click="back"
+                                    class="btn rounded-pill d-flex align-items-center justify-content-center shadow-none fw-semibold"
+                                    style="background: rgba(255,255,255,0.12); color: #ffffff; border: 1px solid rgba(255,255,255,0.25); height: 42px; min-width: 54px; font-size: 0.9rem;"
+                                    title="Volver al paso anterior"
+                                >
+                                    <i class="fas fa-arrow-left"></i>
+                                </button>
+                            @endif
 
-                        <button type="button" wire:click="cancel" class="btn btn-outline-light border-0 rounded-pill py-2 px-3 {{ $step === 3 ? '' : 'flex-grow-1' }}" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); font-size: 0.85rem; height: 42px;">
-                            Cancelar
-                        </button>
+                            @if ($step === 3)
+                                <button
+                                    type="button"
+                                    wire:click="submit"
+                                    wire:loading.attr="disabled"
+                                    wire:target="submit, foto"
+                                    @if (strlen(preg_replace('/\D/', '', (string)$otp)) < 4) disabled @endif
+                                    class="btn btn-danger fw-bold rounded-pill py-2 px-3 flex-grow-1 shadow-none"
+                                    style="font-size: 0.88rem; background: #dc2626; height: 42px;"
+                                >
+                                    <span wire:loading.remove wire:target="submit, foto">Enviar reclamo</span>
+                                    <span wire:loading wire:target="foto"><i class="fas fa-spinner fa-spin me-1"></i> Subiendo foto…</span>
+                                    <span wire:loading wire:target="submit"><i class="fas fa-spinner fa-spin me-1"></i> Enviando…</span>
+                                </button>
+                            @endif
+
+                            <button type="button" wire:click="cancel" class="btn btn-outline-light border-0 rounded-pill py-2 px-3 {{ $step === 3 ? '' : 'flex-grow-1' }}" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); font-size: 0.85rem; height: 42px;">
+                                Cancelar
+                            </button>
+                        </div>
                     </div>
                 @endif
 

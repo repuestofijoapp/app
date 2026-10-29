@@ -234,6 +234,7 @@ class ReclamoCliente extends Component
     public function submit(): void
     {
         $this->generalError = '';
+        $this->otpError     = '';
 
         // Honeypot
         if (!empty($this->website)) {
@@ -247,8 +248,12 @@ class ReclamoCliente extends Component
             $this->generalError = 'No tienes permiso para gestionar este pedido.';
             return;
         }
+
+        // Si ya existe una incidencia para este pedido (ej. se creó justo antes), mostrar el éxito de inmediato
         if ($pedido->incidencia) {
-            $this->generalError = 'Este pedido ya tiene un reclamo registrado.';
+            $this->incidenciaCodigo = $pedido->incidencia->codigo;
+            $this->showSuccess      = true;
+            $this->dispatch('incidencia-creada');
             return;
         }
 
@@ -259,7 +264,8 @@ class ReclamoCliente extends Component
         $hash     = Cache::get($cacheKey);
         $attempts = Cache::get($attKey, 0);
 
-        $esCodigoPruebas = ($this->otp === '1234');
+        $cleanOtp = preg_replace('/\D/', '', (string)$this->otp);
+        $esCodigoPruebas = ($cleanOtp === '1234');
 
         if (!$esCodigoPruebas) {
             if (!$hash) {
@@ -271,7 +277,7 @@ class ReclamoCliente extends Component
                 Cache::forget($cacheKey);
                 return;
             }
-            if (!Hash::check($this->otp, $hash)) {
+            if (!Hash::check($cleanOtp, $hash)) {
                 Cache::put($attKey, $attempts + 1, now()->addMinutes(10));
                 $this->otpError = 'Código incorrecto (' . (5 - $attempts - 1) . ' intentos restantes).';
                 return;
