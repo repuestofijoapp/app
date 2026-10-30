@@ -505,7 +505,14 @@
                     de actividad.</li>
                 <li><strong>Datos de pago:</strong> gestionados de forma segura por Culqi. No almacenamos datos de
                     tarjetas.</li>
-                <li><strong>Incidencias reportadas:</strong> cualquier problema que registres sobre un pedido.</li>
+                <li><strong>Incidencias reportadas:</strong> cualquier problema que registres sobre un pedido,
+                    incluyendo descripción, motivo, submotivo y estado de resolución.</li>
+                <li><strong>Fotografías de evidencia:</strong> imágenes que adjuntes al reportar una incidencia,
+                    almacenadas de forma privada y accesibles únicamente mediante enlace temporal firmado.</li>
+                <li><strong>Número de teléfono verificado:</strong> el número de WhatsApp con el que verificas tu
+                    identidad al presentar una reclamación, mediante código OTP de un solo uso.</li>
+                <li><strong>Datos de auditoría logística (PoD):</strong> fotografías y coordenadas GPS registradas por
+                    el personal de reparto en cada hito de entrega, usadas para auditar disputas.</li>
                 <li><strong>Registro de consentimiento:</strong> fecha, hora y versión de la política aceptada al
                     momento de tu registro.</li>
             </ul>
@@ -526,6 +533,8 @@
                 <li>Mejorar la experiencia de uso de la plataforma.</li>
                 <li>Avisarte cuando un producto buscado y no encontrado esté disponible.</li>
                 <!-- <li>Gestionar el sistema de créditos y beneficios por fidelidad.</li> -->
+                <li>Validar, auditar y resolver incidencias postventa mediante el sistema de reclamaciones rápidas
+                    y la auditoría de Proof of Delivery (PoD).</li>
                 <li>Detectar y prevenir usos fraudulentos del sistema.</li>
                 <li>Cumplir con obligaciones legales y fiscales en Perú.</li>
             </ul>

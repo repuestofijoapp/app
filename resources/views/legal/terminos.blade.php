@@ -519,24 +519,53 @@
             <p>Conforme al Código de Protección y Defensa del Consumidor (Ley N° 29571), el usuario tiene derecho a
                 reclamar en los siguientes supuestos:</p>
             <ul class="data-list">
-                <li><strong>Producto defectuoso:</strong> el repuesto presenta fallas de fabricación o no funciona según
-                    sus especificaciones.</li>
-                <li><strong>Producto incorrecto:</strong> se entregó un repuesto distinto al solicitado y confirmado.
-                </li>
-                <li><strong>Pedido no entregado:</strong> el pedido no llegó en el tiempo estimado sin justificación.
-                </li>
+                <li><strong>Producto defectuoso:</strong> el repuesto presenta fallas de fabricación o no funciona según sus especificaciones.</li>
+                <li><strong>Producto incorrecto:</strong> se entregó un repuesto distinto al solicitado y confirmado.</li>
+                <li><strong>Pedido no entregado:</strong> el pedido no llegó tras la confirmación de despacho (Hito 3) y han transcurrido más de 2 horas.</li>
+                <li><strong>Contenido incompleto o dañado:</strong> el pedido llegó con piezas faltantes o con daño visible en el embalaje.</li>
             </ul>
-            <p style="margin-top:14px"><strong>Plazo para reclamar:</strong> el usuario dispone de <strong>48
-                    horas</strong> desde la recepción del pedido para reportar cualquier incidencia a través de nuestro
-                portal en el area de pedidos.</p>
-            <p><strong>Proceso de devolución:</strong> evaluada la reclamación, RepuestoFijo coordinará la recogida del
-                producto y gestionará el reemplazo o la devolución del importe pagado en un plazo máximo de <strong>5
-                    días hábiles</strong>.</p>
+
+            <span class="subsection-label" style="margin-top:20px">7.1 Canal oficial de reclamaciones rápidas</span>
+            <p>RepuestoFijo dispone de un canal de resolución ágil integrado en la plataforma:</p>
+            <ol class="data-list" style="list-style:decimal;padding-left:20px">
+                <li>Ingresa a <strong>Mis Pedidos</strong> desde tu cuenta.</li>
+                <li>Selecciona el pedido afectado y pulsa <strong>&laquo;Reportar un problema&raquo;</strong>.</li>
+                <li>Describe la incidencia, adjunta una foto de evidencia (obligatoria salvo en &laquo;No llegó nada&raquo; y &laquo;Otro&raquo;) y verifica tu identidad mediante un código OTP enviado por WhatsApp.</li>
+            </ol>
+            <p style="margin-top:10px"><strong>Plazo para reclamar:</strong> disponibles las <strong>48 horas</strong>
+                siguientes a la confirmación de entrega (Hito 4). En el supuesto de &laquo;No llegó mi pedido&raquo;, el canal se
+                activa automáticamente cuando han transcurrido más de 2 horas desde el despacho.</p>
+            <p style="margin-top:10px"><strong>SLA de respuesta interna:</strong> nuestro equipo tiene como objetivo
+                resolver o escalar toda incidencia dentro del <strong>mismo día hábil</strong>
+                (objetivo interno: &lt; 2 horas desde la recepción).</p>
+
+            <span class="subsection-label" style="margin-top:20px">7.2 Auditoría de entrega (PoD)</span>
+            <p>Ante cualquier disputa de entrega, RepuestoFijo realiza una auditoría de <em>Proof of Delivery</em>
+                (PoD) que contrasta cuatro hitos logísticos registrados con marca de tiempo y evidencia fotográfica:</p>
+            <ul class="data-list">
+                <li>Hito 1 &mdash; Recojo en proveedor</li>
+                <li>Hito 2 &mdash; Ingreso y embalaje en hub</li>
+                <li>Hito 3 &mdash; Despacho por motorizado</li>
+                <li>Hito 4 &mdash; Entrega al cliente</li>
+            </ul>
+            <p style="margin-top:8px">Esta trazabilidad es usada como evidencia en caso de contradicción entre el
+                reporte del cliente y el registro del repartidor.</p>
+
+            <span class="subsection-label" style="margin-top:20px">7.3 Proceso de devolución</span>
+            <p>Una vez validada la reclamación, RepuestoFijo coordinará la recogida del producto y gestionará el
+                reemplazo o la devolución del importe pagado en un plazo máximo de <strong>5 días hábiles</strong>.</p>
             <div class="alert-box">
                 <i class="fas fa-exclamation-triangle"></i>
                 <p>No se aceptarán devoluciones de repuestos que hayan sido instalados, modificados o que presenten
                     daños causados por el usuario.</p>
             </div>
+
+            <span class="subsection-label" style="margin-top:20px">7.4 Libro de Reclamaciones formal</span>
+            <p>El canal rápido descrito en &sect;7.1 es un servicio adicional de RepuestoFijo y <strong>no reemplaza</strong>
+                el derecho del consumidor a presentar una queja formal a través del
+                <a href="/libro-de-reclamaciones" style="color:inherit;text-decoration:underline">Libro de Reclamaciones</a>
+                conforme a la Ley N° 29571 y demás normas aplicables en el Perú.
+            </p>
         </div>
 
         <!-- 8. RESPONSABILIDAD -->

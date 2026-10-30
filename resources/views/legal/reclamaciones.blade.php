@@ -621,7 +621,25 @@
             <p class="form-sub">Completa el formulario con la mayor cantidad de detalles posible. Todos los campos
                 marcados con <span style="color:var(--red)">*</span> son obligatorios.</p>
 
-            <form id="reclamacion-form" onsubmit="submitReclamacion(event)">
+                        <div style="background:linear-gradient(135deg,#132530,#1a3545);border:1px solid rgba(255,180,0,0.35);border-radius:12px;padding:18px 20px;margin-bottom:28px;color:#fff">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                    <i class="fas fa-bolt" style="color:#FFB400;font-size:1.1rem"></i>
+                    <strong style="font-size:1rem">¿Tienes un problema con un pedido de hoy?</strong>
+                </div>
+                <p style="color:rgba(255,255,255,0.8);font-size:0.9rem;margin-bottom:14px;line-height:1.5">
+                    Puedes resolverlo más rápido desde tu cuenta: ve a <strong>Mis Pedidos</strong>, selecciona el pedido
+                    y pulsa <strong>&laquo;Reportar un problema&raquo;</strong>. Nuestro equipo lo atiende el mismo día hábil.
+                </p>
+                <a href="{{ route('home') }}" style="display:inline-flex;align-items:center;gap:7px;background:#FFB400;color:#132530;font-weight:700;font-size:0.85rem;padding:9px 18px;border-radius:8px;text-decoration:none">
+                    <i class="fas fa-arrow-right"></i> Ir a Mis Pedidos
+                </a>
+                <p style="color:rgba(255,255,255,0.45);font-size:0.78rem;margin-top:12px;margin-bottom:0">
+                    <i class="fas fa-info-circle"></i>
+                    Este Libro de Reclamaciones es para quejas formales ante Indecopi conforme a la Ley N° 29571.
+                </p>
+            </div>
+
+<form id="reclamacion-form" onsubmit="submitReclamacion(event)">
                 @csrf
 
                 {{-- DATOS DEL RECLAMANTE --}}
