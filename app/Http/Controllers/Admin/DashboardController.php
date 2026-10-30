@@ -36,6 +36,16 @@ class DashboardController extends Controller
         $ticketsSoporte = Incidencia::whereIn('status', ['abierta', 'en_revision'])->count();
         $alertasSeguridad = SecurityLog::where('created_at', '>=', now()->subDay())->count();
 
+        // Incidencias urgentes: abiertas hace más de 2 horas sin resolverse
+        $incidenciasUrgentes = Incidencia::where('status', 'abierta')
+            ->where('created_at', '<=', now()->subHours(2))
+            ->count();
+
+        // Incidencias nuevas hoy (creadas hoy, aún abiertas)
+        $incidenciasNuevasHoy = Incidencia::where('status', 'abierta')
+            ->whereDate('created_at', $today)
+            ->count();
+
         // Pedidos en vivo list - Only truly active ones for the display
         $pedidosEnVivoList = Pedido::with('customer')
             ->whereIn('status', ['por_confirmar', 'en_preparacion', 'en_camino', 'pagado'])
@@ -53,11 +63,11 @@ class DashboardController extends Controller
         $resumenCancelados = Pedido::whereDate('created_at', $today)->where('status', 'cancelado')->count();
         $ticketPromedio = Pedido::whereDate('created_at', $today)->whereNotIn('status', ['cancelado', 'pendiente', 'por_confirmar'])->avg('total') ?? 0;
 
-        // Tickets list
+        // Tickets list — ahora con SLA info
         $recentTickets = Incidencia::with('customer')
             ->whereIn('status', ['abierta', 'en_revision'])
             ->latest()
-            ->take(3)
+            ->take(5)
             ->get();
 
         $recent_logs = SecurityLog::latest()->take(5)->get();
@@ -73,8 +83,11 @@ class DashboardController extends Controller
             'ticket_promedio' => $ticketPromedio,
             'proveedor_activo' => 'Proveedor A', // Mock per screenshot
             'saldo_culqi' => 958, // Mock
+            'incidencias_urgentes' => $incidenciasUrgentes,
+            'incidencias_nuevas_hoy' => $incidenciasNuevasHoy,
         ];
 
-        return view('admin.dashboard', compact('stats', 'pedidosEnVivoList', 'recentTickets', 'recent_logs'));
+        return view('admin.dashboard', compact('stats', 'pedidosEnVivoList', 'recentTickets', 'recent_logs',
+            'incidenciasUrgentes', 'incidenciasNuevasHoy'));
     }
 }

@@ -815,6 +815,28 @@
                                 data-label="Soporte">
                                 <i class="fas fa-headset" style="font-size: 0.8rem;"></i>
                                 <span class="sb-link-label">Soporte</span>
+                                @php
+                                    $incAbiertas = 0;
+                                    try {
+                                        if (\Illuminate\Support\Facades\Schema::hasTable('incidencias')) {
+                                            $incAbiertas = \App\Models\Incidencia::whereIn('status', ['abierta', 'en_revision'])->count();
+                                        }
+                                    } catch (\Throwable $e) {}
+                                    $incUrgentes = 0;
+                                    try {
+                                        $incUrgentes = \App\Models\Incidencia::where('status', 'abierta')
+                                            ->where('created_at', '<=', now()->subHours(2))->count();
+                                    } catch (\Throwable $e) {}
+                                @endphp
+                                @if($incAbiertas > 0)
+                                    <span class="collapse-hide ms-auto badge rounded-pill"
+                                          style="background: {{ $incUrgentes > 0 ? '#ef4444' : '#fbbf24' }};
+                                                 color: {{ $incUrgentes > 0 ? '#fff' : '#000' }};
+                                                 font-size:.65rem; min-width:18px; padding:2px 6px;
+                                                 {{ $incUrgentes > 0 ? 'animation: badge-pulse 1.5s infinite;' : '' }}">
+                                        {{ $incAbiertas }}
+                                    </span>
+                                @endif
                             </a>
 
                             <a href="{{ route('admin.reclamaciones', ['secret' => env('ADMIN_URL_SECRET', 'Repuesto-Sape-2026')]) }}"

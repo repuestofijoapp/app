@@ -141,6 +141,91 @@
     </style>
 
     <div class="container-fluid py-4 px-lg-4">
+
+        {{-- ══════════════════════════════════════════════════════════════ --}}
+        {{-- BANNER DE ALERTA: Incidencias urgentes o sin resolver          --}}
+        {{-- ══════════════════════════════════════════════════════════════ --}}
+        @php
+            $soporteUrl = route('admin.soporte', ['secret' => env('ADMIN_URL_SECRET', 'Repuesto-Sape-2026')]);
+        @endphp
+
+        @if($incidenciasUrgentes > 0)
+            {{-- 🔴 CRÍTICO: hay reclamos abiertos hace más de 2 horas --}}
+            <div x-data="{ visible: true }" x-show="visible"
+                 style="background: linear-gradient(135deg, rgba(220,38,38,0.18) 0%, rgba(239,68,68,0.10) 100%);
+                        border: 1px solid rgba(239,68,68,0.45); border-radius: 14px; padding: 1rem 1.5rem;
+                        margin-bottom: 1.5rem; animation: pulse-border 2s infinite;"
+                 class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width:42px;height:42px;border-radius:50%;background:rgba(239,68,68,0.2);
+                                display:flex;align-items:center;justify-content:center;flex-shrink:0;
+                                box-shadow:0 0 0 6px rgba(239,68,68,0.10);animation:pulse-icon 1.5s infinite;">
+                        <i class="fas fa-exclamation-triangle" style="color:#ef4444;font-size:1.1rem;"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-white" style="font-size:0.97rem;letter-spacing:.2px;">
+                            {{ $incidenciasUrgentes }} reclamo{{ $incidenciasUrgentes > 1 ? 's' : '' }}
+                            sin resolver — <span style="color:#ef4444;">SLA vencido (&gt; 2 horas)</span>
+                        </div>
+                        <div class="text-white-50 small mt-1" style="font-size:0.8rem;">
+                            Un cliente está esperando respuesta. Revisa el panel de Soporte ahora.
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ $soporteUrl }}" class="btn btn-sm fw-bold rounded-pill px-4 py-2"
+                       style="background:#ef4444;color:#fff;border:none;font-size:0.82rem;">
+                        <i class="fas fa-headset me-1"></i> Atender ahora
+                    </a>
+                    <button @click="visible = false" class="btn btn-sm rounded-circle"
+                            style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);border:none;width:30px;height:30px;padding:0;"
+                            title="Ocultar este aviso">
+                        <i class="fas fa-times" style="font-size:0.75rem;"></i>
+                    </button>
+                </div>
+            </div>
+            <style>
+                @keyframes pulse-border {
+                    0%,100% { border-color: rgba(239,68,68,0.45); box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+                    50% { border-color: rgba(239,68,68,0.75); box-shadow: 0 0 16px rgba(239,68,68,0.18); }
+                }
+                @keyframes pulse-icon {
+                    0%,100% { box-shadow: 0 0 0 6px rgba(239,68,68,0.10); }
+                    50% { box-shadow: 0 0 0 10px rgba(239,68,68,0.05); }
+                }
+            </style>
+        @elseif(($stats['tickets_soporte'] ?? 0) > 0)
+            {{-- 🟡 AVISO: hay tickets pendientes pero dentro de SLA --}}
+            <div x-data="{ visible: true }" x-show="visible"
+                 style="background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.30);
+                        border-radius: 14px; padding: 0.85rem 1.5rem; margin-bottom: 1.5rem;"
+                 class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="fas fa-clock" style="color:#fbbf24;font-size:1.25rem;flex-shrink:0;"></i>
+                    <div>
+                        <div class="fw-semibold text-white" style="font-size:0.9rem;">
+                            {{ $stats['tickets_soporte'] }} reclamo{{ $stats['tickets_soporte'] > 1 ? 's' : '' }} pendiente{{ $stats['tickets_soporte'] > 1 ? 's' : '' }} en el panel de Soporte.
+                        </div>
+                        @if($incidenciasNuevasHoy > 0)
+                            <div class="text-white-50 small mt-1" style="font-size:0.78rem;">
+                                <span style="color:#fbbf24;font-weight:600;">{{ $incidenciasNuevasHoy }} nuevo{{ $incidenciasNuevasHoy > 1 ? 's' : '' }} hoy</span>
+                                — aún dentro del SLA de 2 horas.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ $soporteUrl }}" class="btn btn-sm fw-semibold rounded-pill px-4 py-1"
+                       style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.35);font-size:0.82rem;">
+                        <i class="fas fa-headset me-1"></i> Ver panel de soporte
+                    </a>
+                    <button @click="visible = false" class="btn btn-sm rounded-circle"
+                            style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);border:none;width:28px;height:28px;padding:0;">
+                        <i class="fas fa-times" style="font-size:0.7rem;"></i>
+                    </button>
+                </div>
+            </div>
+        @endif
         <!-- Quick Stats Cards (Grid of 4) -->
         <div class="row g-3 mb-4">
             <div class="col-xl-3 col-md-6">
@@ -438,34 +523,52 @@
                     </div>
                 </div>
 
-                <!-- Tickets Soporte -->
-                <div class="card card-glass border-0 rounded-4">
+                <!-- Tickets Soporte (mejorado con SLA) -->
+                <div class="card card-glass border-0 rounded-4"
+                     style="{{ ($stats['tickets_soporte'] ?? 0) > 0 ? 'border: 1px solid rgba(255,59,92,0.25) !important;' : '' }}">
                     <div class="card-body p-4">
-                        <h5 class="text-white fw-bold mb-4">Tickets soporte</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="text-white fw-bold mb-0">
+                                <i class="fas fa-headset me-2" style="color: {{ ($stats['tickets_soporte'] ?? 0) > 0 ? '#ff3b5c' : '#22c55e' }}; font-size:0.95rem;"></i>
+                                Incidencias
+                            </h5>
+                            @if(($stats['tickets_soporte'] ?? 0) > 0)
+                                <span class="badge rounded-pill fw-bold"
+                                      style="background:rgba(255,59,92,0.15);color:#ff3b5c;font-size:0.75rem;border:1px solid rgba(255,59,92,0.35);padding:4px 10px;">
+                                    {{ $stats['tickets_soporte'] }} pendiente{{ $stats['tickets_soporte'] > 1 ? 's' : '' }}
+                                </span>
+                            @endif
+                        </div>
 
-                        @foreach($recentTickets as $ticket)
-                            <div class="mb-4 d-flex align-items-start">
-                                <span
-                                    class="{{ $ticket->status === 'abierta' ? 'dot-danger' : 'dot-warning' }} mt-2 me-2"></span>
-                                <div>
-                                    <div class="text-white fw-bold mb-1">
-                                        #{{ str_pad($ticket->id, 6, '0', STR_PAD_LEFT) }} —
-                                        {{ str_replace(['📦 ', '🔄 ', '💔 ', '💳 ', '❓ '], '', $ticket->tipo_label) }}
+                        @forelse($recentTickets as $ticket)
+                            @php $sla = $ticket->sla; @endphp
+                            <div class="mb-2 p-2 px-3 rounded-3 d-flex align-items-start gap-2"
+                                 style="background: {{ $sla['bg'] }}; border: 1px solid {{ $sla['color'] }}30;">
+                                <span style="width:9px;height:9px;border-radius:50%;background:{{ $sla['color'] }};display:inline-block;box-shadow:0 0 5px {{ $sla['color'] }};flex-shrink:0;margin-top:5px;"></span>
+                                <div class="flex-grow-1" style="min-width:0;">
+                                    <div class="text-white fw-bold" style="font-size:0.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                        {{ $ticket->codigo ?? ('INC-' . str_pad($ticket->id, 6, '0', STR_PAD_LEFT)) }}
+                                        <span class="text-white-50 fw-normal"> — {{ str_replace(['📦 ', '💔 ', '🚫 ', '💬 '], '', $ticket->tipo_label) }}</span>
                                     </div>
-                                    <div class="text-white text-opacity-50 small">
+                                    <div class="text-white-50" style="font-size:0.74rem;margin-top:2px;">
                                         {{ explode(' ', $ticket->customer->name ?? 'Cliente')[0] }}
-                                        {{ explode(' ', $ticket->customer->name ?? 'Cliente')[1] ?? '' }} · hace
-                                        {{ $ticket->created_at->diffInHours(now()) }}h @if($ticket->status === 'abierta') sin
-                                        respuesta @endif
+                                        · <span style="color:{{ $sla['color'] }};font-weight:600;">{{ $sla['label'] }}</span>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
-
-                        @if($recentTickets->isEmpty())
-                            <div class="text-center py-3 text-white">
-                                <span class="dot-active me-2"></span> No hay tickets pendientes
+                        @empty
+                            <div class="text-center py-3">
+                                <span class="dot-active me-2"></span>
+                                <span class="text-white-50 small">Sin reclamos pendientes 🎉</span>
                             </div>
+                        @endforelse
+
+                        @if(($stats['tickets_soporte'] ?? 0) > 0)
+                            <a href="{{ route('admin.soporte', ['secret' => env('ADMIN_URL_SECRET', 'Repuesto-Sape-2026')]) }}"
+                               class="btn w-100 fw-semibold rounded-pill mt-2"
+                               style="background:rgba(255,59,92,0.10);color:#ff3b5c;border:1px solid rgba(255,59,92,0.25);font-size:0.82rem;padding:7px;">
+                                <i class="fas fa-arrow-right me-1"></i> Ver todos en Soporte
+                            </a>
                         @endif
                     </div>
                 </div>
