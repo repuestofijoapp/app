@@ -127,6 +127,18 @@ class PodController extends Controller
 
         if ($nuevoEstado !== $pedido->status) {
             $pedido->update(['status' => $nuevoEstado]);
+
+            // Disparar correos según hito
+            try {
+                $mailService = app(\App\Services\NotificationMailService::class);
+                if ($request->tipo_hito === 'entrega_motorizado') {
+                    $mailService->sendOrderInRoute($pedido);
+                } elseif ($request->tipo_hito === 'entrega_cliente') {
+                    $mailService->sendOrderDelivered($pedido);
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Error email hito {$request->tipo_hito} pedido #{$pedido->id}: " . $e->getMessage());
+            }
         }
 
         return redirect()->route('pod.show', $token)

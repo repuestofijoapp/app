@@ -252,6 +252,13 @@ class Onboarding extends Component
             'onboarding_completed_at' => now(),
         ]);
 
+        // Enviar correo de bienvenida
+        try {
+            app(\App\Services\NotificationMailService::class)->sendWelcome($user);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Error enviando email bienvenida: ' . $e->getMessage());
+        }
+
         return redirect()->route('home')->with('notify', [
             'type'    => 'success',
             'message' => 'Perfil completado correctamente. ¡Bienvenido!',

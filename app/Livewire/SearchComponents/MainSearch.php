@@ -2818,6 +2818,13 @@ class MainSearch extends Component
         if ($pedido->status === 'pagado') {
             \Illuminate\Support\Facades\Log::info("Pedido #{$pedido->id} ya se encuentra pagado. Omitiendo cobro duplicado.");
             $this->confirmedOrder = Pedido::with(['items.product', 'customer'])->find($pedido->id);
+
+            // Enviar correo de pago y compra confirmada al cliente
+            try {
+                app(\App\Services\NotificationMailService::class)->sendPaymentConfirmed($pedido);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Error enviando email pago pedido #{$pedido->id}: " . $e->getMessage());
+            }
             $this->viewState = 'order_confirmed';
             $this->dispatch('payment-finished');
             $this->js("window.dispatchEvent(new CustomEvent('payment-finished'));");
@@ -2914,6 +2921,13 @@ class MainSearch extends Component
             // 4. Set confirmation screen & clear state
             $pedido->refresh();
             $this->confirmedOrder = Pedido::with(['items.product', 'customer'])->find($pedido->id);
+
+            // Enviar correo de pago y compra confirmada al cliente
+            try {
+                app(\App\Services\NotificationMailService::class)->sendPaymentConfirmed($pedido);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Error enviando email pago pedido #{$pedido->id}: " . $e->getMessage());
+            }
 
             $this->repairList = [];
             $this->saveCartToDb();

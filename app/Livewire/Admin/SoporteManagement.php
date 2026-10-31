@@ -127,6 +127,19 @@ class SoporteManagement extends Component
         }
 
         $this->selected->update($data);
+
+        // Notificar por correo al cliente si se resolvió, rechazó o actualizó con nota
+        if (in_array($this->newStatus, ['resuelta', 'rechazada', 'en_proceso'])) {
+            try {
+                app(\App\Services\NotificationMailService::class)->sendIncidentResolved(
+                    $this->selected,
+                    $this->newStatus,
+                    $this->notaCliente
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Error enviando email resolucion incidencia: " . $e->getMessage());
+            }
+        }
         $this->refreshStats();
         $this->closeModal();
         $this->dispatch('notify', ['type' => 'success', 'message' => 'Incidencia actualizada correctamente.']);

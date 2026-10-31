@@ -348,6 +348,13 @@ class ReclamoCliente extends Component
             Log::error('Alerta gestor incidencia falló', ['inc_id' => $inc->id, 'error' => $e->getMessage()]);
         }
 
+        // Enviar correo de confirmación de reclamo al cliente
+        try {
+            app(\App\Services\NotificationMailService::class)->sendIncidentCreated($inc);
+        } catch (\Throwable $e) {
+            Log::error("Error enviando email incidencia creada [{$inc->codigo}]: " . $e->getMessage());
+        }
+
         $this->incidenciaCodigo = $inc->codigo;
         $this->showSuccess      = true;
         $this->dispatch('incidencia-creada');
