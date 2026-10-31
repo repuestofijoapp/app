@@ -12,13 +12,13 @@ class NotificationMailService
 {
     protected string $fromEmail;
     protected string $fromName;
-    protected string $supportEmail;
+    protected string $noReplyEmail;
 
     public function __construct()
     {
-        $this->fromEmail    = config('mail.from.address', 'pedidos@repuestofijo.com');
+        $this->fromEmail    = config('mail.from.address', 'noreply@repuestofijo.com');
         $this->fromName     = config('mail.from.name', 'RepuestoFijo');
-        $this->supportEmail = 'soporte@repuestofijo.com';
+        $this->noReplyEmail = 'noreply@repuestofijo.com';
     }
 
     /**
@@ -32,7 +32,7 @@ class NotificationMailService
             Mail::send('emails.bienvenida', ['user' => $user], function ($m) use ($user) {
                 $m->to($user->email, $user->name)
                   ->from($this->fromEmail, $this->fromName)
-                  ->replyTo($this->supportEmail, 'Soporte RepuestoFijo')
+                  ->replyTo($this->noReplyEmail, 'RepuestoFijo')
                   ->subject('¡Bienvenido a RepuestoFijo! - Tu cuenta está activa');
             });
             Log::info("Email Bienvenida enviado a: {$user->email}");
@@ -57,7 +57,7 @@ class NotificationMailService
             Mail::send('emails.pedido_pagado', ['pedido' => $pedido], function ($m) use ($pedido, $email) {
                 $m->to($email, $pedido->customer?->name ?? 'Cliente')
                   ->from($this->fromEmail, $this->fromName)
-                  ->replyTo($this->supportEmail, 'Soporte RepuestoFijo')
+                  ->replyTo($this->noReplyEmail, 'RepuestoFijo')
                   ->subject("Pago confirmado - Pedido #{$pedido->id} | RepuestoFijo");
             });
             Log::info("Email Pago Confirmado enviado para Pedido #{$pedido->id} a: {$email}");
@@ -82,7 +82,7 @@ class NotificationMailService
             Mail::send('emails.pedido_en_camino', ['pedido' => $pedido], function ($m) use ($pedido, $email) {
                 $m->to($email, $pedido->customer?->name ?? 'Cliente')
                   ->from($this->fromEmail, $this->fromName)
-                  ->replyTo($this->supportEmail, 'Soporte RepuestoFijo')
+                  ->replyTo($this->noReplyEmail, 'RepuestoFijo')
                   ->subject("¡Tu pedido #{$pedido->id} está en camino! 🛵 | RepuestoFijo");
             });
             Log::info("Email Pedido en Camino enviado para Pedido #{$pedido->id} a: {$email}");
@@ -107,7 +107,7 @@ class NotificationMailService
             Mail::send('emails.pedido_entregado', ['pedido' => $pedido], function ($m) use ($pedido, $email) {
                 $m->to($email, $pedido->customer?->name ?? 'Cliente')
                   ->from($this->fromEmail, $this->fromName)
-                  ->replyTo($this->supportEmail, 'Soporte RepuestoFijo')
+                  ->replyTo($this->noReplyEmail, 'RepuestoFijo')
                   ->subject("Pedido #{$pedido->id} entregado con éxito ✅ | RepuestoFijo");
             });
             Log::info("Email Pedido Entregado enviado para Pedido #{$pedido->id} a: {$email}");
@@ -131,9 +131,8 @@ class NotificationMailService
 
             Mail::send('emails.incidencia_creada', ['incidencia' => $incidencia], function ($m) use ($incidencia, $email) {
                 $m->to($email, $incidencia->customer?->name ?? 'Cliente')
-                  ->cc('soporte@repuestofijo.com', 'Soporte RepuestoFijo')
-                  ->from($this->fromEmail, $this->fromName)
-                  ->replyTo($this->supportEmail, 'Soporte RepuestoFijo')
+                  ->from($this->fromEmail, 'RepuestoFijo Soporte')
+                  ->replyTo($this->noReplyEmail, 'RepuestoFijo')
                   ->subject("Reclamo registrado [{$incidencia->codigo}] - Pedido #{$incidencia->pedido_id} | RepuestoFijo");
             });
             Log::info("Email Incidencia Creada enviado para [{$incidencia->codigo}] a: {$email}");
@@ -145,7 +144,7 @@ class NotificationMailService
     }
 
     /**
-     * 6. Incidencia resuelta / actualizada
+     * 6. Incidencia resuelta / actualizada por el Gestor
      */
     public function sendIncidentResolved(Incidencia $incidencia, string $nuevoEstado, ?string $notaCliente = null): bool
     {
@@ -176,8 +175,8 @@ class NotificationMailService
                 'notaCliente' => $notaCliente,
             ], function ($m) use ($incidencia, $email, $estadoLabel) {
                 $m->to($email, $incidencia->customer?->name ?? 'Cliente')
-                  ->from($this->fromEmail, $this->fromName)
-                  ->replyTo($this->supportEmail, 'Soporte RepuestoFijo')
+                  ->from($this->fromEmail, 'RepuestoFijo Soporte')
+                  ->replyTo($this->noReplyEmail, 'RepuestoFijo')
                   ->subject("{$estadoLabel}: Reclamo [{$incidencia->codigo}] | RepuestoFijo");
             });
             Log::info("Email Incidencia Resuelta enviado para [{$incidencia->codigo}] a: {$email}");

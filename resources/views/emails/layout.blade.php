@@ -44,15 +44,14 @@
                         </td>
                     </tr>
 
-                    <!-- Need Help / Support Banner -->
+                    <!-- No-Reply Informational Banner -->
                     <tr>
                         <td style="padding:0 32px 28px 32px;">
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#111622;border:1px solid #1e283d;border-radius:10px;padding:16px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#101522;border:1px solid #1e283d;border-radius:8px;padding:14px 16px;">
                                 <tr>
-                                    <td style="font-size:13px;color:#94a3b8;">
-                                        ¿Dudas o consultas sobre tu pedido? Escríbenos a 
-                                        <a href="mailto:soporte@repuestofijo.com" style="color:#BE3C3B;text-decoration:none;font-weight:bold;">soporte@repuestofijo.com</a>
-                                        o comunícate a través de WhatsApp.
+                                    <td style="font-size:12px;color:#94a3b8;line-height:1.5;">
+                                        <span style="display:inline-block;background:#3b82f6;color:#ffffff;font-size:10px;font-weight:bold;padding:1px 5px;border-radius:3px;margin-right:6px;vertical-align:middle;">i</span>
+                                        <em>Este es un correo informativo automático generado por nuestro sistema. <strong>Por favor, no respondas a este mensaje</strong>, ya que este buzón no es monitoreado. Para cualquier consulta o seguimiento, utiliza nuestra plataforma web en tu sección de <strong>Mis Pedidos</strong>.</em>
                                     </td>
                                 </tr>
                             </table>
@@ -66,8 +65,7 @@
                                 RepuestoFijo &mdash; Lima, Perú
                             </p>
                             <p style="margin:0;line-height:1.4;">
-                                Este es un mensaje transaccional automático enviado a tu correo registrado.<br>
-                                Conforme a la Ley N° 29571 &bull; Código de Protección y Defensa del Consumidor.
+                                Mensaje transaccional de seguimiento &bull; Conforme al Código de Protección y Defensa del Consumidor (Ley N° 29571).
                             </p>
                         </td>
                     </tr>
