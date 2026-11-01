@@ -14,24 +14,24 @@
                     
                     <!-- Header -->
                     <tr>
-                        <td style="padding:28px 32px;background:linear-gradient(135deg, #131826 0%, #1c2438 100%);border-bottom:1px solid #26334d;">
+                        <td style="padding:26px 32px;background:linear-gradient(135deg, #131826 0%, #1c2438 100%);border-bottom:1px solid #26334d;">
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
                                     <td>
-                                        <div style="display:inline-block;">
-                                            <span style="font-size:24px;font-weight:900;letter-spacing:-0.5px;color:#ffffff;text-transform:uppercase;">
-                                                REPUESTO<span style="color:#BE3C3B;">FIJO</span>
-                                            </span>
-                                            <span style="display:block;font-size:11px;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;margin-top:2px;">
-                                                Repuestos automotrices al instante
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td align="right">
-                                        <span style="display:inline-block;padding:6px 12px;background:rgba(190,60,59,0.15);border:1px solid rgba(190,60,59,0.3);border-radius:6px;font-size:12px;font-weight:700;color:#f87171;">
-                                            {{ $badge ?? 'Notificación' }}
+                                        <a href="https://app.repuestofijo.com" style="text-decoration:none;display:inline-block;">
+                                            <img src="https://app.repuestofijo.com/images/logo.png" alt="RepuestoFijo" style="max-height:42px;width:auto;display:block;border:0;" />
+                                        </a>
+                                        <span style="display:block;font-size:11px;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;margin-top:6px;font-weight:600;">
+                                            Repuestos Automotrices AL TOQUE
                                         </span>
                                     </td>
+                                    @if(!empty($badge))
+                                    <td align="right" valign="middle">
+                                        <span style="display:inline-block;padding:6px 12px;background:rgba(190,60,59,0.15);border:1px solid rgba(190,60,59,0.3);border-radius:6px;font-size:12px;font-weight:700;color:#f87171;">
+                                            {{ $badge }}
+                                        </span>
+                                    </td>
+                                    @endif
                                 </tr>
                             </table>
                         </td>
@@ -60,12 +60,12 @@
 
                     <!-- Footer -->
                     <tr>
-                        <td style="padding:24px 32px;background-color:#0f1420;border-top:1px solid #1e283d;text-align:center;font-size:12px;color:#64748b;">
-                            <p style="margin:0 0 8px 0;font-weight:600;color:#94a3b8;">
+                        <td style="padding:22px 32px;background-color:#0f1420;border-top:1px solid #1e283d;text-align:center;font-size:12px;color:#64748b;">
+                            <p style="margin:0 0 6px 0;font-weight:600;color:#94a3b8;">
                                 RepuestoFijo &mdash; Lima, Perú
                             </p>
                             <p style="margin:0;line-height:1.4;">
-                                Mensaje transaccional de seguimiento &bull; Conforme al Código de Protección y Defensa del Consumidor (Ley N° 29571).
+                                Mensaje transaccional de seguimiento
                             </p>
                         </td>
                     </tr>

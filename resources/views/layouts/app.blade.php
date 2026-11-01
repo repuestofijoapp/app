@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#132530">
     <meta name="description" content="RepuestoFijo — La solución integral para repuestos de autos en Lima, Perú. Buscamos en todos los proveedores, consolidamos tu pedido y lo entregamos en tu taller el mismo día.">
     <link rel="canonical" href="{{ url()->current() }}" />
-    <title>RepuestoFijo</title>
+    <title>RepuestoFijo � Repuestos Automotrices AL TOQUE</title>
 
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">

@@ -48,3 +48,4 @@
         Recibirás una notificación por este medio y vía WhatsApp en cuanto haya una actualización sobre tu caso.
     </p>
 @endsection
+

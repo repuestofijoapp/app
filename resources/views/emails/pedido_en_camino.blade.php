@@ -30,3 +30,4 @@
         <strong>Importante:</strong> El motorizado solicitará tu confirmación y registrará una fotografía de entrega al momento de entregarte el repuesto.
     </div>
 @endsection
+
