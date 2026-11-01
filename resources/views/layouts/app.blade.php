@@ -5,9 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#132530">
-    <meta name="description" content="RepuestoFijo — La solución integral para repuestos de autos en Lima, Perú. Buscamos en todos los proveedores, consolidamos tu pedido y lo entregamos en tu taller el mismo día.">
+    <meta name="description"
+        content="RepuestoFijo — La solución integral para repuestos de autos en Lima, Perú. Buscamos en todos los proveedores, consolidamos tu pedido y lo entregamos en tu taller el mismo día.">
     <link rel="canonical" href="{{ url()->current() }}" />
-    <title>RepuestoFijo � Repuestos Automotrices AL TOQUE</title>
+    <title>RepuestoFijo - Repuestos Automotrices AL TOQUE</title>
 
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
@@ -714,7 +715,8 @@
                                     data-label="Mi Perfil">
                                     <i class="fas fa-user-circle"
                                         style="font-size: 1rem; width: auto; @if(request()->routeIs('admin.profile')) color: var(--accent-red); @endif"></i>
-                                    <span class="sb-link-label" style="font-family: 'Syne', sans-serif; font-weight: 600;">Mi Perfil</span>
+                                    <span class="sb-link-label" style="font-family: 'Syne', sans-serif; font-weight: 600;">Mi
+                                        Perfil</span>
                                 </a>
                             @endif
                         </div>
@@ -722,30 +724,39 @@
 
                     @if(auth()->check() && auth()->user()->canAccessDashboard())
                         {{-- Ubicación y Hora en vivo del Gestor/Admin (debajo, abarcando todo el ancho) --}}
-                        <div class="sb-user-geotime collapse-hide" id="sbUserGeoTime" title="Zona horaria y hora local de trabajo">
+                        <div class="sb-user-geotime collapse-hide" id="sbUserGeoTime"
+                            title="Zona horaria y hora local de trabajo">
                             {{-- Fila 1: Ubicación local del gestor (ej. España) --}}
                             <div class="sb-geotime-row" id="sbRowLocal" title="Tu hora local de trabajo">
-                                <span class="d-inline-flex align-items-center gap-1" style="min-width: 0; overflow: hidden; text-overflow: ellipsis;">
-                                    <i class="fas fa-map-marker-alt" style="color: #ff3b5c; font-size: 0.62rem; flex-shrink: 0;"></i>
-                                    <span id="sbGeoCity" style="color: #cbd5e1; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Detectando...</span>
+                                <span class="d-inline-flex align-items-center gap-1"
+                                    style="min-width: 0; overflow: hidden; text-overflow: ellipsis;">
+                                    <i class="fas fa-map-marker-alt"
+                                        style="color: #ff3b5c; font-size: 0.62rem; flex-shrink: 0;"></i>
+                                    <span id="sbGeoCity"
+                                        style="color: #cbd5e1; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Detectando...</span>
                                 </span>
                                 <span style="opacity: 0.25; margin: 0 1px;">·</span>
                                 <span class="d-inline-flex align-items-center gap-1" style="flex-shrink: 0;">
                                     <i class="far fa-clock" style="color: #00d68f; font-size: 0.62rem;"></i>
-                                    <span id="sbGeoClock" style="color: #00d68f; font-family: monospace; font-weight: 700;">--:--:--</span>
+                                    <span id="sbGeoClock"
+                                        style="color: #00d68f; font-family: monospace; font-weight: 700;">--:--:--</span>
                                 </span>
                             </div>
 
                             {{-- Fila 2: Hora oficial de Perú (clientes y pedidos) --}}
-                            <div class="sb-geotime-row" id="sbRowPeru" style="display: none; border-top: 1px dashed rgba(255, 255, 255, 0.08); padding-top: 3px; margin-top: 2px;" title="Hora oficial de Perú (clientes y pedidos)">
+                            <div class="sb-geotime-row" id="sbRowPeru"
+                                style="display: none; border-top: 1px dashed rgba(255, 255, 255, 0.08); padding-top: 3px; margin-top: 2px;"
+                                title="Hora oficial de Perú (clientes y pedidos)">
                                 <span class="d-inline-flex align-items-center gap-1" style="min-width: 0;">
-                                    <i class="fas fa-map-marker-alt" style="color: #ef4444; font-size: 0.62rem; flex-shrink: 0;"></i>
+                                    <i class="fas fa-map-marker-alt"
+                                        style="color: #ef4444; font-size: 0.62rem; flex-shrink: 0;"></i>
                                     <span style="color: #cbd5e1; font-weight: 600;">Perú</span>
                                 </span>
                                 <span style="opacity: 0.25; margin: 0 1px;">·</span>
                                 <span class="d-inline-flex align-items-center gap-1" style="flex-shrink: 0;">
                                     <i class="far fa-clock" style="color: #00d68f; font-size: 0.62rem;"></i>
-                                    <span id="sbPeruClock" style="color: #00d68f; font-family: monospace; font-weight: 700;">--:--:--</span>
+                                    <span id="sbPeruClock"
+                                        style="color: #00d68f; font-family: monospace; font-weight: 700;">--:--:--</span>
                                 </span>
                             </div>
                         </div>
@@ -773,11 +784,12 @@
 
                     {{-- Diagnóstico de Catálogo --}}
                     @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.catalog-diagnostic', ['secret' => env('ADMIN_URL_SECRET', 'Repuesto-Sape-2026')]) }}"
-                        class="sb-link {{ request()->routeIs('admin.catalog-diagnostic') ? 'active' : '' }}" data-label="Diagnóstico">
-                        <i class="fas fa-stethoscope"></i>
-                        <span class="sb-link-label">Diagnóstico</span>
-                    </a>
+                        <a href="{{ route('admin.catalog-diagnostic', ['secret' => env('ADMIN_URL_SECRET', 'Repuesto-Sape-2026')]) }}"
+                            class="sb-link {{ request()->routeIs('admin.catalog-diagnostic') ? 'active' : '' }}"
+                            data-label="Diagnóstico">
+                            <i class="fas fa-stethoscope"></i>
+                            <span class="sb-link-label">Diagnóstico</span>
+                        </a>
                     @endif
 
                     {{-- Operaciones Group (Desplegable) --}}
@@ -821,19 +833,21 @@
                                         if (\Illuminate\Support\Facades\Schema::hasTable('incidencias')) {
                                             $incAbiertas = \App\Models\Incidencia::whereIn('status', ['abierta', 'en_revision'])->count();
                                         }
-                                    } catch (\Throwable $e) {}
+                                    } catch (\Throwable $e) {
+                                    }
                                     $incUrgentes = 0;
                                     try {
                                         $incUrgentes = \App\Models\Incidencia::where('status', 'abierta')
                                             ->where('created_at', '<=', now()->subHours(2))->count();
-                                    } catch (\Throwable $e) {}
+                                    } catch (\Throwable $e) {
+                                    }
                                 @endphp
                                 @if($incAbiertas > 0)
                                     <span class="collapse-hide ms-auto badge rounded-pill"
-                                          style="background: {{ $incUrgentes > 0 ? '#ef4444' : '#fbbf24' }};
-                                                 color: {{ $incUrgentes > 0 ? '#fff' : '#000' }};
-                                                 font-size:.65rem; min-width:18px; padding:2px 6px;
-                                                 {{ $incUrgentes > 0 ? 'animation: badge-pulse 1.5s infinite;' : '' }}">
+                                        style="background: {{ $incUrgentes > 0 ? '#ef4444' : '#fbbf24' }};
+                                                         color: {{ $incUrgentes > 0 ? '#fff' : '#000' }};
+                                                         font-size:.65rem; min-width:18px; padding:2px 6px;
+                                                         {{ $incUrgentes > 0 ? 'animation: badge-pulse 1.5s infinite;' : '' }}">
                                         {{ $incAbiertas }}
                                     </span>
                                 @endif
@@ -848,9 +862,10 @@
                                     $pendientes = 0;
                                     try {
                                         if (\Illuminate\Support\Facades\Schema::hasTable('reclamaciones')) {
-                                            $pendientes = \DB::table('reclamaciones')->where('estado','pendiente')->count();
+                                            $pendientes = \DB::table('reclamaciones')->where('estado', 'pendiente')->count();
                                         }
-                                    } catch (\Throwable $e) {}
+                                    } catch (\Throwable $e) {
+                                    }
                                 @endphp
                                 @if($pendientes > 0)
                                     <span class="collapse-hide ms-auto badge rounded-pill"
@@ -887,11 +902,12 @@
                                     $whatsapp = resolve(\App\Services\WhatsAppService::class);
                                     $botStatus = $whatsapp->getStatus();
                                 @endphp
-                                <span class="sb-status-dot 
-                                                                                                            @if($botStatus === 'online') active 
-                                                                                                            @elseif($botStatus === 'offline') offline 
-                                                                                                            @else error @endif 
-                                                                                                            collapse-hide"
+                                <span
+                                    class="sb-status-dot 
+                                                                                                                        @if($botStatus === 'online') active 
+                                                                                                                        @elseif($botStatus === 'offline') offline 
+                                                                                                                        @else error @endif 
+                                                                                                                        collapse-hide"
                                     title="ZettaBot: {{ ucfirst($botStatus) }}"></span>
                             </a>
 
@@ -905,16 +921,14 @@
 
                             {{-- Vehículos: solo admins --}}
                             <a href="{{ route('admin.vehicles', ['secret' => env('ADMIN_URL_SECRET', 'Repuesto-Sape-2026')]) }}"
-                                class="sb-link {{ request()->routeIs('admin.vehicles') ? 'active' : '' }}"
-                                data-label="Vehículos">
+                                class="sb-link {{ request()->routeIs('admin.vehicles') ? 'active' : '' }}" data-label="Vehículos">
                                 <i class="fas fa-car"></i>
                                 <span class="sb-link-label">Vehículos</span>
                             </a>
 
 
                             {{-- Seguridad Group (Desplegable) --}}
-                            <div
-                                x-data="{ open: {{ request()->routeIs('admin.access-logs', 'admin.logs') ? 'true' : 'false' }} }">
+                            <div x-data="{ open: {{ request()->routeIs('admin.access-logs', 'admin.logs') ? 'true' : 'false' }} }">
                                 <button @click="open = !open" class="sb-link sb-dropdown-toggle" :class="open ? 'is-active' : ''"
                                     style="width: 100%; border: none; background: transparent; cursor: pointer; justify-content: flex-start; text-align: left;">
                                     <i class="fas fa-shield-alt"></i>
@@ -1077,7 +1091,7 @@
 
     {{-- ── Geolocalización y Reloj en vivo para Gestores y Administradores ── --}}
     <script>
-        (function() {
+        (function () {
             const cityEl = document.getElementById('sbGeoCity');
             const clockEl = document.getElementById('sbGeoClock');
             const peruRowEl = document.getElementById('sbRowPeru');
@@ -1126,7 +1140,7 @@
                             cityEl.textContent = label;
                         }
                     })
-                    .catch(() => {});
+                    .catch(() => { });
             }
 
             // 2. Reloj en tiempo real
@@ -1141,7 +1155,7 @@
                         hour12: false
                     }).format(now);
                     clockEl.textContent = localTimeStr;
-                } catch(e) {
+                } catch (e) {
                     clockEl.textContent = now.toTimeString().substring(0, 8);
                 }
 
@@ -1158,7 +1172,7 @@
                             }).format(now);
                             peruClockEl.textContent = peruTimeStr;
                             peruRowEl.style.display = 'flex';
-                        } catch(e) {
+                        } catch (e) {
                             peruRowEl.style.display = 'none';
                         }
                     } else {
@@ -1175,14 +1189,15 @@
 
     {{-- Google Maps & Places API --}}
     @if(config('services.google.places_api_key'))
-        <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.places_api_key') }}&libraries=places&loading=async"></script>
+        <script
+            src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.places_api_key') }}&libraries=places&loading=async"></script>
     @endif
 
     {{-- Culqi Checkout v4 - fuera del componente Livewire para que no se destruya con los polls --}}
     <script src="https://checkout.culqi.com/js/v4"></script>
     <script>
         // Se inicializa cuando Culqi carga
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             if (typeof Culqi === 'undefined') return;
             Culqi.publicKey = '{{ config('services.culqi.public_key', env('CULQI_PUBLIC_KEY')) }}';
         });
@@ -1196,7 +1211,7 @@
                 }
                 const script = document.createElement('script');
                 script.src = "https://checkout.culqi.com/js/v4?t=" + new Date().getTime();
-                script.onload = function() {
+                script.onload = function () {
                     if (typeof Culqi !== 'undefined') {
                         Culqi.publicKey = '{{ env('CULQI_PUBLIC_KEY') }}';
                         initiateCulqiPayment(amount, email, orderId);
@@ -1236,12 +1251,12 @@
 
         let isProcessingCulqi = false;
 
-        window.addEventListener('payment-finished', function() {
+        window.addEventListener('payment-finished', function () {
             isProcessingCulqi = false;
         });
 
         // Callback obligatorio que Culqi llama cuando el usuario completa o cancela el pago
-        window.culqi = function() {
+        window.culqi = function () {
             if (Culqi.token) {
                 if (isProcessingCulqi) {
                     console.warn("Pago ya en proceso. Ignorando evento duplicado de Culqi.");
@@ -1288,22 +1303,16 @@
     </script>
 
     {{-- OVERLAY DE PROCESAMIENTO DE PAGO PREMIUM --}}
-    <div x-data="{ showOverlay: false }"
-         x-on:show-payment-overlay.window="showOverlay = true"
-         x-on:process-payment.window="showOverlay = true"
-         x-on:payment-finished.window="setTimeout(() => { showOverlay = false; }, 400)"
-         x-show="showOverlay"
-         x-transition:enter="transition ease-out duration-500"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-500"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="position-fixed top-0 start-0 w-100 h-100"
-         style="background: #000; z-index: 999999999;"
-         x-cloak>
+    <div x-data="{ showOverlay: false }" x-on:show-payment-overlay.window="showOverlay = true"
+        x-on:process-payment.window="showOverlay = true"
+        x-on:payment-finished.window="setTimeout(() => { showOverlay = false; }, 400)" x-show="showOverlay"
+        x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-500"
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+        class="position-fixed top-0 start-0 w-100 h-100" style="background: #000; z-index: 999999999;" x-cloak>
 
-        <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center" style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; min-height: 100vh !important;">
+        <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center"
+            style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; min-height: 100vh !important;">
             <div class="rf-pay-anim-wrapper">
                 <div class="rf-isotipo-wrap">
                     <div class="rf-logo-glow-ring"></div>
@@ -1318,80 +1327,119 @@
     </div>
 
     <style>
-    [x-cloak] {
-        display: none !important;
-    }
-    .rf-pay-anim-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0;
-        user-select: none;
-    }
-    .rf-isotipo-wrap {
-        position: relative;
-        width: 100%;
-        max-width: 260px;
-        height: auto;
-        margin-bottom: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 20px;
-    }
-    .rf-logo-glow-ring {
-        position: absolute;
-        width: 120%;
-        height: 120%;
-        background: radial-gradient(ellipse, rgba(204,0,0,0.4) 0%, transparent 70%);
-        animation: rfGlowPulse 2s infinite ease-in-out;
-        pointer-events: none;
-    }
-    .rf-real-logo {
-        position: relative;
-        z-index: 1;
-        width: 100%;
-        height: auto;
-        max-height: 80px;
-        object-fit: contain;
-        animation: rfLogoPulse 2s infinite ease-in-out;
-        filter: drop-shadow(0 0 18px rgba(204,0,0,0.5));
-    }
-    @keyframes rfGlowPulse {
-        0%,100% { opacity: 0.4; transform: scale(0.95); }
-        50%      { opacity: 0.8;   transform: scale(1.05); }
-    }
-    @keyframes rfLogoPulse {
-        0%,100% { filter: drop-shadow(0 0 12px rgba(204,0,0,0.4)); transform: scale(1); }
-        50%      { filter: drop-shadow(0 0 24px rgba(204,0,0,0.8)); transform: scale(1.03); }
-    }
-    .rf-tagline {
-        font-family: 'DM Sans', sans-serif;
-        color: rgba(255,255,255,0.7);
-        font-size: 0.85rem;
-        letter-spacing: 0.06em;
-        margin: 0 0 20px;
-        text-transform: uppercase;
-        text-align: center;
-    }
-    .rf-progress-track {
-        width: 200px;
-        height: 2px;
-        background: rgba(255,255,255,0.12);
-        border-radius: 99px;
-        overflow: hidden;
-    }
-    .rf-progress-bar {
-        height: 100%;
-        background: linear-gradient(90deg, #CC0000, #ff4444);
-        border-radius: 99px;
-        animation: rfProgress 3s infinite linear;
-    }
-    @keyframes rfProgress {
-        0%    { width: 0%; margin-left: 0%; }
-        80%   { width: 100%; margin-left: 0%; }
-        100%  { width: 0%; margin-left: 100%; }
-    }
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .rf-pay-anim-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            user-select: none;
+        }
+
+        .rf-isotipo-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 260px;
+            height: auto;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+        }
+
+        .rf-logo-glow-ring {
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(ellipse, rgba(204, 0, 0, 0.4) 0%, transparent 70%);
+            animation: rfGlowPulse 2s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        .rf-real-logo {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: auto;
+            max-height: 80px;
+            object-fit: contain;
+            animation: rfLogoPulse 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 18px rgba(204, 0, 0, 0.5));
+        }
+
+        @keyframes rfGlowPulse {
+
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: scale(0.95);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes rfLogoPulse {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 12px rgba(204, 0, 0, 0.4));
+                transform: scale(1);
+            }
+
+            50% {
+                filter: drop-shadow(0 0 24px rgba(204, 0, 0, 0.8));
+                transform: scale(1.03);
+            }
+        }
+
+        .rf-tagline {
+            font-family: 'DM Sans', sans-serif;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            letter-spacing: 0.06em;
+            margin: 0 0 20px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .rf-progress-track {
+            width: 200px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .rf-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #CC0000, #ff4444);
+            border-radius: 99px;
+            animation: rfProgress 3s infinite linear;
+        }
+
+        @keyframes rfProgress {
+            0% {
+                width: 0%;
+                margin-left: 0%;
+            }
+
+            80% {
+                width: 100%;
+                margin-left: 0%;
+            }
+
+            100% {
+                width: 0%;
+                margin-left: 100%;
+            }
+        }
     </style>
 </body>
 
