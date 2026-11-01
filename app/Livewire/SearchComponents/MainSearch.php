@@ -2115,7 +2115,35 @@ class MainSearch extends Component
         if ($addr['type'] === 'lima') {
             $this->deliveryAddress = $addr['address'] ?? '';
             $this->deliveryDistrict = $addr['district'] ?? '';
+            $this->deliveryLat = !empty($addr['lat']) ? round(floatval($addr['lat']), 7) : null;
+            $this->deliveryLng = !empty($addr['lng']) ? round(floatval($addr['lng']), 7) : null;
+            $this->deliveryUbigeo = $addr['ubigeo'] ?? '';
+            $this->deliveryPlaceSelected = !empty($this->deliveryLat) && !empty($this->deliveryLng);
+
+            // Re-vincular provincia y distrito INEI si tenemos distrito o ubigeo
+            if ($this->deliveryUbigeo) {
+                $this->deliveryDistrictCode = (string) $this->deliveryUbigeo;
+                $this->deliveryProvinceCode = substr($this->deliveryDistrictCode, 0, 4);
+                $this->deliveryDepartmentCode = substr($this->deliveryDistrictCode, 0, 2);
+            } elseif ($this->deliveryDistrict) {
+                $matched = UbigeoService::matchDistrict($this->deliveryDistrict, 'LIMA');
+                if ($matched) {
+                    $this->deliveryProvinceCode = (string) $matched['provincia_codigo'];
+                    $this->deliveryDistrictCode = (string) $matched['ubigeo'];
+                    $this->deliveryUbigeo = (string) $matched['ubigeo'];
+                }
+            }
+
             $this->estimatedDeliveryCost = $this->costForDistrict($this->deliveryDistrict);
+
+            // Notificar al mapa interactivo para reposicionar el marcador y centrar
+            if ($this->deliveryLat && $this->deliveryLng) {
+                $this->dispatch('saved-address-location-loaded', [
+                    'lat' => $this->deliveryLat,
+                    'lng' => $this->deliveryLng,
+                ]);
+            }
+
             // Limpiar campos de provincia
             $this->deliveryAgency = '';
             $this->deliveryCity = '';
@@ -2130,6 +2158,10 @@ class MainSearch extends Component
             // Limpiar campos de Lima
             $this->deliveryAddress = '';
             $this->deliveryDistrict = '';
+            $this->deliveryLat = null;
+            $this->deliveryLng = null;
+            $this->deliveryUbigeo = '';
+            $this->deliveryPlaceSelected = false;
         }
     }
 

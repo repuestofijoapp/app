@@ -5830,6 +5830,29 @@
 
         document.addEventListener('livewire:initialized', function () {
             window.initRfPlacesAutocomplete();
+
+            // Reposicionar el mapa cuando se pulsa una dirección guardada
+            Livewire.on('saved-address-location-loaded', function (payload) {
+                const data = Array.isArray(payload) ? payload[0] : payload;
+                if (!data || !data.lat || !data.lng) return;
+
+                const lat = parseFloat(data.lat);
+                const lng = parseFloat(data.lng);
+                if (isNaN(lat) || isNaN(lng)) return;
+
+                const pos = new google.maps.LatLng(lat, lng);
+
+                if (window.rfPickerMap && window.rfPickerMarker) {
+                    window.rfPickerMap.setCenter(pos);
+                    window.rfPickerMap.setZoom(17);
+                    window.rfPickerMarker.setPosition(pos);
+                }
+
+                const coordsLabel = document.getElementById('rf_map_coords_label');
+                if (coordsLabel) {
+                    coordsLabel.innerText = `Lat: ${lat.toFixed(5)} | Lng: ${lng.toFixed(5)}`;
+                }
+            });
         });
     </script>
 
