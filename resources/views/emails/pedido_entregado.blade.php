@@ -1,8 +1,8 @@
-@extends('emails.layout', ['title' => 'Pedido Entregado - Pedido #' . $pedido->id, 'badge' => 'Entregado'])
+@extends('emails.layout', ['title' => 'Pedido Entregado - Pedido #' . $pedido->id])
 
 @section('content')
     <h2 style="margin:0 0 16px 0;font-size:20px;color:#ffffff;font-weight:700;">
-        ¡Pedido entregado con éxito! ✅
+        ¡Pedido entregado con éxito!
     </h2>
 
     <p style="margin:0 0 18px 0;">
@@ -36,4 +36,3 @@
         ¡Gracias por confiar en RepuestoFijo!
     </p>
 @endsection
-
