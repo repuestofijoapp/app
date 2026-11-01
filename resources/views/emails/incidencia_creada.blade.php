@@ -1,8 +1,8 @@
-@extends('emails.layout', ['title' => 'Reclamo Registrado - ' . $incidencia->codigo, 'badge' => 'Soporte Abierto'])
+@extends('emails.layout', ['title' => 'Reclamo Registrado - ' . $incidencia->codigo])
 
 @section('content')
     <h2 style="margin:0 0 16px 0;font-size:20px;color:#ffffff;font-weight:700;">
-        Hemos recibido tu reclamo [{{ $incidencia->codigo }}] 📋
+        Hemos recibido tu reclamo [{{ $incidencia->codigo }}]
     </h2>
 
     <p style="margin:0 0 18px 0;">
@@ -41,11 +41,10 @@
 
     <!-- SLA commitment -->
     <div style="background:rgba(59,130,246,0.1);border-left:4px solid #3b82f6;padding:12px 16px;border-radius:4px;margin:20px 0;font-size:13px;color:#93c5fd;">
-        <strong>SLA de Atención:</strong> Nuestro equipo logístico auditará la evidencia del despacho y te responderá en el <strong>mismo día hábil</strong> (objetivo interno &lt; 2 horas).
+        <strong>SLA de Atención:</strong> Nuestro equipo logístico auditará la evidencia del despacho y te responderá en el <strong>mismo día hábil</strong>.
     </div>
 
     <p style="margin:16px 0 0 0;font-size:13px;color:#94a3b8;">
-        Recibirás una notificación por este medio y vía WhatsApp en cuanto haya una actualización sobre tu caso.
+        Recibirás una notificación por este medio o vía la plataforma en el detalle de tu pedido, en cuanto haya una actualización sobre tu caso.
     </p>
 @endsection
-
