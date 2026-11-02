@@ -49,15 +49,53 @@
     @if (!empty($incidenciaData['historial_estados']))
         <div>
             <div class="text-white text-opacity-50 small mb-2" style="font-size: 0.75rem;">Historial de seguimiento</div>
-            <div class="d-flex flex-column gap-2">
+            <div class="d-flex flex-column gap-2 p-3 rounded-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);">
+                @php
+                    $statusLabels = [
+                        'abierta'        => 'Reclamo recibido',
+                        'en_revision'    => 'En revisión',
+                        'reenvio_camino' => 'Reenvío en camino',
+                        'reembolsado'    => 'Reembolso procesado',
+                        'resuelta'       => 'Caso resuelto',
+                        'rechazada'      => 'Rechazado',
+                        'cerrada'        => 'Caso cerrado',
+                    ];
+                    $statusColors = [
+                        'abierta'        => '#f59e0b',
+                        'en_revision'    => '#3b82f6',
+                        'reenvio_camino' => '#10b981',
+                        'reembolsado'    => '#8b5cf6',
+                        'resuelta'       => '#10b981',
+                        'rechazada'      => '#ef4444',
+                        'cerrada'        => '#64748b',
+                    ];
+                @endphp
                 @foreach (array_reverse($incidenciaData['historial_estados']) as $h)
+                    @php
+                        $statusCode = $h['status'] ?? $h['estado'] ?? 'abierta';
+                        $label = $statusLabels[$statusCode] ?? ucfirst(str_replace('_', ' ', $statusCode));
+                        $dotColor = $statusColors[$statusCode] ?? '#f97316';
+                        $rawTime = $h['timestamp'] ?? $h['fecha'] ?? null;
+                        $formattedDate = '';
+                        if ($rawTime) {
+                            try {
+                                $formattedDate = \Carbon\Carbon::parse($rawTime)->format('d/m/Y H:i');
+                            } catch (\Throwable $e) {
+                                $formattedDate = $rawTime;
+                            }
+                        }
+                    @endphp
                     <div class="d-flex align-items-start gap-2">
-                        <div class="rounded-circle mt-1" style="width: 8px; height: 8px; background: #f97316; flex-shrink: 0;"></div>
-                        <div>
-                            <div class="text-white small fw-semibold">{{ $h['estado'] ?? '' }}</div>
-                            <div class="text-white text-opacity-40" style="font-size: 0.7rem;">
-                                {{ $h['fecha'] ?? '' }}{{ isset($h['por']) ? ' · ' . $h['por'] : '' }}
+                        <div class="rounded-circle mt-1" style="width: 8px; height: 8px; background: {{ $dotColor }}; flex-shrink: 0; box-shadow: 0 0 6px {{ $dotColor }}88;"></div>
+                        <div class="flex-grow-1">
+                            <div class="text-white small fw-semibold" style="font-size: 0.84rem;">
+                                {{ $label }}
                             </div>
+                            @if ($formattedDate)
+                                <div class="text-white text-opacity-50" style="font-size: 0.72rem;">
+                                    {{ $formattedDate }}
+                                </div>
+                            @endif
                         </div>
                     </div>
                 @endforeach
