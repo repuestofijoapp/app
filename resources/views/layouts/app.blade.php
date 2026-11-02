@@ -845,9 +845,9 @@
                                 @if($incAbiertas > 0)
                                     <span class="collapse-hide ms-auto badge rounded-pill"
                                         style="background: {{ $incUrgentes > 0 ? '#ef4444' : '#fbbf24' }};
-                                                         color: {{ $incUrgentes > 0 ? '#fff' : '#000' }};
-                                                         font-size:.65rem; min-width:18px; padding:2px 6px;
-                                                         {{ $incUrgentes > 0 ? 'animation: badge-pulse 1.5s infinite;' : '' }}">
+                                                                 color: {{ $incUrgentes > 0 ? '#fff' : '#000' }};
+                                                                 font-size:.65rem; min-width:18px; padding:2px 6px;
+                                                                 {{ $incUrgentes > 0 ? 'animation: badge-pulse 1.5s infinite;' : '' }}">
                                         {{ $incAbiertas }}
                                     </span>
                                 @endif
@@ -904,10 +904,10 @@
                                 @endphp
                                 <span
                                     class="sb-status-dot 
-                                                                                                                        @if($botStatus === 'online') active 
-                                                                                                                        @elseif($botStatus === 'offline') offline 
-                                                                                                                        @else error @endif 
-                                                                                                                        collapse-hide"
+                                                                                                                                    @if($botStatus === 'online') active 
+                                                                                                                                    @elseif($botStatus === 'offline') offline 
+                                                                                                                                    @else error @endif 
+                                                                                                                                    collapse-hide"
                                     title="ZettaBot: {{ ucfirst($botStatus) }}"></span>
                             </a>
 

@@ -409,6 +409,7 @@ class ProductManagement extends Component
 
         foreach ($p->oversizes as $variant) {
             $key = $variant->oversize ?: 'STD';
+            if ($key === 'UNI') $key = 'UNICA';
             if (isset($this->oversizesData[$key])) {
                 $this->oversizesData[$key] = [
                     'enabled' => true,
@@ -608,6 +609,7 @@ class ProductManagement extends Component
                 // Sync oversizes
                 foreach ($this->oversizesData as $key => $val) {
                     if ($val['enabled'] ?? false) {
+                        if ($key === 'UNICA') { ProductOversize::where('product_id', $product->id)->where('oversize', 'UNI')->delete(); }
                         ProductOversize::updateOrCreate(
                             ['product_id' => $product->id, 'oversize' => $key],
                             [

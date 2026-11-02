@@ -54,7 +54,9 @@ class MainSearch extends Component
             // Check if ALL products of this provider in the repairList have a price AND provider does not require ZettaBot
             $providerProductsInCart = collect($this->repairList)->filter(fn($item) => $item['product']['provider_id'] == $p->id);
             $allHavePrice = $providerProductsInCart->every(fn($item) => ($item['product']['price'] ?? 0) > 0);
-            $dependsOnZbot = $p->requires_zbot || !$allHavePrice;
+            // A product with a pre-set price is always direct — no ZettaBot needed,
+            // regardless of the provider's requires_zbot flag.
+            $dependsOnZbot = !$allHavePrice;
 
             $state = 'waiting';
             $result = 'Esperando';
@@ -123,24 +125,46 @@ class MainSearch extends Component
     }
 
     /**
-     * Returns true if EVERY product in the repairList has a pre-set price
-     * AND its provider does NOT require ZettaBot confirmation.
-     * In this case we can skip the WhatsApp flow and go straight to payment.
+     * Returns true if EVERY product in the repairList has a pre-set price.
+     * A product with a price is treated as "direct" regardless of the provider's
+     * requires_zbot flag — the price was explicitly set in the Dashboard.
      */
     public function isOrderFullyPrePriced(): bool
     {
         if (empty($this->repairList)) return false;
 
         foreach ($this->repairList as $item) {
-            $product = $item['product'];
-            $hasPrice = isset($product['price']) && floatval($product['price']) > 0;
+            $hasPrice = isset($item['product']['price']) && floatval($item['product']['price']) > 0;
             if (!$hasPrice) return false;
-
-            $provider = \App\Models\Provider::find($product['provider_id'] ?? null);
-            if (!$provider || $provider->requires_zbot) return false;
         }
 
         return true;
+    }
+
+    /**
+     * Returns the pricing state of the current repair list:
+     *   'full'  — all products have pre-set price → skip ZettaBot entirely
+     *   'none'  — no product has a price → full ZettaBot flow
+     *   'mixed' — some have price, some don't → hybrid flow
+     */
+    public function getOrderPricingState(): string
+    {
+        if (empty($this->repairList)) return 'none';
+
+        $hasPrePriced = false;
+        $hasUnpriced  = false;
+
+        foreach ($this->repairList as $item) {
+            if (floatval($item['product']['price'] ?? 0) > 0) {
+                $hasPrePriced = true;
+            } else {
+                $hasUnpriced = true;
+            }
+        }
+
+        if ($hasPrePriced && !$hasUnpriced) return 'full';
+        if ($hasUnpriced && !$hasPrePriced) return 'none';
+        return 'mixed';
     }
 
     public $triedProviderIds = [];
@@ -325,8 +349,9 @@ class MainSearch extends Component
                 // Skip excluded items
                 if ($override && ($override['excluded'] ?? false)) continue;
 
-                if ($hasPrice && !$requiresZbot) {
-                    // Direct confirmation, no ZettaBot, no markup, but we add 18% IGV
+                if ($hasPrice) {
+                    // Direct confirmation: product has a pre-set price in Dashboard.
+                    // No ZettaBot, no markup — we add 18% IGV only.
                     $unitPriceWithTax = round(floatval($product['price']) * 1.18, 2);
                     $oem = $product['supplier_code'] ?? 'N/A';
                     $finalQty = ($override && isset($override['qty']) && $override['qty'] > 0)
@@ -1920,6 +1945,18 @@ class MainSearch extends Component
             return;
         }
 
+        // If multiple oversizes exist (e.g. UNICA + legacy UNI, or filter with no oversize selector)
+        if ($oversizes->isNotEmpty()) {
+            $variant = $oversizes->firstWhere('oversize', 'UNICA')
+                    ?? $oversizes->firstWhere('oversize', 'UNI')
+                    ?? $oversizes->firstWhere('oversize', 'STD')
+                    ?? $oversizes->first();
+            if ($variant) {
+                $this->addToRepairWithOversize($productId, $variant->oversize);
+                return;
+            }
+        }
+
         // Fallback: no oversizes table data (legacy product), use product directly
         if ($oversizes->isEmpty()) {
             $cartKey = (string) $productId;
@@ -2401,6 +2438,17 @@ class MainSearch extends Component
         session()->put('current_pedido_id', $pedido->id);
         $this->saveCartToDb();
 
+        if ($this->isOrderFullyPrePriced()) {
+            \Illuminate\Support\Facades\Log::info("Pedido {$pedido->id}: todos los productos tienen precio predefinido. Saltando ZettaBot directo a pago.");
+            $this->isSearching = false;
+            $this->showZbotModal = false;
+            $this->zbotConfirmed = true;
+            $this->viewState = 'repair_summary';
+            $this->savePersistedSearchState();
+            $this->dispatch('notify', ['type' => 'success', 'message' => '¡Precios confirmados! Ya puedes proceder al pago.']);
+            return;
+        }
+
         // Group by provider and SEND WhatsApp messages
         $grouped = collect($this->repairList)->groupBy('product.provider_id');
         $ws = new WhatsAppService();
@@ -2413,11 +2461,11 @@ class MainSearch extends Component
                 continue;
             }
 
-            // ── Direct provider: all products have pre-set prices, skip WhatsApp ──
+            // ── Direct product: has a pre-set price → skip WhatsApp regardless of provider's requires_zbot ──
             $allHavePrice = $items->every(fn($i) => floatval($i['product']['price'] ?? 0) > 0);
-            if (!$provider->requires_zbot && $allHavePrice) {
-                \Illuminate\Support\Facades\Log::info("Proveedor {$providerId} es directo (sin ZettaBot). Confirmación instantánea.");
-                // No ZbotQuery needed — getConfirmedItems() handles direct providers automatically.
+            if ($allHavePrice) {
+                \Illuminate\Support\Facades\Log::info("Proveedor {$providerId}: todos los productos tienen precio fijo. Confirmación instantánea sin ZettaBot.");
+                // No ZbotQuery needed — getConfirmedItems() handles direct-priced products automatically.
                 continue;
             }
 

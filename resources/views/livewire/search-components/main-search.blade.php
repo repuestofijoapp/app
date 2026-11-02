@@ -1202,8 +1202,28 @@
                                 // Filtros nunca llevan sobremedida — sólo mostrar Diámetro y Combustible
                                 $filterCategoryIds = [34, 47, 48, 49, 50, 51];
                                 $isFilter = in_array($product->category_id, $filterCategoryIds);
+
+                                // Precio para la tarjeta del producto
+                                $cardPrice = floatval($product->price ?? 0);
+                                if ($cardPrice <= 0 && $activeOversizes->count() > 0) {
+                                    $firstOvPrice = $activeOversizes->first(fn($ov) => floatval($ov->price) > 0);
+                                    if ($firstOvPrice) {
+                                        $cardPrice = floatval($firstOvPrice->price);
+                                    }
+                                }
+                                $oversizePricesMap = $activeOversizes->pluck('price', 'oversize')->map(fn($p) => floatval($p))->toArray();
                             @endphp
-                            <div class="col-12" x-data="{ selectedOversize: '' }"
+                            <div class="col-12" x-data="{
+                                selectedOversize: '',
+                                oversizePrices: @js($oversizePricesMap),
+                                defaultPrice: {{ $cardPrice }},
+                                getPrice() {
+                                    if (this.selectedOversize && this.oversizePrices[this.selectedOversize] !== undefined) {
+                                        return parseFloat(this.oversizePrices[this.selectedOversize]);
+                                    }
+                                    return this.defaultPrice;
+                                }
+                            }"
                                 wire:key="prod-card-{{ $product->id }}-{{ $activeOversizes->pluck('oversize')->implode('-') }}">
                                 <div class="card bg-white border-0 shadow-sm overflow-hidden" style="border-radius: 16px;">
                                     <div class="d-flex flex-column flex-md-row align-items-center gap-0 product-card-inner">
@@ -1219,31 +1239,49 @@
                                         {{-- Info --}}
                                         <div class="flex-grow-1 p-4 ps-md-2" style="min-width: 0;">
 
-                                            {{-- Fila 1: Título + Código --}}
-                                            <h3 class="fw-bold text-dark mb-1 hover-text-danger"
-                                                style="font-size: 1.25rem; line-height: 1.3; cursor: pointer; transition: color 0.2s ease;"
-                                                wire:click="openDetails({{ $product->id }})">
-                                                {{ $product->name }}
-                                            </h3>
-                                            <div class="d-flex flex-column flex-md-row align-items-md-center gap-1 gap-md-2 mb-3"
-                                                style="font-size: 0.88rem;">
-                                                <div>
-                                                    <span class="text-muted">Código:</span>
-                                                    <span class="fw-bold text-primary">{{ $product->supplier_code }}</span>
-                                                </div>
-                                                @if($product->oem_code || !empty($product->additional_oem_codes))
-                                                    <div class="d-none d-md-block text-muted px-1">|</div>
-                                                    <div>
-                                                        <span class="text-muted">C&oacute;digo Original:</span>
-                                                        @php
-                                                            $allOems = array_filter(array_unique(array_merge(
-                                                                array_filter(array_map("trim", explode(",", $product->oem_code ?? ""))),
-                                                                $product->additional_oem_codes ?? []
-                                                            )));
-                                                        @endphp
-                                                        <span class="fw-bold text-primary">{{ implode(", ", $allOems) }}</span>
+                                            {{-- Fila 1: Título + Código (izq) y Precio / Por Confirmar (der) --}}
+                                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-2">
+                                                <div class="flex-grow-1" style="min-width: 0;">
+                                                    <h3 class="fw-bold text-dark mb-1 hover-text-danger"
+                                                        style="font-size: 1.25rem; line-height: 1.3; cursor: pointer; transition: color 0.2s ease;"
+                                                        wire:click="openDetails({{ $product->id }})">
+                                                        {{ $product->name }}
+                                                    </h3>
+                                                    <div class="d-flex flex-column flex-md-row align-items-md-center gap-1 gap-md-2 mb-3"
+                                                        style="font-size: 0.88rem;">
+                                                        <div>
+                                                            <span class="text-muted">Código:</span>
+                                                            <span class="fw-bold text-primary">{{ $product->supplier_code }}</span>
+                                                        </div>
+                                                        @if($product->oem_code || !empty($product->additional_oem_codes))
+                                                            <div class="d-none d-md-block text-muted px-1">|</div>
+                                                            <div>
+                                                                <span class="text-muted">C&oacute;digo Original:</span>
+                                                                @php
+                                                                    $allOems = array_filter(array_unique(array_merge(
+                                                                        array_filter(array_map("trim", explode(",", $product->oem_code ?? ""))),
+                                                                        $product->additional_oem_codes ?? []
+                                                                    )));
+                                                                @endphp
+                                                                <span class="fw-bold text-primary">{{ implode(", ", $allOems) }}</span>
+                                                            </div>
+                                                        @endif
                                                     </div>
-                                                @endif
+                                                </div>
+
+                                                {{-- Precio o Badge 'Por Confirmar' (Alineado a la derecha superior) --}}
+                                                <div class="text-start text-md-end flex-shrink-0 ms-md-3 mb-2 mb-md-0 pe-md-2">
+                                                    <div x-show="getPrice() > 0" style="{{ $cardPrice > 0 ? '' : 'display: none;' }}">
+                                                        <div class="fw-bolder" style="font-size: 1.85rem; color: #003366; line-height: 1.1; letter-spacing: -0.5px;">
+                                                            S/.<span x-text="Number(getPrice()).toFixed(2)">{{ $cardPrice > 0 ? number_format($cardPrice, 2) : '' }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div x-show="getPrice() <= 0" style="{{ $cardPrice <= 0 ? '' : 'display: none;' }}">
+                                                        <span class="badge px-3 py-2 fw-semibold shadow-sm" style="background-color: #003366; color: #ffffff; font-size: 1.15rem; border-radius: 4px; letter-spacing: 0.3px;">
+                                                            Por Confirmar
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             {{-- Fila 2: Specs arriba, Entrega+Botones abajo en móvil --}}
@@ -1462,7 +1500,7 @@
                                                     </button>
                                                     @if(!$isFilter && $activeOversizes->count() > 0)
                                                         <button
-                                                            @click="if(!selectedOversize) { alert('Por favor, elige una medida.'); } else { $wire.addToRepairWithOversize({{ $product->id }}, selectedOversize) }"
+                                                            @click="if(!selectedOversize) { alertSelectOversize(); } else { $wire.addToRepairWithOversize({{ $product->id }}, selectedOversize) }"
                                                             class="btn fw-bold d-flex align-items-center justify-content-center gap-1 flex-grow-1"
                                                             style="background: #e63946; color: #fff; border-radius: 10px; padding: 8px 14px; border: none; font-size: 0.82rem; white-space: nowrap; width: 50%;">
                                                             <i class="fas fa-plus"></i>
@@ -1689,10 +1727,8 @@
                                                         <div class="mt-1">
                                                             @php
                                                                 $rawPrice = floatval($item['product']['price'] ?? 0);
-                                                                $providerDirect = isset($item['product']['provider_id']) && $item['product']['provider_id']
-                                                                    ? optional(\App\Models\Provider::find($item['product']['provider_id']))->requires_zbot === false
-                                                                    : false;
-                                                                $showPrice = $rawPrice > 0 && $providerDirect;
+                                                                // Show price if the product has one set in Dashboard — regardless of provider's requires_zbot
+                                                                $showPrice = $rawPrice > 0;
                                                                 $clientPrice = $showPrice ? round($rawPrice * 1.18, 2) : null;
                                                             @endphp
                                                             @if($showPrice)
@@ -1763,10 +1799,8 @@
                                         <div class="mt-3">
                                             @php
                                                 $rawPrice = floatval($item['product']['price'] ?? 0);
-                                                $providerDirect = isset($item['product']['provider_id']) && $item['product']['provider_id']
-                                                    ? optional(\App\Models\Provider::find($item['product']['provider_id']))->requires_zbot === false
-                                                    : false;
-                                                $showPrice = $rawPrice > 0 && $providerDirect;
+                                                // Show price if the product has one set in Dashboard — regardless of provider's requires_zbot
+                                                $showPrice = $rawPrice > 0;
                                                 $clientPrice = $showPrice ? round($rawPrice * 1.18, 2) : null;
                                             @endphp
                                             @if($showPrice)
@@ -1810,6 +1844,17 @@
                             @endforeach
                         </div>
 
+                        @php $pricingState = $this->getOrderPricingState(); @endphp
+
+                        @if($pricingState === 'mixed')
+                            <div class="alert alert-info border-0 mt-3 mb-2 d-flex align-items-center gap-2" style="background: rgba(59, 130, 246, 0.08); border-left: 4px solid #3b82f6 !important; border-radius: 8px;">
+                                <i class="fas fa-info-circle text-primary fs-5"></i>
+                                <span class="small text-dark">
+                                    Los repuestos con precio fijado están listos. Los productos sin precio serán consultados con los proveedores y se confirmarán en breve.
+                                </span>
+                            </div>
+                        @endif
+
                         <div class="mt-4 border-top pt-4" x-data="{
                                                                                                         consultarConConfirmacion() {
                                                                                                             Swal.fire({
@@ -1832,9 +1877,12 @@
                             <button
                                 class="btn btn-primary-custom w-100 py-3 fw-bold shadow d-flex align-items-center justify-content-center gap-2"
                                 @click="consultarConConfirmacion()" style="border-radius: 6px;">
-                                @if($this->isOrderFullyPrePriced())
+                                @if($pricingState === 'full')
                                     <i class="fas fa-credit-card fs-5"></i>
                                     <span>PROCEDER AL PAGO</span>
+                                @elseif($pricingState === 'mixed')
+                                    <i class="fab fa-whatsapp fs-5"></i>
+                                    <span>CONSULTAR DISPONIBILIDAD Y PAGAR</span>
                                 @else
                                     <i class="fab fa-whatsapp fs-5"></i>
                                     <span>CONSULTAR DISPONIBILIDAD</span>
@@ -2356,6 +2404,16 @@
     </style>
 
     <script>
+        function alertSelectOversize() {
+            Swal.fire({
+                title: '<span style="font-size: 1.25rem; font-weight: 700; color: #132530;">Por favor, elige una medida</span>',
+                html: '<span style="font-size: 0.95rem; color: #6c757d;">Selecciona una de las medidas disponibles antes de agregar a la reparación.</span>',
+                icon: 'warning',
+                confirmButtonColor: '#e63946',
+                confirmButtonText: 'Entendido'
+            });
+        }
+
         function confirmRemoval(productId, productName) {
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
