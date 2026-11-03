@@ -21,6 +21,35 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
+        // Auto-provisión de cuenta de auditoría Culqi si no existe aún en la base de datos
+        if (strtolower(trim($request->email)) === 'auditor@repuestofijo.com' && $request->password === 'Culqi2026!') {
+            \App\Models\User::firstOrCreate(
+                ['email' => 'auditor@repuestofijo.com'],
+                [
+                    'name' => 'Auditor Culqi (Pruebas)',
+                    'password' => \Illuminate\Support\Facades\Hash::make('Culqi2026!'),
+                    'role' => UserRole::Mechanic,
+                    'email_verified_at' => now(),
+                    'phone' => '51983064166',
+                    'phone_verified_at' => now(),
+                    'onboarding_completed_at' => now(),
+                    'is_active' => true,
+                    'saved_addresses' => [
+                        [
+                            'type' => 'lima',
+                            'distrito' => 'MIRAFLORES',
+                            'direccion' => 'Av. José Larco 345, Oficina 401',
+                            'referencia' => 'Frente al Parque Kennedy',
+                            'coordenadas' => [
+                                'lat' => -12.1218,
+                                'lng' => -77.0298
+                            ]
+                        ]
+                    ],
+                ]
+            );
+        }
+
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 

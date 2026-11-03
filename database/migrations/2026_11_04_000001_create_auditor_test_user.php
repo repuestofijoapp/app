@@ -47,3 +47,4 @@ return new class extends Migration
         User::where('email', 'auditor@repuestofijo.com')->delete();
     }
 };
+

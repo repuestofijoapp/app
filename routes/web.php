@@ -81,6 +81,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/Ayoro-sape-{secret}/configuracion', \App\Livewire\Admin\SystemSettings::class)->name('admin.system-settings');
         Route::get('/Ayoro-sape-{secret}/logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->name('admin.logs');
         Route::get('/Ayoro-sape-{secret}/reclamaciones', \App\Livewire\Admin\ReclamacionManagement::class)->name('admin.reclamaciones');
+        Route::get('/Ayoro-sape-{secret}/run-migrations', function ($secret) {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            $output = \Illuminate\Support\Facades\Artisan::output();
+            return response("<pre style='background:#0d1e28;color:#10b981;padding:24px;font-family:monospace;border-radius:12px;margin:20px;font-size:14px;'>" . htmlspecialchars($output) . "</pre>");
+        })->name('admin.run-migrations');
     });
 
     // Evidencia fotográfica de incidencias (accesible con URL firmada, admin/manager o dueño del reclamo)
