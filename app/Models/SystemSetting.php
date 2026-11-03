@@ -52,6 +52,23 @@ class SystemSetting extends Model
     }
 
     /**
+     * Get a generic string setting value.
+     */
+    public static function get(string $key, ?string $default = null): ?string
+    {
+        $setting = self::where('key', $key)->first();
+        return $setting ? $setting->value : $default;
+    }
+
+    /**
+     * Set a generic string setting value.
+     */
+    public static function set(string $key, ?string $value): void
+    {
+        self::updateOrCreate(['key' => $key], ['value' => $value]);
+    }
+
+    /**
      * Check if a specific make is disabled.
      */
     public static function isMakeDisabled(?string $make): bool

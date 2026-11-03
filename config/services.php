@@ -29,6 +29,13 @@ return [
         'simulation' => env('GREEN_API_SIMULATION', false),
     ],
 
+    'apis_peru_wa' => [
+        'username'  => env('APIS_PERU_USERNAME'),
+        'password'  => env('APIS_PERU_PASSWORD'),
+        'device_id' => env('APIS_PERU_DEVICE_ID'),
+        'base_url'  => 'https://whatsapp.apisperu.com/api/v1',
+    ],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
