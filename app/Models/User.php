@@ -203,4 +203,20 @@ class User extends Authenticatable
         if (empty($this->ruc_dni)) return 'Documento';
         return strlen($this->ruc_dni) === 11 ? 'RUC' : 'DNI';
     }
+
+    /**
+     * URL del avatar del usuario (foto de Google, archivo subido o avatar con iniciales).
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        if (!empty($this->profile_photo_path)) {
+            if (str_starts_with($this->profile_photo_path, 'http')) {
+                return $this->profile_photo_path;
+            }
+            return \Illuminate\Support\Facades\Storage::url($this->profile_photo_path);
+        }
+
+        $name = urlencode($this->name ?: 'Usuario');
+        return "https://ui-avatars.com/api/?name={$name}&color=7F9CF5&background=1E293B&bold=true&size=100";
+    }
 }

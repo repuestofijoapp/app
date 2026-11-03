@@ -243,10 +243,14 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle bg-white bg-opacity-5 d-flex align-items-center justify-content-center"
-                                        style="width: 35px; height: 35px;">
-                                        <i class="fas fa-user-circle opacity-50"></i>
-                                    </div>
+                                    @php
+                                        $custAvatar = $pedido->customer?->avatar_url ?? ('https://ui-avatars.com/api/?name=' . urlencode($pedido->customer?->name ?? 'Cliente') . '&color=7F9CF5&background=1E293B&bold=true&size=80');
+                                    @endphp
+                                    <img src="{{ $custAvatar }}"
+                                         alt="{{ $pedido->customer?->name ?? 'Cliente' }}"
+                                         class="rounded-circle border border-white border-opacity-10 shadow-sm"
+                                         style="width: 35px; height: 35px; object-fit: cover; flex-shrink: 0;"
+                                         onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=C&color=7F9CF5&background=1E293B&bold=true&size=80';">
                                     <div>
                                         <div class="fw-bold small">{{ $pedido->customer->name ?? 'N/A' }}</div>
                                         <div class="extra-small opacity-50">{{ $pedido->telefono_contacto }}</div>
@@ -344,7 +348,14 @@
                     <div class="col-md-6">
                         <h6 class="text-white extra-small text-uppercase ls-1 mb-3">Información del Cliente</h6>
                         <div class="info-box">
-                            <div class="fw-bold mb-2">{{ $selectedPedido->customer->name }}</div>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <img src="{{ $selectedPedido->customer?->avatar_url ?? ('https://ui-avatars.com/api/?name=' . urlencode($selectedPedido->customer?->name ?? 'Cliente') . '&color=7F9CF5&background=1E293B&bold=true&size=80') }}"
+                                     alt="{{ $selectedPedido->customer?->name ?? 'Cliente' }}"
+                                     class="rounded-circle border border-white border-opacity-10 shadow-sm"
+                                     style="width: 32px; height: 32px; object-fit: cover; flex-shrink: 0;"
+                                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=C&color=7F9CF5&background=1E293B&bold=true&size=80';">
+                                <div class="fw-bold">{{ $selectedPedido->customer->name ?? 'Cliente' }}</div>
+                            </div>
                             <div class="small opacity-75 mb-1"><i
                                     class="fas fa-envelope me-2"></i>{{ $selectedPedido->customer->email }}</div>
                             <div class="small opacity-75 mb-1"><i
