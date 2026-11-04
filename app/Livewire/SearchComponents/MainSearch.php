@@ -2150,10 +2150,10 @@ class MainSearch extends Component
         $this->deliveryType = $addr['type'];
 
         if ($addr['type'] === 'lima') {
-            $this->deliveryAddress = $addr['address'] ?? '';
-            $this->deliveryDistrict = $addr['district'] ?? '';
-            $this->deliveryLat = !empty($addr['lat']) ? round(floatval($addr['lat']), 7) : null;
-            $this->deliveryLng = !empty($addr['lng']) ? round(floatval($addr['lng']), 7) : null;
+            $this->deliveryAddress = $addr['address'] ?? $addr['direccion'] ?? '';
+            $this->deliveryDistrict = $addr['district'] ?? $addr['distrito'] ?? '';
+            $this->deliveryLat = !empty($addr['lat']) ? round(floatval($addr['lat']), 7) : (!empty($addr['coordenadas']['lat']) ? round(floatval($addr['coordenadas']['lat']), 7) : null);
+            $this->deliveryLng = !empty($addr['lng']) ? round(floatval($addr['lng']), 7) : (!empty($addr['coordenadas']['lng']) ? round(floatval($addr['coordenadas']['lng']), 7) : null);
             $this->deliveryUbigeo = $addr['ubigeo'] ?? '';
             $this->deliveryPlaceSelected = !empty($this->deliveryLat) && !empty($this->deliveryLng);
 

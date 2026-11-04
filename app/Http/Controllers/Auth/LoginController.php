@@ -37,13 +37,13 @@ class LoginController extends Controller
                     'saved_addresses' => [
                         [
                             'type' => 'lima',
-                            'distrito' => 'MIRAFLORES',
-                            'direccion' => 'Av. José Larco 345, Oficina 401',
+                            'label' => 'MIRAFLORES — Av. José Larco 345',
+                            'district' => 'MIRAFLORES',
+                            'address' => 'Av. José Larco 345, Oficina 401',
                             'referencia' => 'Frente al Parque Kennedy',
-                            'coordenadas' => [
-                                'lat' => -12.1218,
-                                'lng' => -77.0298
-                            ]
+                            'lat' => -12.1218,
+                            'lng' => -77.0298,
+                            'ubigeo' => '150122',
                         ]
                     ],
                 ]

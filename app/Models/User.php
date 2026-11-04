@@ -159,12 +159,20 @@ class User extends Authenticatable
 
         // Eliminar entradas duplicadas (misma dirección+distrito para Lima, o ciudad+agencia para provincua)
         $existing = array_filter($existing, function ($a) use ($address) {
-            if ($a['type'] !== $address['type'])
+            if (($a['type'] ?? '') !== ($address['type'] ?? ''))
                 return true;
-            if ($address['type'] === 'lima') {
-                return !($a['address'] === $address['address'] && $a['district'] === $address['district']);
+            if (($address['type'] ?? '') === 'lima') {
+                $aAddr = $a['address'] ?? $a['direccion'] ?? '';
+                $newAddr = $address['address'] ?? $address['direccion'] ?? '';
+                $aDist = $a['district'] ?? $a['distrito'] ?? '';
+                $newDist = $address['district'] ?? $address['distrito'] ?? '';
+                return !($aAddr === $newAddr && $aDist === $newDist);
             }
-            return !($a['agency'] === $address['agency'] && $a['city'] === $address['city']);
+            $aAgency = $a['agency'] ?? $a['agencia'] ?? '';
+            $newAgency = $address['agency'] ?? $address['agencia'] ?? '';
+            $aCity = $a['city'] ?? $a['ciudad'] ?? '';
+            $newCity = $address['city'] ?? $address['ciudad'] ?? '';
+            return !($aAgency === $newAgency && $aCity === $newCity);
         });
 
         // Insertar al inicio (más reciente primero)
