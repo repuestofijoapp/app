@@ -3004,8 +3004,13 @@
                     <div class="px-4 pb-4">
                         <button wire:click="confirmDeliveryAndProceed" class="btn w-100 py-3 fw-bold text-white rounded-3"
                             style="background: linear-gradient(135deg, #BE3C3B, #e05555); font-size:0.95rem; letter-spacing:.3px;">
-                            <i class="fab fa-whatsapp me-2"></i>
-                            Consultar disponibilidad
+                            @if($pricingState === 'full')
+                                <i class="fas fa-credit-card me-2"></i>
+                                Proceder al pago
+                            @else
+                                <i class="fab fa-whatsapp me-2"></i>
+                                Consultar disponibilidad
+                            @endif
                         </button>
                         <button wire:click="$set('showDeliveryModal',false)" class="btn w-100 mt-2 text-white"
                             style="font-size:0.85rem;">

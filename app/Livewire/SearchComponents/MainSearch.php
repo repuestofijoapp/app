@@ -2352,25 +2352,30 @@ class MainSearch extends Component
 
         // ★ Guardar dirección en el perfil del usuario (solo usuarios autenticados)
         if (auth()->check()) {
-            if ($this->deliveryType === 'lima') {
-                auth()->user()->saveAddress([
-                    'type' => 'lima',
-                    'address' => $this->deliveryAddress,
-                    'district' => $this->deliveryDistrict,
-                    'lat' => $this->deliveryLat,
-                    'lng' => $this->deliveryLng,
-                    'ubigeo' => $this->deliveryUbigeo,
-                ]);
-            } else {
-                auth()->user()->saveAddress([
-                    'type' => 'province',
-                    'agency' => $this->deliveryAgency,
-                    'city' => $this->deliveryCity,
-                    'recipient_name' => $this->recipientName,
-                    'recipient_dni' => $this->recipientDni,
-                    'recipient_phone' => $this->recipientPhone,
-                    'recipient_address' => $this->recipientAddress,
-                ]);
+            try {
+                if ($this->deliveryType === 'lima') {
+                    auth()->user()->saveAddress([
+                        'type' => 'lima',
+                        'address' => $this->deliveryAddress,
+                        'district' => $this->deliveryDistrict,
+                        'lat' => $this->deliveryLat,
+                        'lng' => $this->deliveryLng,
+                        'ubigeo' => $this->deliveryUbigeo,
+                    ]);
+                } else {
+                    auth()->user()->saveAddress([
+                        'type' => 'province',
+                        'agency' => $this->deliveryAgency,
+                        'city' => $this->deliveryCity,
+                        'recipient_name' => $this->recipientName,
+                        'recipient_dni' => $this->recipientDni,
+                        'recipient_phone' => $this->recipientPhone,
+                        'recipient_address' => $this->recipientAddress,
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                // No bloquear el flujo si falla guardar dirección
+                \Illuminate\Support\Facades\Log::warning('saveAddress falló (no crítico): ' . $e->getMessage());
             }
         }
 
@@ -2393,128 +2398,139 @@ class MainSearch extends Component
 
     public function processFinalOrder()
     {
-        $this->isSearching = true;
-        $this->showZbotModal = true;
-        $this->zbotSearchStartTime = now();
-        $this->showLeadForm = false;
-        $this->triedProviderIds = [];
-        $this->searchingForAlternatives = false;
-        $this->zbotConfirmed = false; // reset por si hay un ciclo anterior
+        try {
+            $this->isSearching = true;
+            $this->showZbotModal = true;
+            $this->zbotSearchStartTime = now();
+            $this->showLeadForm = false;
+            $this->triedProviderIds = [];
+            $this->searchingForAlternatives = false;
+            $this->zbotConfirmed = false; // reset por si hay un ciclo anterior
 
-        \Illuminate\Support\Facades\Log::info("Iniciando processFinalOrder. Items: " . count($this->repairList));
+            \Illuminate\Support\Facades\Log::info("Iniciando processFinalOrder. Items: " . count($this->repairList));
 
-        // Generate 4-digit secret key if provincia
-        $claveSecreta = null;
-        if ($this->deliveryType === 'province') {
-            $claveSecreta = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-        }
+            // Generate 4-digit secret key if provincia
+            $claveSecreta = null;
+            if ($this->deliveryType === 'province') {
+                $claveSecreta = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+            }
 
-        // Generar token criptográfico único para PoD
-        $deliveryToken = Str::random(40);
+            // Generar token criptográfico único para PoD
+            $deliveryToken = Str::random(40);
 
-        // 1. Create the Pedido record
-        // Status 'por_confirmar': el pedido existe pero aún no hay proveedor confirmado
-        // ni cobro real. Pasa a 'pagado' solo cuando Culqi confirme el webhook.
-        $pedido = Pedido::create([
-            'customer_id' => auth()->id(),
-            'tipo_envio' => $this->deliveryType === 'lima' ? 'Lima' : 'Provincia',
-            'distrito' => $this->deliveryDistrict ?: $this->deliveryCity,
-            'departamento' => $this->deliveryDepartment,
-            'provincia' => $this->deliveryProvince,
-            'ubigeo_code' => $this->deliveryUbigeo ?: $this->deliveryDistrictCode,
-            'direccion' => $this->deliveryAddress ?: $this->recipientAddress,
-            'lat' => $this->deliveryLat,
-            'lng' => $this->deliveryLng,
-            'referencia' => $this->deliveryNotes,
-            'delivery_token' => $deliveryToken,
-            'telefono_contacto' => $this->recipientPhone ?: $this->phone,
-            'metodo_pago' => 'Culqi',
-            'clave_secreta' => $claveSecreta,
-            'costo_envio' => $this->estimatedDeliveryCost,
-            'status' => 'por_confirmar',
-        ]);
+            // 1. Create the Pedido record
+            // Status 'por_confirmar': el pedido existe pero aún no hay proveedor confirmado
+            // ni cobro real. Pasa a 'pagado' solo cuando Culqi confirme el webhook.
+            $pedido = Pedido::create([
+                'customer_id' => auth()->id(),
+                'tipo_envio' => $this->deliveryType === 'lima' ? 'Lima' : 'Provincia',
+                'distrito' => $this->deliveryDistrict ?: $this->deliveryCity,
+                'departamento' => $this->deliveryDepartment,
+                'provincia' => $this->deliveryProvince,
+                'ubigeo_code' => $this->deliveryUbigeo ?: $this->deliveryDistrictCode,
+                'direccion' => $this->deliveryAddress ?: $this->recipientAddress,
+                'lat' => $this->deliveryLat,
+                'lng' => $this->deliveryLng,
+                'referencia' => $this->deliveryNotes,
+                'delivery_token' => $deliveryToken,
+                'telefono_contacto' => $this->recipientPhone ?: $this->phone,
+                'metodo_pago' => 'Culqi',
+                'clave_secreta' => $claveSecreta,
+                'costo_envio' => $this->estimatedDeliveryCost,
+                'status' => 'por_confirmar',
+            ]);
 
-        $this->lastOrderId = $pedido->id;
-        session()->put('current_pedido_id', $pedido->id);
-        $this->saveCartToDb();
+            $this->lastOrderId = $pedido->id;
+            session()->put('current_pedido_id', $pedido->id);
+            $this->saveCartToDb();
 
-        if ($this->isOrderFullyPrePriced()) {
-            \Illuminate\Support\Facades\Log::info("Pedido {$pedido->id}: todos los productos tienen precio predefinido. Saltando ZettaBot directo a pago.");
+            if ($this->isOrderFullyPrePriced()) {
+                \Illuminate\Support\Facades\Log::info("Pedido {$pedido->id}: todos los productos tienen precio predefinido. Saltando ZettaBot directo a pago.");
+                $this->isSearching = false;
+                $this->showZbotModal = false;
+                $this->zbotConfirmed = true;
+                $this->viewState = 'repair_summary';
+                $this->savePersistedSearchState();
+                $this->dispatch('notify', ['type' => 'success', 'message' => '¡Precios confirmados! Ya puedes proceder al pago.']);
+                return;
+            }
+
+            // Group by provider and SEND WhatsApp messages
+            $grouped = collect($this->repairList)->groupBy('product.provider_id');
+            $ws = new WhatsAppService();
+            // Determine chat_id suffix based on active provider
+            $wsProvider = \App\Models\SystemSetting::get('whatsapp_provider', 'green_api');
+            $chatSuffix = $wsProvider === 'apis_peru' ? '@s.whatsapp.net' : '@c.us';
+
+            foreach ($grouped as $providerId => $items) {
+                $provider = \App\Models\Provider::find($providerId);
+
+                if (!$provider) {
+                    \Illuminate\Support\Facades\Log::warning("Proveedor no encontrado: {$providerId}");
+                    continue;
+                }
+
+                // ── Direct product: has a pre-set price → skip WhatsApp regardless of provider's requires_zbot ──
+                $allHavePrice = $items->every(fn($i) => floatval($i['product']['price'] ?? 0) > 0);
+                if ($allHavePrice) {
+                    \Illuminate\Support\Facades\Log::info("Proveedor {$providerId}: todos los productos tienen precio fijo. Confirmación instantánea sin ZettaBot.");
+                    // No ZbotQuery needed — getConfirmedItems() handles direct-priced products automatically.
+                    continue;
+                }
+
+                if (!$provider->whatsapp_number) {
+                    \Illuminate\Support\Facades\Log::warning("Proveedor {$providerId} sin WhatsApp.");
+                    continue;
+                }
+
+                \Illuminate\Support\Facades\Log::info("Enviando pedido (vía texto) a Proveedor {$providerId} ({$provider->whatsapp_number})");
+
+                $token = (string) \Illuminate\Support\Str::uuid();
+                $link = url("/proveedor/confirmar/{$token}");
+
+                $orderMsg = $ws->formatZbotOrder($items, $pedido->id); // Use real pedido ID
+                $menuMsg = "{$orderMsg}\n\n*🔗 Confirma tu stock y precios aquí:*\n{$link}";
+
+                $res = $ws->sendMessage($provider->whatsapp_number, $menuMsg);
+
+                if ($res) {
+                    \Illuminate\Support\Facades\Log::info("Mensaje enviado exitosamente. ID: " . ($res['idMessage'] ?? 'N/A'));
+
+                    $cleanNumber = preg_replace('/[^0-9]/', '', $provider->whatsapp_number);
+
+                    ZbotQuery::create([
+                        'pedido_id' => $pedido->id,
+                        'provider_id' => $providerId,
+                        'chat_id' => $cleanNumber . $chatSuffix,
+                        'message_id' => $res['idMessage'] ?? null,
+                        'status' => 'waiting',
+                        'current_step' => 'initial',
+                        'items_json' => $items->toArray(),
+                        'expires_at' => now()->addMinutes(9),
+                        'reminders_sent' => 0,
+                        'confirmation_token' => $token,
+                    ]);
+                } else {
+                    \Illuminate\Support\Facades\Log::error("Fallo al enviar mensaje a Proveedor {$providerId}");
+                }
+            }
+
+            // If province order: store pickup password and secret key in session
+            if ($this->deliveryType === 'province') {
+                session()->put('pickup_password', $this->pickupPassword);
+                session()->put('secret_key', $claveSecreta);
+                session()->put('recipient_phone', $this->recipientPhone);
+                session()->put('recipient_name', $this->recipientName);
+            }
+
+            $this->savePersistedSearchState();
+
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('processFinalOrder exception: ' . $e->getMessage() . ' | ' . $e->getFile() . ':' . $e->getLine() . ' | ' . $e->getTraceAsString());
             $this->isSearching = false;
             $this->showZbotModal = false;
-            $this->zbotConfirmed = true;
-            $this->viewState = 'repair_summary';
-            $this->savePersistedSearchState();
-            $this->dispatch('notify', ['type' => 'success', 'message' => '¡Precios confirmados! Ya puedes proceder al pago.']);
-            return;
+            $this->dispatch('notify', ['type' => 'error', 'message' => 'Ocurrió un error al procesar tu pedido. Por favor intenta de nuevo.']);
         }
-
-        // Group by provider and SEND WhatsApp messages
-        $grouped = collect($this->repairList)->groupBy('product.provider_id');
-        $ws = new WhatsAppService();
-
-        foreach ($grouped as $providerId => $items) {
-            $provider = \App\Models\Provider::find($providerId);
-
-            if (!$provider) {
-                \Illuminate\Support\Facades\Log::warning("Proveedor no encontrado: {$providerId}");
-                continue;
-            }
-
-            // ── Direct product: has a pre-set price → skip WhatsApp regardless of provider's requires_zbot ──
-            $allHavePrice = $items->every(fn($i) => floatval($i['product']['price'] ?? 0) > 0);
-            if ($allHavePrice) {
-                \Illuminate\Support\Facades\Log::info("Proveedor {$providerId}: todos los productos tienen precio fijo. Confirmación instantánea sin ZettaBot.");
-                // No ZbotQuery needed — getConfirmedItems() handles direct-priced products automatically.
-                continue;
-            }
-
-            if (!$provider->whatsapp_number) {
-                \Illuminate\Support\Facades\Log::warning("Proveedor {$providerId} sin WhatsApp.");
-                continue;
-            }
-
-            \Illuminate\Support\Facades\Log::info("Enviando pedido (vía texto) a Proveedor {$providerId} ({$provider->whatsapp_number})");
-
-            $token = (string) \Illuminate\Support\Str::uuid();
-            $link = url("/proveedor/confirmar/{$token}");
-
-            $orderMsg = $ws->formatZbotOrder($items, $pedido->id); // Use real pedido ID
-            $menuMsg = "{$orderMsg}\n\n*🔗 Confirma tu stock y precios aquí:*\n{$link}";
-
-            $res = $ws->sendMessage($provider->whatsapp_number, $menuMsg);
-
-            if ($res) {
-                \Illuminate\Support\Facades\Log::info("Mensaje enviado exitosamente. ID: " . ($res['idMessage'] ?? 'N/A'));
-
-                $cleanNumber = preg_replace('/[^0-9]/', '', $provider->whatsapp_number);
-
-                ZbotQuery::create([
-                    'pedido_id' => $pedido->id,
-                    'provider_id' => $providerId,
-                    'chat_id' => $cleanNumber . '@c.us',
-                    'message_id' => $res['idMessage'] ?? null,
-                    'status' => 'waiting',
-                    'current_step' => 'initial',
-                    'items_json' => $items->toArray(),
-                    'expires_at' => now()->addMinutes(9),
-                    'reminders_sent' => 0,
-                    'confirmation_token' => $token,
-                ]);
-            } else {
-                \Illuminate\Support\Facades\Log::error("Fallo al enviar mensaje a Proveedor {$providerId}");
-            }
-        }
-
-        // If province order: store pickup password and secret key in session
-        if ($this->deliveryType === 'province') {
-            session()->put('pickup_password', $this->pickupPassword);
-            session()->put('secret_key', $claveSecreta);
-            session()->put('recipient_phone', $this->recipientPhone);
-            session()->put('recipient_name', $this->recipientName);
-        }
-
-        $this->savePersistedSearchState();
     }
 
     /**
