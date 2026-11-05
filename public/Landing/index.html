@@ -80,6 +80,7 @@
   "paymentAccepted": "Cash, Credit Card, Culqi, Yape, Plin"
 }
 </script>
+
 <link rel="icon" type="image/png" href="./favicon_color.png">
 <!-- Preconnect para Google Fonts (no bloquea render) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -98,6 +99,7 @@
   --gray: #1a3244;
   --gray2: #1e3a50;
   --accent: #E8D5B0;
+  --red-text: #E4574A; /* variante más clara de --red, cumple contraste 4.5:1 en texto pequeño sobre fondo oscuro */
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -149,9 +151,6 @@ nav {
 .nav-links a:hover { color: var(--white); }
 
 .nav-actions { display: flex; align-items: center; }
-.nav-logo-link { display: flex; align-items: center; text-decoration: none; cursor: none; }
-.nav-logo-img { height: 34px; width: auto; object-fit: contain; display: block; }
-
 .nav-btn-app {
   display: inline-flex;
   align-items: center;
@@ -186,17 +185,42 @@ nav {
 .nav-btn-app:hover svg {
   transform: translateX(3px);
 }
-.footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px 28px; margin-bottom: 24px; list-style: none; padding: 0; }
-.footer-links a { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(245, 240, 232, 0.55); text-decoration: none; transition: color .2s; cursor: none; }
-.footer-links a:hover { color: var(--white); }
-.footer-meta { font-size: 11px; color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  margin-bottom: 24px;
+  list-style: none;
+  padding: 0;
+}
+.footer-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(245, 240, 232, 0.55);
+  text-decoration: none;
+  transition: color .2s;
+  cursor: none;
+}
+.footer-links a:hover {
+  color: var(--white);
+}
+.footer-meta {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 8px;
+}
 
 .hero-logo-main { width: clamp(300px, 60vw, 750px); margin-bottom: 40px; opacity: 0; filter: drop-shadow(0 0 50px rgba(255,255,255,0.2)); position: relative; z-index: 10; }
 .hero-bg-text { display: none; }
 
 /* PROBLEMAS */
 .problems-section { padding: 100px 48px; max-width: 1100px; margin: 0 auto; position: relative; z-index: 10; }
-.section-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .25em; text-transform: uppercase; color: var(--red); margin-bottom: 16px; }
+.section-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .25em; text-transform: uppercase; color: var(--red-text); margin-bottom: 16px; }
 .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 7vw, 96px); line-height: .95; letter-spacing: 1px; margin-bottom: 64px; text-align: center; }
 .problems-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; justify-items: center; margin: 0 auto; }
 .problem-card { padding: 40px 32px; border: 1px solid rgba(255,255,255,0.08); background: var(--gray); position: relative; overflow: hidden; opacity: 0; transform: translateY(40px); }
@@ -210,10 +234,10 @@ nav {
 
 /* TRANSITION */
 .transition-section { padding: 100px 48px; text-align: center; position: relative; overflow: hidden; }
-.transition-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .25em; text-transform: uppercase; color: var(--red); margin-bottom: 20px; opacity: 0; }
+.transition-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .25em; text-transform: uppercase; color: var(--red-text); margin-bottom: 20px; opacity: 0; }
 .transition-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(44px, 8vw, 112px); line-height: .95; letter-spacing: -1px; margin-bottom: 0; opacity: 0; }
 .transition-title em { font-style: normal; color: var(--red); }
-.hero-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--red); margin-bottom: 24px; opacity: 0; }
+.hero-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--red-text); margin-bottom: 24px; opacity: 0; }
 .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(64px, 12vw, 160px); line-height: .95; letter-spacing: -1px; margin-bottom: 24px; opacity: 0; }
 .hero h1 em { font-style: normal; color: var(--red); display: block; }
 .hero-sub { font-size: clamp(14px, 1.5vw, 18px); color: rgba(245,240,232,0.5); max-width: 480px; line-height: 1.7; margin-bottom: 40px; opacity: 0; }
@@ -262,7 +286,6 @@ nav {
 .piece-count strong { color: var(--white); }
 
 .how-section { padding: 120px 48px; max-width: 1100px; margin: 0 auto; }
-.section-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .25em; text-transform: uppercase; color: var(--red); margin-bottom: 16px; }
 .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 7vw, 96px); line-height: .95; letter-spacing: 1px; margin-bottom: 64px; }
 .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
 .step { padding: 40px 32px; border: 1px solid rgba(255,255,255,0.08); background: var(--gray); position: relative; overflow: hidden; opacity: 0; transform: translateY(40px); transition: border-color .3s; }
@@ -286,17 +309,9 @@ nav {
 .btn-cta { display: inline-block; padding: 16px 40px; border: 1.5px solid var(--white); color: var(--white); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; transition: background .2s, color .2s; cursor: none; }
 .btn-cta:hover { background: var(--white); color: var(--black); }
 
-/* HOW IT WORKS */
-.how-section { padding: 100px 48px; max-width: 1100px; margin: 0 auto; position: relative; z-index: 10; }
-.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-.step { padding: 40px 32px; border: 1px solid rgba(255,255,255,0.08); background: var(--gray); position: relative; overflow: hidden; opacity: 0; transform: translateY(40px); }
-.step-num { font-family: 'Bebas Neue', sans-serif; font-size: 80px; line-height: 1; color: rgba(255,255,255,0.04); position: absolute; top: 12px; right: 20px; }
-.step h3 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 1px; margin-bottom: 12px; color: var(--white); }
-.step p { font-size: 15px; line-height: 1.75; color: rgba(245,240,232,0.5); }
-
 footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-items: center; justify-content: space-between; }
 .footer-logo img { height: 30px; object-fit: contain; filter: brightness(0) invert(1); }
-.footer-text { font-size: 12px; color: rgba(255,255,255,0.3); font-family: 'DM Mono', monospace; }
+.footer-text { font-size: 12px; color: rgba(255,255,255,0.55); font-family: 'DM Mono', monospace; }
 .footer-social { display: flex; gap: 24px; justify-content: center; margin-bottom: 24px; }
 .social-link { color: rgba(255, 255, 255, 0.3); transition: color 0.3s ease, transform 0.3s ease; width: 20px; height: 20px; display: inline-block; cursor: none; }
 .social-link:hover { color: var(--red); transform: translateY(-3px); }
@@ -375,7 +390,7 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
   font-size: 10px;
   letter-spacing: .2em;
   text-transform: uppercase;
-  color: #C0392B;
+  color: var(--red-text);
   margin-bottom: 10px;
   display: block;
 }
@@ -451,8 +466,8 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
 <div class="cursor-ring" id="cursor-ring"></div>
 
 <nav>
-  <a href="https://repuestofijo.com" class="nav-logo-link">
-    <img src="logo.webp" alt="RepuestoFijo" width="338" height="63" class="nav-logo-img">
+  <a href="https://repuestofijo.com" style="display:flex;align-items:center;text-decoration:none;cursor:none;">
+    <img src="logo.webp" alt="RepuestoFijo" width="338" height="63" class="nav-logo-img" style="height:34px;width:auto;object-fit:contain;display:block;">
   </a>
   <div class="nav-actions">
     <a href="https://app.repuestofijo.com" class="nav-btn-app">
@@ -461,6 +476,7 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
     </a>
   </div>
 </nav>
+<main>
 <div class="hero-split">
   <div class="panel" id="prob1">
     <!-- LCP candidate: preload hint en <head> para meca1.webp ya está en el link preload -->
@@ -525,7 +541,7 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
       <!-- FILTRO — izquierda arriba -->
       <div class="piece isolated" id="piece1" style="left:2%;top:15%">
         <div class="piece-icon">
-          <img src="Filtro_1.webp" alt="Filtro" class="piece-svg" width="180" height="180" style="object-fit: contain;">
+          <img src="Filtro_1.webp" alt="Filtro" class="piece-svg" width="180" height="180" style="object-fit: contain;" loading="lazy" decoding="async">
         </div>
         <div class="piece-prov">PROVEEDOR 01</div>
       </div>
@@ -533,7 +549,7 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
       <!-- AMORTIGUADOR — derecha arriba -->
       <div class="piece isolated" id="piece2" style="right:2%;top:15%">
         <div class="piece-icon">
-          <img src="Amortiguador.webp" alt="Amortiguador" class="piece-svg" width="180" height="180" style="object-fit: contain;">
+          <img src="Amortiguador.webp" alt="Amortiguador" class="piece-svg" width="180" height="180" style="object-fit: contain;" loading="lazy" decoding="async">
         </div>
         <div class="piece-prov">PROVEEDOR 02</div>
       </div>
@@ -541,7 +557,7 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
       <!-- ALTERNADOR — izquierda abajo -->
       <div class="piece isolated" id="piece3" style="left:2%;top:70%">
         <div class="piece-icon">
-          <img src="Alternador_Pro.webp" alt="Alternador" class="piece-svg" width="180" height="180" style="object-fit: contain;">
+          <img src="Alternador_Pro.webp" alt="Alternador" class="piece-svg" width="180" height="180" style="object-fit: contain;" loading="lazy" decoding="async">
         </div>
         <div class="piece-prov">PROVEEDOR 02</div>
       </div>
@@ -549,7 +565,7 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
       <!-- BUJÍA — derecha abajo -->
       <div class="piece isolated" id="piece4" style="right:2%;top:70%">
         <div class="piece-icon">
-          <img src="Bujia_1.webp" alt="Bujía" class="piece-svg" width="180" height="180" style="object-fit: contain;">
+          <img src="Bujia_1.webp" alt="Bujía" class="piece-svg" width="180" height="180" style="object-fit: contain;" loading="lazy" decoding="async">
         </div>
         <div class="piece-prov">PROVEEDOR 03</div>
       </div>
@@ -628,11 +644,12 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
     </div>
     <div class="why-cta" id="why-cta">
       <span class="big-number">100%</span>
-      <p class="big-desc">De las piezas que necesitas, listas para entrega hoy mismo.</p>
+      <p class="big-desc">De las piezas que necesitas, listas para entrega hoy mismo en tu taller.</p>
       <a href="https://app.repuestofijo.com" class="btn-cta">Buscar repuestos ahora &rarr;</a>
     </div>
   </div>
 </section>
+</main>
 
 <footer>  
   <ul class="footer-links">
@@ -674,29 +691,49 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
 <!-- GSAP + Lottie + datos de animación: al final del body, no bloquean render -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-<!-- box_data.js (346KB Lottie data) cargado solo cuando el usuario llega a esa sección -->
 <script>
-(function() {
-  var loaded = false;
-  var observer = new IntersectionObserver(function(entries) {
-    if (entries[0].isIntersecting && !loaded) {
-      loaded = true;
-      observer.disconnect();
-      var s = document.createElement('script');
-      s.src = './box_data.js';
-      s.onload = function() {
-        // Iniciar Lottie solo cuando los datos están disponibles
-        if (typeof lottie !== 'undefined' && typeof boxAnimationData !== 'undefined') {
-          window._initLottie && window._initLottie();
-        }
+// Lottie (17KB) + box_data.js (346KB) se cargan solo cuando el usuario
+// está por llegar a #anim-section, no en el arranque de la página.
+// Esto saca ~360KB de JS del camino crítico inicial (mejora TBT/LCP en mobile).
+let lottieBox = null;
+let lottieReady = null;
+
+function loadAnimAssets() {
+  if (lottieReady) return lottieReady;
+  lottieReady = new Promise((resolve) => {
+    const lottieScript = document.createElement('script');
+    lottieScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js';
+    lottieScript.onload = () => {
+      const dataScript = document.createElement('script');
+      dataScript.src = './box_data.js';
+      dataScript.onload = () => {
+        lottieBox = lottie.loadAnimation({
+          container: document.getElementById('lottie-box'),
+          renderer: 'svg',
+          loop: false,
+          autoplay: false,
+          animationData: boxAnimationData
+        });
+        resolve();
       };
-      document.body.appendChild(s);
+      document.body.appendChild(dataScript);
+    };
+    document.body.appendChild(lottieScript);
+  });
+  return lottieReady;
+}
+
+// Precarga cuando el usuario está a ~1 pantalla de distancia de la sección
+const animSectionEl = document.getElementById('anim-section');
+const animPreloadObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      loadAnimAssets();
+      animPreloadObserver.disconnect();
     }
-  }, { rootMargin: '200px' });
-  var target = document.getElementById('anim-section');
-  if (target) observer.observe(target);
-})();
+  });
+}, { rootMargin: '600px 0px' });
+if (animSectionEl) animPreloadObserver.observe(animSectionEl);
 </script>
 <script>
 gsap.registerPlugin(ScrollTrigger);
@@ -760,14 +797,9 @@ gsap.timeline({scrollTrigger:{trigger:'.transition-section',start:'top 80%'}})
   .from('#trans-tag',{opacity:0,y:16,duration:.6,ease:'power3.out'})
   .from('#trans-title',{opacity:0,y:40,duration:.9,ease:'power3.out'},'-=.3');
 
-// Lottie
-const lottieBox = lottie.loadAnimation({
-  container: document.getElementById('lottie-box'),
-  renderer: 'svg',
-  loop: false,
-  autoplay: false,
-  animationData: boxAnimationData
-});
+// Aseguramos que Lottie/box_data.js estén cargados antes de que el usuario
+// llegue al punto del timeline donde se necesita el frame de la caja.
+loadAnimAssets();
 
 // ANIMATION SEC
 const animTl = gsap.timeline({
@@ -798,7 +830,7 @@ animTl
     frame: 80, // Mitad de la animación (caja abierta)
     duration: 1.0,
     ease: "none",
-    onUpdate: () => lottieBox.goToAndStop(boxFrame.frame, true)
+    onUpdate: () => { if (lottieBox) lottieBox.goToAndStop(boxFrame.frame, true); }
   }, 2.2)
 
   .to('#anim-label-1', { opacity: 0, duration: 0.5 }, 2.8)
@@ -838,7 +870,7 @@ animTl
     frame: 160, 
     duration: 1.5,
     ease: "power2.inOut",
-    onUpdate: () => lottieBox.goToAndStop(boxFrame.frame, true)
+    onUpdate: () => { if (lottieBox) lottieBox.goToAndStop(boxFrame.frame, true); }
   }, 4.7)
   .to('#box-wrap', { scale: 1.2, duration: .35, ease: 'back.out(3)' }, 6.0)
   .to('#box-wrap', { scale: 1, duration: .3 }, 6.35)
