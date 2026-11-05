@@ -674,8 +674,6 @@
             <div class="info-box">
                 <strong>Repuesto Fijo</strong>
                 <span>RUC: 10421922557</span>
-                <span>Domicilio fiscal: Calle Filadelfia 2453, San Martín de Porres, Lima, Perú</span>
-                <span>Correo de atención: <a href="mailto:soporte@repuestofijo.com">soporte@repuestofijo.com</a></span>
                 <span>Correo de privacidad: <a
                         href="mailto:privacidad@repuestofijo.com">privacidad@repuestofijo.com</a></span>
             </div>
