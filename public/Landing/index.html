@@ -3,9 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="RepuestoFijo — La solución integral para repuestos de autos en Lima, Perú. Buscamos en todos los proveedores, consolidamos tu pedido y lo entregamos en tu taller el mismo día.">
+<title>RepuestoFijo | Repuestos de Autos con Entrega el Mismo Día en Lima</title>
+<meta name="description" content="Marketplace de repuestos automotrices en Lima, Perú. Cotizamos y buscamos en todos los almacenes mayoristas al mismo tiempo. Entrega rápida en tu taller el mismo día.">
+<meta name="keywords" content="repuestos autos lima, repuestos automotrices lima peru, repuestos toyota lima, repuestos hyundai lima, repuestos nissan, filtros de aceite, amortiguadores, repuestos delivery taller">
+<meta name="robots" content="index, follow">
+<meta name="author" content="RepuestoFijo S.A.C.">
 <link rel="canonical" href="https://repuestofijo.com/" />
-<title>RepuestoFijo — Repuestos al toque</title>
+
+<!-- GEO Tags (Geolocalización Local SEO Lima, Perú) -->
+<meta name="geo.region" content="PE-LMA">
+<meta name="geo.placename" content="Lima, Perú">
+<meta name="geo.position" content="-12.046374;-77.042793">
+<meta name="ICBM" content="-12.046374, -77.042793">
+
+<!-- Open Graph / WhatsApp / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_PE">
+<meta property="og:site_name" content="RepuestoFijo">
+<meta property="og:title" content="RepuestoFijo | Repuestos al Toque con Entrega en tu Taller">
+<meta property="og:description" content="Buscamos en todos los almacenes mayoristas de Lima al mismo tiempo. Consolidamos tu pedido y te lo entregamos el mismo día en tu taller.">
+<meta property="og:url" content="https://repuestofijo.com/">
+<meta property="og:image" content="https://repuestofijo.com/logo_color.png">
+<meta property="og:image:width" content="600">
+<meta property="og:image:height" content="315">
+<meta property="og:image:alt" content="RepuestoFijo - Repuestos automotrices en Lima">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="RepuestoFijo | Repuestos al Toque en Lima">
+<meta name="twitter:description" content="La solución integral para repuestos de autos en Lima. Entrega el mismo día en tu taller.">
+<meta name="twitter:image" content="https://repuestofijo.com/logo_color.png">
+
+<!-- Schema.org Datos Estructurados JSON-LD (Google & Motores de IA) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AutoPartsStore",
+  "name": "RepuestoFijo",
+  "image": "https://repuestofijo.com/logo_color.png",
+  "logo": "https://repuestofijo.com/logo_color.png",
+  "url": "https://repuestofijo.com",
+  "telephone": "+51983064166",
+  "email": "soporte@repuestofijo.com",
+  "description": "Marketplace especializado en repuestos de autos para talleres y mecánicos en Lima con entrega el mismo día.",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Lima",
+    "addressRegion": "Lima",
+    "addressCountry": "PE"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": -12.046374,
+    "longitude": -77.042793
+  },
+  "areaServed": [
+    "Lima Metropolitana",
+    "La Victoria",
+    "Ate",
+    "San Juan de Lurigancho",
+    "Surquillo",
+    "Los Olivos",
+    "Miraflores",
+    "San Martín de Porres",
+    "Breña",
+    "Callao"
+  ],
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    "opens": "08:00",
+    "closes": "18:30"
+  },
+  "priceRange": "S/.",
+  "currenciesAccepted": "PEN",
+  "paymentAccepted": "Cash, Credit Card, Culqi, Yape, Plin"
+}
+</script>
 <link rel="icon" type="image/png" href="./favicon_color.png">
 <!-- Preconnect para Google Fonts (no bloquea render) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -74,10 +148,44 @@ nav {
 .nav-links a { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,240,232,0.5); text-decoration: none; transition: color .2s; }
 .nav-links a:hover { color: var(--white); }
 
-.nav-actions { display: flex; align-items: center; gap: 20px; }
+.nav-actions { display: flex; align-items: center; }
+.nav-logo-link { display: flex; align-items: center; text-decoration: none; cursor: none; }
+.nav-logo-img { height: 34px; width: auto; object-fit: contain; display: block; }
 
-.nav-btn-app { display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px; background: var(--red); color: var(--white); font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; border-radius: 4px; transition: all .2s; cursor: none; box-shadow: 0 4px 15px rgba(192, 57, 43, 0.35); }
-.nav-btn-app:hover { background: #a93226; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(192, 57, 43, 0.5); }
+.nav-btn-app {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #BE3C3B 0%, #D84240 100%);
+  color: var(--white);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 999px;
+  white-space: nowrap;
+  line-height: 1;
+  transition: all .25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: none;
+  box-shadow: 0 4px 16px rgba(190, 60, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.nav-btn-app:hover {
+  background: linear-gradient(135deg, #a93226 0%, #BE3C3B 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 8px 24px rgba(190, 60, 59, 0.55);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.nav-btn-app svg {
+  transition: transform .2s ease;
+}
+.nav-btn-app:hover svg {
+  transform: translateX(3px);
+}
 .footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px 28px; margin-bottom: 24px; list-style: none; padding: 0; }
 .footer-links a { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(245, 240, 232, 0.55); text-decoration: none; transition: color .2s; cursor: none; }
 .footer-links a:hover { color: var(--white); }
@@ -318,9 +426,21 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
   .panel-content { padding: 24px 20px; }
   .panel-num { font-size: 80px; bottom: 80px; }
   .hero-bottom-bar { flex-direction: column; gap: 8px; padding: 12px 20px; }
-  nav { justify-content: space-between; padding: 12px 20px; }
-  
-  .nav-btn-app { padding: 8px 16px; font-size: 10px; }
+  nav {
+    justify-content: space-between;
+    padding: 10px 16px;
+    height: 56px;
+  }
+  .nav-logo-img {
+    height: 25px !important;
+  }
+  .nav-btn-app {
+    padding: 7px 14px;
+    font-size: 10px;
+    letter-spacing: .08em;
+    gap: 6px;
+    box-shadow: 0 3px 10px rgba(190, 60, 59, 0.35);
+  }
 }
 </style>
 <!-- GTM y Clarity movidos al final del body para no bloquear render -->
@@ -331,8 +451,8 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
 <div class="cursor-ring" id="cursor-ring"></div>
 
 <nav>
-  <a href="https://repuestofijo.com" style="display:flex;align-items:center;text-decoration:none;cursor:none;">
-    <img src="logo.webp" alt="RepuestoFijo" width="338" height="63" style="height:36px;width:auto;object-fit:contain;">
+  <a href="https://repuestofijo.com" class="nav-logo-link">
+    <img src="logo.webp" alt="RepuestoFijo" width="338" height="63" class="nav-logo-img">
   </a>
   <div class="nav-actions">
     <a href="https://app.repuestofijo.com" class="nav-btn-app">
