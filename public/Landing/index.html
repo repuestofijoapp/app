@@ -74,6 +74,16 @@ nav {
 .nav-links a { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,240,232,0.5); text-decoration: none; transition: color .2s; }
 .nav-links a:hover { color: var(--white); }
 
+.nav-actions { display: flex; align-items: center; gap: 20px; }
+.nav-login { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,240,232,0.65); text-decoration: none; transition: color .2s; cursor: none; }
+.nav-login:hover { color: var(--white); }
+.nav-btn-app { display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px; background: var(--red); color: var(--white); font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; border-radius: 4px; transition: all .2s; cursor: none; box-shadow: 0 4px 15px rgba(192, 57, 43, 0.35); }
+.nav-btn-app:hover { background: #a93226; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(192, 57, 43, 0.5); }
+.footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px 28px; margin-bottom: 24px; list-style: none; padding: 0; }
+.footer-links a { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(245, 240, 232, 0.55); text-decoration: none; transition: color .2s; cursor: none; }
+.footer-links a:hover { color: var(--white); }
+.footer-meta { font-size: 11px; color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+
 .hero-logo-main { width: clamp(300px, 60vw, 750px); margin-bottom: 40px; opacity: 0; filter: drop-shadow(0 0 50px rgba(255,255,255,0.2)); position: relative; z-index: 10; }
 .hero-bg-text { display: none; }
 
@@ -309,7 +319,9 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
   .panel-content { padding: 24px 20px; }
   .panel-num { font-size: 80px; bottom: 80px; }
   .hero-bottom-bar { flex-direction: column; gap: 8px; padding: 12px 20px; }
-  nav { justify-content: center; padding: 14px 20px; }
+  nav { justify-content: space-between; padding: 12px 20px; }
+  .nav-login { display: none; }
+  .nav-btn-app { padding: 8px 16px; font-size: 10px; }
 }
 </style>
 <!-- GTM y Clarity movidos al final del body para no bloquear render -->
@@ -320,7 +332,16 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
 <div class="cursor-ring" id="cursor-ring"></div>
 
 <nav>
-  <img src="logo.webp" alt="RepuestoFijo" width="338" height="63" style="height:36px;width:auto;object-fit:contain;">
+  <a href="https://repuestofijo.com" style="display:flex;align-items:center;text-decoration:none;cursor:none;">
+    <img src="logo.webp" alt="RepuestoFijo" width="338" height="63" style="height:36px;width:auto;object-fit:contain;">
+  </a>
+  <div class="nav-actions">
+    <a href="https://app.repuestofijo.com/login" class="nav-login">Iniciar Sesión</a>
+    <a href="https://app.repuestofijo.com" class="nav-btn-app">
+      <span>Buscar Repuestos</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
 </nav>
 <div class="hero-split">
   <div class="panel" id="prob1">
@@ -490,18 +511,26 @@ footer { padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);  align-ite
     <div class="why-cta" id="why-cta">
       <span class="big-number">100%</span>
       <p class="big-desc">De las piezas que necesitas, listas para entrega hoy mismo.</p>
-      <a href="#" class="btn-cta">Comprar ahora</a>
+      <a href="https://app.repuestofijo.com" class="btn-cta">Buscar repuestos ahora &rarr;</a>
     </div>
   </div>
 </section>
 
 <footer>  
+  <ul class="footer-links">
+    <li><a href="https://app.repuestofijo.com">Buscador de Repuestos</a></li>
+    <li><a href="https://app.repuestofijo.com/login">Acceso Talleres / Clientes</a></li>
+    <li><a href="https://app.repuestofijo.com/terminos" target="_blank" rel="noopener">Términos y Condiciones</a></li>
+    <li><a href="https://app.repuestofijo.com/privacidad" target="_blank" rel="noopener">Política de Privacidad</a></li>
+    <li><a href="https://app.repuestofijo.com/reclamaciones" target="_blank" rel="noopener">Libro de Reclamaciones</a></li>
+  </ul>
   <div class="footer-social">
     <a href="https://www.linkedin.com/company/repuestofijo" target="_blank" class="social-link" title="Siguenos en LinkedIn">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
     </a>
   </div>
-  <div class="footer-text text-center">© 2026 RepuestoFijo · Lima, Perú · Powered by ZettaThink</div>
+  <div class="footer-meta text-center">RepuestoFijo S.A.C. · Lima, Perú · Contacto: soporte@repuestofijo.com</div>
+  <div class="footer-text text-center">© 2026 RepuestoFijo · Todos los derechos reservados · Powered by ZettaThink</div>
 </footer>
 
 <!-- Analytics diferidos — no bloquean render -->
